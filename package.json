@@ -1,0 +1,25 @@
+{
+ "name": "InformationAcessor",
+ "productName": "Infozam",
+ "version": "1.0.0",
+ "description": "A program that facilitates easy database searching and log file converting",
+ "main": "main.js",
+ "scripts": {
+  "start": "electron ."
+ },
+ "author": "AJC",
+ "license": "ISC",
+ "devDependencies": {
+  "electron": "^2.0.5",
+  "electron-packager": "^12.1.0",
+  "request-promise": "^4.2.2"
+ },
+ "dependencies": {
+  "cross-spawn": "^6.0.5",
+   "npm": "^6.2.0",
+   "swish": "^1.0.0",
+  "request": "^2.87.0",
+  "shelljs": "^0.8.2",
+  "tree-kill": "^1.2.0"
+ }
+}
