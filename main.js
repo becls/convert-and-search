@@ -3,10 +3,10 @@ const {app, BrowserWindow} = require('electron');
 const ipcRenderer = require('electron').ipcRenderer;
 //var kill = require('tree-kill');
 var path = require('path')
-//const spawn = require('cross-spawn');
+const spawn = require('cross-spawn');
 //const child = spawn('./go');
-//const child = spawn('swish/go', {detached: true});
-const child = require('./swish');
+const child = spawn('swish/go', {detached: true});
+//const child = require('swish');
 
 let mainWindow
 
@@ -20,6 +20,21 @@ const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) 
 })
 if (isSecondInstance) {
     app.quit()
+}
+
+child.stdout.on('data', function(data) {
+    console.log(`stdout: ${data}`);
+});
+
+
+function exitSwish(){
+  console.log("Exiting swish");
+  //child("(exit)");
+  child.stdin.write("(exit)\n");
+  console.log("Amazed if worked");
+  //spawn("taskkill -f -im swish.exe");
+  //console.log(process._getActiveHandles());
+  
 }
 
 
@@ -57,7 +72,9 @@ app.on('window-all-closed', function () {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
+    exitSwish();
     app.quit();
+    
     //process.exit();
     //const childProc = require('child_process')
     //const killed = childProc.exec('npm stop');

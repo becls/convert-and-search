@@ -16,10 +16,9 @@
  },
  "dependencies": {
   "cross-spawn": "^6.0.5",
-   "npm": "^6.2.0",
-   "swish": "^1.0.0",
+  "electron-builder": "^20.26.0",
+  "npm": "^6.2.0",
   "request": "^2.87.0",
-  "shelljs": "^0.8.2",
   "tree-kill": "^1.2.0"
  }
 }
