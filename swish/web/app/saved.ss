@@ -73,7 +73,7 @@
                   ["database" data-func]
                   ["search" search-func])])
       
-      (with-db [db (log-path) SQLITE_OPEN_READONLY]
+      (with-db [db (log-file) SQLITE_OPEN_READONLY]
         (do-query db sql limit offset type func)))))
 
 (dispatch)

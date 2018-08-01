@@ -1,0 +1,22 @@
+starting as stand-alone application
+"HERE"
+
+Date: Tue Jul 31 22:02:44 2018
+Timestamp: 1533070964362
+Event: #(<child-end> 1533070964360 #<process 8> 1 normal)
+
+
+Date: Tue Jul 31 22:02:44 2018
+Timestamp: 1533070964667
+Event: #(<child-end> 1533070964666 #<process 7> 1 shutdown)
+
+
+Date: Tue Jul 31 22:02:44 2018
+Timestamp: 1533070964668
+Event: #(<child-end> 1533070964667 #<process 6> 1 shutdown)
+
+
+Date: Tue Jul 31 22:02:44 2018
+Timestamp: 1533070964669
+Event: #(application-start-failed shutdown)
+

@@ -82,7 +82,7 @@
      (p ,(get-database-name))))
 
 (define (get-database-name)
-  (with-db [db (log-path) SQLITE_OPEN_READONLY]
+  (with-db [db (log-file) SQLITE_OPEN_READONLY]
     (let* ([stmt (sqlite:prepare db (format "select name from database where file_path = '~a'" (user-log-path)))]
            [results (sqlite:step stmt)])
       (if results
