@@ -6,20 +6,21 @@ const fixPath = require('fix-path');
 fixPath();
 const spawn = require('cross-spawn');
 const child = spawn('resources\\app\\swish\\convert.exe', {detached: true});
+//const child = spawn('swish\\convert.exe', {detached: true});
 
 let mainWindow
 
 //Only allow one instance
-// const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
-//     // Someone tried to run a second instance, we should focus our window.
-//     if (mainWindow) {
-//         if (mainWindow.isMinimized()) mainWindow.restore()
-//         mainWindow.focus()
-//     }
-// })
-// if (isSecondInstance) {
-//     app.quit()
-// }
+const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
+  // Someone tried to run a second instance, we should focus our window.
+  if (mainWindow) {
+         if (mainWindow.isMinimized()) mainWindow.restore()
+         mainWindow.focus()
+     }
+ })
+ if (isSecondInstance) {
+     app.quit()
+ }
 
 
 function createWindow () {
@@ -27,7 +28,7 @@ function createWindow () {
   
   mainWindow = new BrowserWindow({show: false,
 				  icon: path.join(__dirname, 'assets/icons/png/64x64.png'),
-				  backgroundColor: '#4e284c'})
+				  backgroundColor: '#283A4E'})
   mainWindow.maximize()
   mainWindow.show()
 

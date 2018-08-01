@@ -24,7 +24,7 @@ body, form, div { margin:0px; padding:0px; }
 
 body {
   position:relative;
-  background-color:#283A4E;
+  background-color:#4e284c;
   min-width:1200px;
   background-position: 0 -30;
   background-repeat:no-repeat;
@@ -37,7 +37,7 @@ body {
 table { margin:7px; }
 table, td, th { border-collapse:collapse; }
 tr:nth-child(even) {background: #DDE}
-tr:nth-child(odd) {background: #FFF}
+tr:nth-child(odd) {background: #FaFaFa}
 td, th { padding:1px 7px 1px 7px; border: 1px solid #999; }
 th { border-bottom:3px double #999; }
 td { }
@@ -150,7 +150,7 @@ div.panel {
   margin:7px 7px 7px 0px;
   padding:3px 0px 3px;
   position:relative;
-  background-color: #FFF;
+  background-color: #FaFaFa;
   background-image: url('rounded-panel-header.png');
   background-position: top;
   background-repeat: repeat-x;
@@ -169,7 +169,7 @@ div.panel p.warning {color:orange;}
 div.panel a { color: #00F; text-decoration:none; }
 div.panel p  + p { margin-top:6px; }
 div.panel h1 { font-size:1.125em; margin-left:2px; }
-div.panel h2 { font-size:1em; color:white; margin-bottom:15px; text-align:center; }
+div.panel h2 { font-size:1em; color: #FaFaFa; margin-bottom:15px; text-align:center; }
 div.panel h3 { padding-left:7px; font-size:1em; padding-bottom:2px; border-bottom:1px solid #999; margin:5px 0px 7px; }
 div.panel h4 { padding-left:9px; font-size:1em; padding-bottom:2px; border-bottom:1px solid #DDD; margin:5px 0px 7px; }
 
