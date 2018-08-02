@@ -85,7 +85,7 @@
 (define (navigation)
   (panel (osi_get_hostname)
     (section software-product-name
-      (link "/app/saved?type=database&sql=&limit=100&offset=0" "Back to search") 
+      (link "/app/search" "Back to search") 
       (link "charts" "Charts")
       (link "errors?type=child&sql=&limit=100&offset=0" "Child Errors")
       (link "errors?type=gen-server&sql=&limit=100&offset=0" "Gen-Server Errors")

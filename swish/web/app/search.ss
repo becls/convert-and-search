@@ -72,11 +72,11 @@
           [desc-or-asc (if desc
                            "DESC"
                            "ASC")])
-      (string-append "ORDER by " order-col " "  desc-or-asc)))
+      (string-append "ORDER by [" order-col "] "  desc-or-asc)))
   (define (build-search-str)
     (if (string=? search-column "")
         #f
-        (string-append "[" search-column  "] like  " "('" search-term "')")))
+        (string-append "[" search-column  "] like ('" search-term "')")))
 
   (define (build-time-range cols)
     (if (string=? range-min "")
@@ -149,9 +149,27 @@
          [with-start-and-end (string-append "[" string "]")])
     with-start-and-end))
 
+(define (edit-setup sql db)
+  (define (get-bracketed priorKeyword)
+    (match (pregexp-match  (format "~a \\[(.*?)]" priorKeyword) sql)
+      [(,full . (,val)) val]
+      [,_ #f]))
+
+  (define (get-quoted priorKeyword)
+    (match (pregexp-match (format "~a \\('(.*?)'" priorKeyword) sql)
+      [(,full . (,val)) val]
+      [,_ ""]))
+
+  (define (get-desc)
+    (match (pregexp-match "DESC" sql)
+      [(,val) #t]
+      [,_ #f]))
+             
+  (intial-setup db (get-bracketed "from") (get-bracketed "where") (get-quoted "like") (get-quoted "between") (get-quoted "and") (get-bracketed "by") (get-desc)))
+
 
 ;;Intial setup
-(define (intial-setup db)
+(define (intial-setup db table column search-term min max order desc)
   (define (table-info master-row)
     (match master-row
       [#(,table-name)
@@ -169,7 +187,7 @@
                                      "select tbl_name from SQLITE_MASTER where type in (?, ?) order by tbl_name" "table" "view"))))
       `(select (@ (name "table") (id "table"))
          (option (@ (style "color: grey")) "(please select a table)") ;;Consider: changing to blank option
-         ,@(map (lambda (c) `(option ,(stringify c))) tables))))
+         ,@(map (lambda (c) `(option ,(if (and table (string=? table (stringify c))) `(@ (selected "selected"))) ,(stringify c))) tables))))
 
   (define (make-col-drop-downs db-tables cont-name drop-name)
     (define (db-table->selection table)
@@ -201,17 +219,17 @@
            (tr (td (p "Table")) (td (form ,(make-table-drop-down))) (td (p "Required")))
            (tr (td (p "Column")) (td ,(make-col-drop-downs db-tables "container" "cols")) (td (p "Select a table first")))
            (tr (td (p "Search term")) (td (p (textarea (@ (id "keyWord") (name "keyWord") (class "textBox"))
-                                               ,""))) (td (p "% is used for any number of don't care characters")
+                                               ,search-term))) (td (p "% is used for any number of don't care characters")
                                                         (p "#% returns everything that starts with #")))
            (tr (td (p "Minimum date-time")) (td (p (textarea (@ (id "min") (name "min") (class "textBox"))
-                                                     ,""))) (td (p "Inclusive") (p "Accepted formats:") (p "mm/dd/yyyy hh:mm:ss") (p " mm/dd/yyyy")
+                                                     ,min))) (td (p "Inclusive") (p "Accepted formats:") (p "mm/dd/yyyy hh:mm:ss") (p " mm/dd/yyyy")
                                                               (p "For example, 07/13/2018 15:38:59")))
            (tr (td (p "Maximum date-time")) (td (p (textarea (@ (id "max") (name "max") (class "textBox"))
-                                                     ,""))) (td (p "Inclusive")))
+                                                     ,max))) (td (p "Inclusive")))
            (tr (td (p "Order by")) (td ,(make-col-drop-downs db-tables "order-contain" "orders")) (td (p "Leave blank for timestamp")))
            (tr (td (p "Desc")) (td (label (@ (class "checkbox-inline"))
                                      (input (@ (name "desc")
-                                               (type "checkbox") (checked))))) (td (p "If sorting by timestamp shows most recent first"))))
+                                               (type "checkbox") ,(if desc `(checked)))))) (td (p "If sorting by timestamp shows most recent first"))))
           (input (@ (name "limit") (class "hidden") (value 100)))
           (input (@ (name "offset") (class "hidden") (value 0)))
           (input (@ (name "type") (class "hidden") (value "")))
@@ -233,9 +251,13 @@ select.addEventListener('change', updateColumnOrder, false);")
        (schema->html db-tables)))))
 
 (define (home-link last-sql)
-  `(a (@ (href ,(format "saveSearch?sql=~a"
-                  (http:percent-encode last-sql))))
-     "Save Search"))
+  `(table
+    (tr (td (@ (style "border: 0px solid;"))
+          (a (@ (href ,(format "saveSearch?sql=~a"
+                         (http:percent-encode last-sql)))) "Save Search"))
+      (td (@ (style "border: 0px solid; background: #FaFaFa;"))
+         (a (@ (href ,(format "search?edit-sql=~a"
+                         (http:percent-encode last-sql)))) "Edit Search")))))  
 
 
 ;;Runs each time page loaded, calls intial-setup or do-query
@@ -248,7 +270,8 @@ select.addEventListener('change', updateColumnOrder, false);")
         [limit (integer-param "limit" 0 params)]
         [offset (integer-param "offset" 0 params)]
         [sql (string-param "sql" params)]
-        [order-col (string-param "order" params)])
+        [order-col (string-param "order" params)]
+        [edit-sql (string-param "edit-sql" params)])
     (unless (user-log-path)
       (respond `(p "Please select a database first")))
 
@@ -260,7 +283,8 @@ select.addEventListener('change', updateColumnOrder, false);")
                         (match (catch (construct-sql table column keyword min max desc db order-col))
                           [#(EXIT ,reason) (respond:error reason)]
                           [,value (do-query db value limit offset "" (lambda x x))]))]
-                     [else (intial-setup db)]))))))
+                     [edit-sql (edit-setup edit-sql db)]
+                     [else (intial-setup db #f "" "" "" "" "" #t)]))))))
 
 
 (dispatch)
