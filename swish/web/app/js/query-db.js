@@ -74,6 +74,24 @@ function updateColumnSearch(){
   elements.filter('.' + value).show(); 
 }
 
+function updateJoin1(){
+  var e = document.getElementById('t1');
+  var strUser = e.options[e.selectedIndex].text;
+  var elements = $('div.contJ1').children().hide();
+  var value = $(this).val();
+  document.getElementById('join1Val').value = "";
+  elements.filter('.' + value).show(); 
+}
+
+function updateJoin2(){
+  var e = document.getElementById('t2');
+  var strUser = e.options[e.selectedIndex].text;
+  var elements = $('div.contJ2').children().hide();
+  var value = $(this).val();
+  document.getElementById('join2Val').value = "";
+  elements.filter('.' + value).show(); 
+}
+
 function updateColumnOrder(){
   var e = document.getElementById('table');
   var strUser = e.options[e.selectedIndex].text;
@@ -90,6 +108,16 @@ function updateOtherFeildSearch(){
 function updateOtherFeildOrder(){
    var value = $(this).val();
    document.getElementById('order').value = value;
+}
+
+function updateOtherFeildJ1(){
+   var value = $(this).val();
+   document.getElementById('join1Val').value = value;
+}
+
+function updateOtherFeildJ2(){
+   var value = $(this).val();
+   document.getElementById('join2Val').value = value;
 }
 
 $(document).ready(onLoad);

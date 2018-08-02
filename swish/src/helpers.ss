@@ -89,12 +89,11 @@
      ((string-ci=? (car list) x) #t)
      (else (containsStr? (cdr list) x))))
 
-  (define (slist->string slst div)
-    (cond ((null? slst) "")
-      ((null? (cdr slst)) (car slst))
-      (else (string-append (car slst)
-              div
-              (slist->string (cdr slst) div)))))
+  (define (slist->string slist div)
+    (match slist
+      [(,first) first]
+      [(,first . ,rest) (string-append first div (slist->string rest div))]
+      [,_ ""]))
 
   (define string-replace 
     (lambda (s match replacement)

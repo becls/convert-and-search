@@ -98,6 +98,7 @@
       (link "saved?type=database&sql=&limit=100&offset=0" "Manage databases")
       (link "saved?type=search&sql=&limit=100&offset=0" "Saved searches")
       (link "search" "Search")
+      (link  "twoTableSearch" "Two table search")
       (link "query-db" "Advanced search")
       (link "converter" "Convert log files")
       (link "/swish/errors?type=child&sql=&limit=100&offset=0" "Debug")
