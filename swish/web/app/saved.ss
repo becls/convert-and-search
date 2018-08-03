@@ -46,15 +46,18 @@
 (define (dispatch)
   (let ([limit (integer-param "limit" 0 params)]
         [offset (integer-param "offset" 0 params)]
-        [search-sql "Select name, description, sqlite, null as [delete] from search order by name collate nocase"]
+        [search-sql "Select name, description, sqlite, null as [Filter], null as [Edit], null as [Export], null as [Delete] from search order by name collate nocase"]
         [data-sql "Select name, description, file_path, null as [delete] from database order by name collate nocase"]
         [type (get-param "type")]
         [sql (string-param "sql" params)]
-        [search-func (lambda (name desc sqlite delete)
+        [search-func (lambda (name desc sqlite filter edit export delete)
                        (let ([display-name (if (string=? name "") "()" name)])
                          (list
                           (link (format "query-db?limit=100&offset=0&sql=~a" (http:percent-encode sqlite)) (format "~a" display-name))
                           desc sqlite
+                          (link (format "filter?sql=~a" (http:percent-encode sqlite)) "Filter results")
+                          (link (format "search?edit-sql=~a" (http:percent-encode sqlite))  "Edit")
+                          (link (format "export?inst=&sql=~a" (http:percent-encode sqlite))  "Export to excel")
                           (link (format "confirm-delete?type=search&val=~a" (http:percent-encode sqlite))  "Delete"))))]
         [data-func (lambda (name desc filePath delete)
                      (let ([display-name (if (string=? name "") "()" name)])

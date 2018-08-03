@@ -39,18 +39,47 @@
 
 
 (define (get-paths)
-  (respond `(form (table (tr (th (p "Field")) (th (p "Value")))
-                    (tr (td (p "Folder to convert")) (td (p (input (@ (name "folder") (class "path") (type "file") (webkitdirectory) (mozdirectory) (id "folder"))))))
-                    (tr (td (p "Destination folder")) (td (p (input (@ (name "dest") (class "path") (type "file") (webkitdirectory) (mozdirectory) (id "dest"))))))
-                    (tr (td (p "New file name")) (td (p (textarea (@ (name "name")) ""))))) 
-              (input (@ (id "folder-path") (name "folder-path") (class "hidden")))
-              (input (@ (id "dest-path") (name "dest-path") (class "hidden")))
-              (script "function func(){var x = document.getElementById('folder').files[0].path;
+  (respond
+   `(form
+     (table (tr (td (@ (style "border: 0px solid;")) (table (tr (th (p "Field")) (th (p "Value")))
+                       (tr (td (p "Folder to convert")) (td (p (input (@ (name "folder") (class "path") (type "file") (webkitdirectory) (mozdirectory) (id "folder"))))))
+                       (tr (td (p "Destination folder")) (td (p (input (@ (name "dest") (class "path") (type "file") (webkitdirectory) (mozdirectory) (id "dest"))))))
+                       (tr (td (p "New file name")) (td (p (textarea (@ (name "name")) ""))))))
+              (td (@ (style "border: 0px solid;")) (table (tr (th (@ (style "border: 0px solid; background: #FaFaFa;")) (h1 (@ (style "text-decoration: underline;" )) "Help"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formating"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Generated database setup")))))))
+     (input (@ (id "folder-path") (name "folder-path") (class "hidden")))
+     (input (@ (id "dest-path") (name "dest-path") (class "hidden")))
+     (script "function func(){var x = document.getElementById('folder').files[0].path;
 document.getElementById('folder-path').value = x} $('.path').bind('change', func).trigger('change')")
-              (script "function func(){var x = document.getElementById('dest').files[0].path;
+     (script "function func(){var x = document.getElementById('dest').files[0].path;
 document.getElementById('dest-path').value = x} $('.path').bind('change', func).trigger('change')")
-              (p (button (@ (type "submit")) "Convert")))
-    `(p "Depending on folder size the conversion may take a few minutes. If you leave this page the conversion will continue in the background. If you stay on this page you will be notified when the conversion is complete.")))
+   (p (button (@ (type "submit")) "Convert")))
+   `(p "Depending on folder size the conversion may take a few minutes. If you leave this page the conversion will continue in the background. If you stay on this page you will be notified when the conversion is complete.")))
+
+(define (file-explain)
+  (respond `(p "The converter only converts files in the current
+directory. Subdirectories are ignored. Therefore, navigate to the folder that contains the log files themselves.")
+    `(p "Only files whose file name follow the pattern: \"<name>dd-mm-yyyy HH.MM.SS.log\" are converted. Other files in the folder are ignored.")
+    `(p "<name> becomes the name of the table in the database.")
+    `(p "The files themselves can contain some header information, then each data entry should start with \"mm/dd/yyyy HH:MM:SS,\" followed by a value.")
+    `(table (tr (td (@ (style "border: 0px solid;")) ,(link "converter" "Back"))
+              (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Database setup"))))))
+
+(define (setup-explain)
+  (respond `(div (@ (style "width: 90%")) (p "There are two types of tables created, data tables and header
+    tables. There is only one header table created, called Runs. Each file adds one
+    entry to the runs table that describes the information found at
+    the top of the runs file. Data tables contain the information
+    found in the main body of the log file. There are as many data
+    tables created as there are unique convertable file names.")
+              (p "Each data table created has four columns, Run number, method, dateTime, and
+    desc. Run number is automatically generated and references the
+    corresponding entry in the Runs table, allowing the user to determine the header information if necessary.")
+              (p "Method is obtained from the header information.")
+              (p "dateTime is the value found at the start of each data entry in the log file.")
+              (p "desc is everything that follows the dateTime value in the data entry.")
+              (p "For instance, the line \"06/19/2018 19:25:58,Run ended.\" would have \"06/19/2018 19:25:58\" as its dateTime value and \"Run ended.\" as its desc."))
+    `(table (tr (td (@ (style "border: 0px solid;")) ,(link "converter" "Back"))
+              (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formating"))))))
 
 (define (do-conversion src dest name)
   (unless (not (string=? "undefined" src))
@@ -227,22 +256,16 @@ document.getElementById('dest-path').value = x} $('.path').bind('change', func).
   (let* (;[status (get-convert-status)]
          [src (string-param "folder-path" params)]
          [dest (string-param "dest-path" params)]
-         [name (string-param "name" params)])
+         [name (string-param "name" params)]
+         [file (string-param "file" params)]
+         [setup (string-param "setup" params)])
     (cond
      [src
       (match (catch (do-conversion src dest name))
         [#(EXIT ,reason) (respond:error reason)]
         [,value value])]
+     [file (file-explain)]
+     [setup (setup-explain)]
      [else (get-paths)])))
-;; [(and src (string=? status ""))
-;;  (match (catch (do-conversion src dest name))
-;;    [#(EXIT ,reason) (respond:error reason)]
-;;    [,value value])]
-;; [(string=? status "")
-;;  (get-paths)]
-;; [(string=? status "Conversion complete")
-;;  (conversion-complete dest name)]
-;; [else (respond `(p ,status) `(script "location.reload()"))])))
 
 (dispatch)
-;(conversion-complete "Hello" "Goodbye")

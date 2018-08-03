@@ -100,9 +100,22 @@ function updateColumnOrder(){
   elements.filter('.' + value).show(); 
 }
 
+function updateColumnExc(){
+  var e = document.getElementById('table');
+  var strUser = e.options[e.selectedIndex].text;
+  var elements = $('div.excCont').children().hide();
+  var value = $(this).val();
+  elements.filter('.' + value).show(); 
+}
+
 function updateOtherFeildSearch(){
    var value = $(this).val();
    document.getElementById('column').value = value;
+}
+
+function updateOtherExecCol(){
+   var value = $(this).val();
+   document.getElementById('exec').value = value;
 }
 
 function updateOtherFeildOrder(){

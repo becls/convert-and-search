@@ -67,7 +67,7 @@
     [,flag (if flag flag "")]
     [,button (string-param "button" params)])
    (if (= count 0)
-       (respond  (section "Query finished" `(p ,(home-link sql))))
+       (respond  (section "Query finished" `(p "Query was:") `(p ,sql) `(p ,(home-link sql))))
        (respond
         `(table
           (tr (@ (style "text-align: center;"))
@@ -87,9 +87,7 @@
         `(p (@ (style "text-align: center; color: Red; size: +10; font-weight: bold")),flag)
         (section (format "Rows ~d to ~d" (+ offset 1) (+ offset count))
           (match (cons (sqlite:columns stmt) (sqlite:execute stmt '()))
-            [(,cols . ,rows) (data->html-table 1 cols rows f)]))
-        (if button
-            (link "addFolder?selected=true" "Continue"))))))
+            [(,cols . ,rows) (data->html-table 1 cols rows f)]))))))
 
 (define (make-td c r)
   (let* ([text (format "~a" r)]
@@ -111,13 +109,6 @@
                                         (label (@ (for ,id) (class "elide")) ,text))))])))
 
 (define (data->html-table border columns rows f)
-  (define (widths ls-cols)
-    (let* ([num-cols (length ls-cols)]
-           [min (round (/ (/ 100 num-cols) 2))]
-           [max (round (* (/ 100 num-cols) 2))])
-      `(@ (max-width ,max) (min-width ,min) )))
-
-  
   (let ([columns (vector->list columns)])
     `(div (@ (class "dataCont"))
        (table (@ (class "dataTable"))
