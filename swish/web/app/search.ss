@@ -69,66 +69,54 @@
     (if (string-ci=? (car columns) "timestamp")
         (cdr columns)
         (cons (car columns) (removeTimestamp (cdr columns)))))
-  (define (build-order all-cols)
+  (define (build-order)
     (let ([order-col (if (string=? order-col "")
                          "ROWID"
                          order-col)]
           [desc-or-asc (if desc
                            "DESC"
                            "ASC")])
-      (string-append "ORDER by [" order-col "] "  desc-or-asc)))
+      (string-append " ORDER by [" order-col "] "  desc-or-asc)))
   (define (build-search-str)
     (if (string=? search-column "")
-        #f
+        ""
         (string-append "[" search-column  "] like ('" search-term "')")))
+
+  (define (format-cols cols)
+    (let ([str (apply string-append
+                 (map (lambda (x) (if (string=? "timestamp" x)
+                                      "strftime('%m/%d/%Y %H:%M:%S', timestamp/1000,'unixepoch','localtime') as timestamp, "
+                                      (string-append "["x"], ")))
+                   cols))])
+      (substring str 0 (- (string-length str) 2))))
+
+  
+  ;; (let* ([string (slist->string cols "], [")]
+  ;;        [with-start-and-end (string-append "[" string "]")])
+  ;;   with-start-and-end))
 
   (define (build-time-range cols)
     (if (string=? range-min "")
-        #f
+        ""
         (if (containsStr? cols "timestamp")
             (string-append "strftime('%m/%d/%Y %H:%M:%S', timestamp/1000,'unixepoch','localtime')"
               "between ('" range-min "') and ('" range-max "')")
             (string-append "dateTime between ('" range-min "') and ('" range-max"')"))))
 
+  (define (has-value str)
+    (not (string=? "" str)))
+
   (check-request-blank-vals)
   (let* ([all-cols (get-columns search-table db)]
-         [ls (cons (build-order all-cols) '())]
+         [timed? (or (containsStr? all-cols "timestamp") (containsStr? all-cols "dateTime"))]
          [time-range (build-time-range all-cols)]
-         [ls (if time-range
-                 (cons time-range ls)
-                 ls)]
-
-         [search-str (build-search-str)]
-         [ls (cond [(and search-str time-range)
-                    (let ((temp (cons "and" ls)))
-                      (cons search-str temp))]
-               [search-str (cons search-str ls)]
-               [else ls])]
-         
-         [ls (if (or time-range search-str)
-                 (cons "where" ls)
-                 ls)]
-         
-         [ls (cons (string-append "[" search-table "]") ls)]
-         [ls (cons "from" ls)]
-         [timestamp?  (if (containsStr? all-cols "timestamp")
-                          #t
-                          #f)]
-         [timed? (if (or timestamp? (containsStr? all-cols "dateTime"))
-                     #t
-                     #f)]
-         [columns (if timestamp?
-                      (removeTimestamp all-cols)
-                      all-cols)]
-         [formated-columns (format-cols columns)]
-         [ls (cons formated-columns ls)]
-         [ls (if timestamp?
-                 (cons "select strftime('%m/%d/%Y %H:%M:%S', timestamp/1000,'unixepoch','localtime') as timestamp," ls)
-                 (cons "select" ls))])
+         [where? (if (or (has-value search-column) (has-value range-min)) " where " "")]
+         [and? (if (and (has-value search-column) (has-value range-min)) " and " "")])
     
-    (if (and time-range (not timed?))
+    (if (and (has-value time-range) (not timed?))
         (raise `#(no-timestamp)))
-    (slist->string ls " ")))
+
+    (string-append "select " (format-cols all-cols) " from [" search-table "]" where? (build-search-str) and? time-range (build-order))))
 
 (define (remove-tags val)
   (match val
@@ -148,10 +136,7 @@
        (string->symbol name)]))
   (table-info table))
 
-(define (format-cols cols)
-  (let* ([string (slist->string cols "], [")]
-         [with-start-and-end (string-append "[" string "]")])
-    with-start-and-end))
+
 
 (define (edit-setup sql db)
   (define (get-bracketed priorKeyword)
