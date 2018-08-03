@@ -59,18 +59,18 @@
         )))))
 
 (define (instructions sql)
-  (respond (section "Follow the instruction below to import the results of your search into excel"
-             `(p "1) Open the data tab in excel")
-             `(p "2) Under the \"get external data\" section there should be an option called \"From Web,\" select this option")
-             `(p "2a) If the button is grayed out, open a new sheet or workbook")
+  (respond (section "Follow the instruction below to import the results of your search into excel."
+             `(p "1) Open the data tab in excel.")
+             `(p "2) Under the \"get external data\" section there should be an option called \"From Web,\" select this option.")
+             `(p "2a) If the button is grayed out, open a new sheet or workbook.")
              `(p "3) Copy the following into the address box:")
              `(p (@ (style "word-wrap:break-word; color: #26d693")) ,(format "http://localhost:54321/app/export?sql=~a" (http:percent-encode sql)))
-             `(p "3a) If the system complains about a long URL, you can shorten it using TinyURL.com or another URL shortener")
-             `(p "4) Hit either enter or the button labeled go to load the specified page")
-             `(p "5) Click the small yellow arrow in the top left corner to select all content on the page")
-             `(p "6) Click import in the bottom right corner")
-             `(p "7) Select where to import the data")
-             `(p "8) The import may take a moment, but your data should load"))))
+             `(p "3a) If the system complains about a long URL, you can shorten it using TinyURL.com or another URL shortener.")
+             `(p "4) Hit either enter or the button labeled go to load the specified page.")
+             `(p "5) Click the small yellow arrow in the top left corner to select all content on the page.")
+             `(p "6) Click import in the bottom right corner.")
+             `(p "7) Select where to import the data.")
+             `(p "8) The import may take a moment, but your data should load."))))
 
 (define (results sql db)
   (define (get-results next-row f)
