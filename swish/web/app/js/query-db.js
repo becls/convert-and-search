@@ -65,12 +65,57 @@ function rowToOffset() {
   return true;
 }
 
-function updateColumnSearch(){
-  var e = document.getElementById('table');
+function intialupdate(){
+  hideAll();
+  updateCont('div.container', 'column', 'table');
+  updateCont('div.excCont', 'exec', 'table');
+  updateCont('div.order-contain', 'order', 'table');
+  
+  updateVal('div.container', 'column', 'table');
+  updateVal('div.order-contain', 'order', 'table');
+  updateVal('div.excCont', 'exec', 'table');  
+}
+
+function hideAll(){
+  $('div.container').children().hide();
+  $('div.excCont').children().hide();
+  $('div.order-contain').children().hide();
+}
+
+function updateCont(container, elmId, match){
+  var e = document.getElementById(match);
   var strUser = e.options[e.selectedIndex].text;
-  var elements = $('div.container').children().hide();
-  document.getElementById('column').value = '';
+  var elements = $(container).children().hide();
+  document.getElementById(elmId).value = '';
   elements.filter('.' + strUser).show();
+}
+
+function updateVal(container, elmId, match){
+  var e = document.getElementById(match);
+  var strUser = e.options[e.selectedIndex].text;
+  var elements = $(container).children();
+  var selected = elements.filter('.' + strUser);
+  var selectElm = selected[0].children[0];
+  var val = selectElm.options[selectElm.selectedIndex].text
+  document.getElementById(elmId).value = val;
+}
+
+function updateDrops(){
+  updateCont('div.container', 'column', 'table');
+  updateCont('div.order-contain', 'order', 'table');
+  updateCont('div.excCont', 'exec', 'table');
+}
+
+function updateColVal(){
+  updateVal('div.container', 'column', 'table');
+}
+
+function updateExecVal(){
+  updateVal('div.excCont', 'exec', 'table');
+}
+
+function updateOrderVal(){
+  updateVal('div.order-contain', 'order', 'table');
 }
 
 function updateJoin1(){
@@ -89,52 +134,6 @@ function updateJoin2(){
   var value = $(this).val();
   document.getElementById('join2Val').value = "";
   elements.filter('.' + value).show(); 
-}
-
-function updateColumnOrder(){
-  var e = document.getElementById('table');
-  var strUser = e.options[e.selectedIndex].text;
-  var elements = $('div.order-contain').children().hide();
-  document.getElementById('order').value = "";
-  elements.filter('.' + strUser).show(); 
-}
-
-function updateColumnExc(){
-  var e = document.getElementById('table');
-  var strUser = e.options[e.selectedIndex].text;
-  var elements = $('div.excCont').children().hide();
-  document.getElementById('exec').value = "";
-  elements.filter('.' + strUser).show(); 
-}
-
-function updateOtherFeildSearch(){
-  var e = document.getElementById('table');
-  var strUser = e.options[e.selectedIndex].text;
-  var elements = $('div.container').children();
-  var selected = elements.filter('.' + strUser);
-  var selectElm = selected[0].children[0];
-  var val = selectElm.options[selectElm.selectedIndex].text
-  document.getElementById('column').value = val;
-}
-
-function updateOtherExecCol(){
-  var e = document.getElementById('table');
-  var strUser = e.options[e.selectedIndex].text;
-  var elements = $('div.excCont').children();
-  var selected = elements.filter('.' + strUser);
-  var selectElm = selected[0].children[0];
-  var val = selectElm.options[selectElm.selectedIndex].text
-  document.getElementById('exec').value = val;
-}
-
-function updateOtherFeildOrder(){
-  var e = document.getElementById('table');
-  var strUser = e.options[e.selectedIndex].text;
-  var elements = $('div.order-contain').children();
-  var selected = elements.filter('.' + strUser);
-  var selectElm = selected[0].children[0];
-  var val = selectElm.options[selectElm.selectedIndex].text
-  document.getElementById('order').value = val;
 }
 
 function updateOtherFeildJ1(){

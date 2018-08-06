@@ -57,7 +57,7 @@ app.on('window-all-closed', function () {
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
     //Kill swish
-    child.stdin.write("(exit)\n"); //Consider: making so does not throw an error if swish failed to load
+    child.stdin.write("(app:shutdown)\n"); //Consider: making so does not throw an error if swish failed to load
     app.quit();
   }
 })

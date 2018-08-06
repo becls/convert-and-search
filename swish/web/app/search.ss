@@ -247,28 +247,13 @@
           (p (button (@ (type "submit")) "Run Search"))
           (p (textarea (@ (id "sql") (name "sql") (class "hidden"))))
           
-          (script "$('div.container').children().hide();
+          (script "
+window.addEventListener('load', intialupdate, false);
 var select = document.getElementById('table');
-window.addEventListener('load', updateColumnSearch, false);
-window.addEventListener('load', updateOtherFeildSearch,false);
-select.addEventListener('click', updateColumnSearch, false);
-")
-          
-          (script "$('div.excCont').children().hide();
-var select = document.getElementById('table');
-window.addEventListener('load', updateColumnExc, false);
-window.addEventListener('load', updateOtherExecCol, false);
-select.addEventListener('click', updateColumnExc, false);")
-          
-          (script "$('div.order-contain').children().hide();
-var select = document.getElementById('table');
-window.addEventListener('load', updateColumnOrder, false);
-window.addEventListener('load', updateOtherFeildOrder, false);
-select.addEventListener('change', updateColumnOrder, false);")
-          
-          (script "$('.excCol').bind('change', updateOtherExecCol).trigger('change')")
-          (script "$('.cols').bind('change', updateOtherFeildSearch).trigger('change')")
-          (script "$('.orders').bind('change', updateOtherFeildOrder).trigger('change')")))
+select.addEventListener('click', updateDrops, false);")
+          (script "$('.excCol').bind('change', updateExecVal).trigger('change')")
+          (script "$('.cols').bind('change', updateColVal).trigger('change')")
+          (script "$('.orders').bind('change', updateOrderVal).trigger('change')")))
      
      (section "Schema"
        (schema->html db-tables)))))

@@ -46,10 +46,10 @@
   (define (build-join-condition)
     (let ([t1-info (formatCond table1 join1)]
           [t2-info (formatCond table2 join2)])
-      (string-append " where"  t1-info " = " t2-info)))
+      (string-append " where "  t1-info " = " t2-info)))
 
   (define (build-table-info)
-    (string-append " from " (stringify table1) " join " (stringify table2)))
+    (string-append " from [" (stringify table1) "] join [" (stringify table2) "]"))
 
   (define (build-new-col)
     (string-append (formatCond table1 join1) " as [" newName "], ")) 
