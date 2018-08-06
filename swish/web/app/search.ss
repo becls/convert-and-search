@@ -71,12 +71,12 @@
         (cons (car columns) (removeTimestamp (cdr columns)))))
   (define (build-order)
     (let ([order-col (if (string=? order-col "")
-                         "ROWID"
-                         order-col)]
+                         "1"
+                        (string-append "[" order-col "]"))]
           [desc-or-asc (if desc
                            "DESC"
                            "ASC")])
-      (string-append " ORDER by [" order-col "] "  desc-or-asc)))
+      (string-append " ORDER by " order-col " "  desc-or-asc)))
   (define (build-search-str)
     (if (string=? search-column "")
         ""
@@ -85,23 +85,23 @@
   (define (format-cols cols)
     (let ([str (apply string-append
                  (map (lambda (x) (if (string=? "timestamp" x)
-                                      "strftime('%m/%d/%Y %H:%M:%S', timestamp/1000,'unixepoch','localtime') as timestamp, "
+                                      "datetime(timestamp/1000, 'unixepoch','localtime') as timestamp, "
                                       (string-append "["x"], ")))
                    cols))])
       (substring str 0 (- (string-length str) 2))))
-
   
-  ;; (let* ([string (slist->string cols "], [")]
-  ;;        [with-start-and-end (string-append "[" string "]")])
-  ;;   with-start-and-end))
-
   (define (build-time-range cols)
     (if (string=? range-min "")
         ""
         (if (containsStr? cols "timestamp")
-            (string-append "strftime('%m/%d/%Y %H:%M:%S', timestamp/1000,'unixepoch','localtime')"
+            (string-append "datetime(timestamp/1000,'unixepoch','localtime')"
               "between ('" range-min "') and ('" range-max "')")
             (string-append "dateTime between ('" range-min "') and ('" range-max"')"))))
+
+  (define (build-except cols)
+    (if (string=? exc-col "")
+        ""
+        (string-append " Except Select " cols " from [" search-table "] where [" exc-col "] like ('" exc-term "')"))) 
 
   (define (has-value str)
     (not (string=? "" str)))
@@ -111,12 +111,14 @@
          [timed? (or (containsStr? all-cols "timestamp") (containsStr? all-cols "dateTime"))]
          [time-range (build-time-range all-cols)]
          [where? (if (or (has-value search-column) (has-value range-min)) " where " "")]
-         [and? (if (and (has-value search-column) (has-value range-min)) " and " "")])
+         [and? (if (and (has-value search-column) (has-value range-min)) " and " "")]
+         [formated-cols (format-cols all-cols)]
+         [except-clause (build-except formated-cols)])
     
     (if (and (has-value time-range) (not timed?))
         (raise `#(no-timestamp)))
 
-    (string-append "select " (format-cols all-cols) " from [" search-table "]" where? (build-search-str) and? time-range (build-order))))
+    (string-append "select " formated-cols " from [" search-table "]" where? (build-search-str) and? time-range except-clause (build-order))))
 
 (define (remove-tags val)
   (match val
@@ -142,7 +144,7 @@
   (define (get-bracketed priorKeyword)
     (match (pregexp-match  (format "~a \\[(.*?)]" priorKeyword) sql)
       [(,full . (,val)) val]
-      [,_ #f]))
+      [,_ ""]))
 
   (define (get-quoted priorKeyword)
     (match (pregexp-match (format "~a \\('(.*?)'" priorKeyword) sql)
@@ -153,12 +155,24 @@
     (match (pregexp-match "DESC" sql)
       [(,val) #t]
       [,_ #f]))
-  ; (respond `(p ,sql)))          
-  (intial-setup db "The system filled in what fields it could from the existing query. If your active database is different than the one used to create the search some fields may be blank" (get-bracketed "from") (get-bracketed "where") (get-quoted "like") (get-quoted "between") (get-quoted "and") (get-bracketed "by") (get-desc)))
+
+  (define (get-exc-col)
+    (match (pregexp-match "Except (?:.*?) where \\[(.*?)]" sql)
+      [(,full . (,val)) val]
+      [,_ ""]))
+
+  (define (get-exc-term)
+    (match (pregexp-match "Except (?:.*?) like \\('(.*?)'" sql)
+      [(,full . (,val)) val]
+      [,_ ""]))
+
+  
+  (intial-setup db "The system filled in what fields it could from the existing query. If your active database is different than the one used to create the search some fields may be blank" (get-bracketed "from") (get-bracketed "where") (get-quoted "like") (get-quoted "between") (get-quoted "and") (get-exc-col) (get-exc-term) (get-bracketed "by") (get-desc)))
 
 
 ;;Intial setup
-(define (intial-setup db inst table column search-term min max order desc)
+(define (intial-setup db inst table column search-term min max excCol excTerm order desc)
+  
   (define (table-info master-row)
     (match master-row
       [#(,table-name)
@@ -176,9 +190,9 @@
                                      "select tbl_name from SQLITE_MASTER where type in (?, ?) order by tbl_name" "table" "view"))))
       `(select (@ (name "table") (id "table"))
          (option (@ (style "color: grey")) "(please select a table)") ;;Consider: changing to blank option
-         ,@(map (lambda (c) `(option ,(if (and table (string=? table (stringify c))) `(@ (selected "selected"))) ,(stringify c))) tables))))
+         ,@(map (lambda (c) `(option ,(if (string=? table (stringify c)) `(@ (selected "selected"))) ,(stringify c))) tables))))
 
-  (define (make-col-drop-downs db-tables cont-name drop-name)
+  (define (make-col-drop-downs db-tables cont-name drop-name val)
     (define (db-table->selection table)
       (match table
         [(,name . ,columns)
@@ -190,11 +204,10 @@
     (define (column->option column-type)
       (match column-type
         [(,column . ,type)
-         `(option ,(stringify column))]))
+         `(option ,(if (string=? val (stringify column)) `(@ (selected "selected"))) ,(stringify column))]))
     `(div
       ,@(map db-table->selection db-tables)))
-  
-  
+
   (let ([db-tables
          (map table-info
            (execute-sql db
@@ -203,26 +216,25 @@
      (section inst
        `(form (@ (method "get") (class "schema"))
           (table
-           ;Consider using rowspan or background color to make row pairings clearer
            (tr
              (th (p "Field")) (th (p "Value")) (th (p "Explination")) (th (p "Example")))
            (tr (td (p "Table")) (td (form ,(make-table-drop-down))) (td (p (@ (style "color:red")) "Required") (p "The table to search")) (td (p "")))
-           (tr (td (p "Column")) (td ,(make-col-drop-downs db-tables "container" "cols"))
+           (tr (td (p "Column")) (td ,(make-col-drop-downs db-tables "container" "cols" column))
              (td (@ (rowspan "2")) (p "Optional, use if you wish to search for a specifc term in a specifc column") (p "Does an exact match search. You can do a keyword search using % to represent don't care characters")) (td (@ (rowspan "2")) (p "Selecting \"Desc\" and entering  \"%light curtain%\" will show you all results where the desc column contains the phrase  \"light curtain\".") (p "You can also use % only at the begining or end, for example \"#%\" returns all results that start with #")))
            (tr (@ (style "background-color: #FaFaFa;")) (td (p "Search term")) (td (p (textarea (@ (id "keyWord") (name "keyWord") (class "textBox")),search-term))))
 
-           (tr (@ (style "background-color: #DDE;")) (td (p "Exclude column")) (td ,(make-col-drop-downs db-tables "excCont" "excCol"))
+           (tr (@ (style "background-color: #DDE;")) (td (p "Exclude column")) (td ,(make-col-drop-downs db-tables "excCont" "excCol" excCol))
              (td  (@ (rowspan "2"))(p "Optional, similar to the above two rows, except excludes results from the search that match this condition") (p "Still shows this column, just not the rows that match the condition") (p "Same guidelines as above for the keyword")) (td (@ (rowspan "2")) (p "Selecting \"Method\" and entering  \"Clinical%\" will remove all rows where the method name starts with clinical")))
-           (tr (td (p "Exclude term")) (td (p (textarea (@ (id "execTerm") (name "execTerm") (class "textBox"))))))
+           (tr (td (p "Exclude term")) (td (p (textarea (@ (id "execTerm") (name "execTerm") (class "textBox")) ,excTerm))))
            
            (tr (td (p "Minimum date-time"))
              (td (p (textarea (@ (id "min") (name "min") (class "textBox")),min)))
              (td (@ (rowspan "2")) (p "Optional, limits the time range of results shown") (p "Inclusive")
                (p "Table must include a column labeled eaither \"timestamp\" or \"dateTime\""))
-             (td (@ (rowspan "2"))(p "Formats:  mm/dd/yyyy HH:MM:SS or mm/dd/yyyy") (p "For example, 07/13/2018 15:38:59")))
+             (td (@ (rowspan "2"))(p "Formats:  yyyy-mm-dd HH:MM:SS or yyyy-mm-dd") (p "For example, 2018-06-17 15:38:59")))
            (tr (@ (style "background-color: #FaFaFa;"))
              (td (p "Maximum date-time")) (td (p (textarea (@ (id "max") (name "max") (class "textBox")),max))))
-           (tr (@ (style "background-color: #DDE;")) (td (p "Order by")) (td ,(make-col-drop-downs db-tables "order-contain" "orders")) (td (p "Optional, defaults to the order entered into the database")) (td (p ""))) 
+           (tr (@ (style "background-color: #DDE;")) (td (p "Order by")) (td ,(make-col-drop-downs db-tables "order-contain" "orders" order)) (td (p "Optional, defaults to the order entered into the database")) (td (p ""))) 
            (tr (@ (style "background-color: #FaFaFa;")) (td (p "Desc")) (td (label (@ (class "checkbox-inline"))
                                      (input (@ (name "desc")
                                                (type "checkbox") ,(if desc `(checked)))))) (td (p "If left order by blank, shows most recent first")) (td (p ""))))
@@ -234,21 +246,29 @@
           (input (@ (id "order") (name "order") (class "hidden") (value "")))
           (p (button (@ (type "submit")) "Run Search"))
           (p (textarea (@ (id "sql") (name "sql") (class "hidden"))))
+          
           (script "$('div.container').children().hide();
 var select = document.getElementById('table');
-select.addEventListener('change', updateColumnSearch, false);")
+window.addEventListener('load', updateColumnSearch, false);
+window.addEventListener('load', updateOtherFeildSearch,false);
+select.addEventListener('click', updateColumnSearch, false);
+")
           
           (script "$('div.excCont').children().hide();
 var select = document.getElementById('table');
-select.addEventListener('change', updateColumnExc, false);")
+window.addEventListener('load', updateColumnExc, false);
+window.addEventListener('load', updateOtherExecCol, false);
+select.addEventListener('click', updateColumnExc, false);")
           
           (script "$('div.order-contain').children().hide();
 var select = document.getElementById('table');
+window.addEventListener('load', updateColumnOrder, false);
+window.addEventListener('load', updateOtherFeildOrder, false);
 select.addEventListener('change', updateColumnOrder, false);")
+          
           (script "$('.excCol').bind('change', updateOtherExecCol).trigger('change')")
           (script "$('.cols').bind('change', updateOtherFeildSearch).trigger('change')")
-          (script "$('.orders').bind('change', updateOtherFeildOrder).trigger('change')"))
-       )
+          (script "$('.orders').bind('change', updateOtherFeildOrder).trigger('change')")))
      
      (section "Schema"
        (schema->html db-tables)))))
@@ -275,7 +295,7 @@ select.addEventListener('change', updateColumnOrder, false);")
         [limit (integer-param "limit" 0 params)]
         [offset (integer-param "offset" 0 params)]
         [excludeCol (string-param "exec" params)]
-        [excludeTerm (string-param "execTerm" params)]
+        [excludeTerm (string-param-sql "execTerm" params)]
         [sql (string-param "sql" params)]
         [order-col (string-param "order" params)]
         [edit-sql (string-param "edit-sql" params)])
@@ -292,7 +312,7 @@ select.addEventListener('change', updateColumnOrder, false);")
                           [#(EXIT ,reason) (respond:error reason)]
                           [,value (do-query db value limit offset "" (lambda x x))]))]
                      [edit-sql (edit-setup edit-sql db)]
-                     [else (intial-setup db "Please enter the following fields" #f "" "" "" "" "" #t)]))))))
+                     [else (intial-setup db "Please enter the following fields" "" "" "" "" "" "" ""  "" #t)]))))))
 
 
 (dispatch)

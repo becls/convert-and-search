@@ -145,6 +145,12 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
         (and (>= n 9)
              (string=? (substring line 0 9) "Method = ")
              (substring line 9 (- n 1)))))
+    
+    (define (reformat date)
+      (let ([year (substring date 6 10)]
+            [month (substring date 0 2)]
+            [day (substring date 3 5)])
+        (string-append year "-" month "-" day (substring date 10 (string-length date)))))
 
     (define (parse-date-line line)
       ;; mm/dd/yyyy HH:MM:SS,
@@ -170,7 +176,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
              (char-numeric? (string-ref line 15))
              (char-numeric? (string-ref line 17))
              (char-numeric? (string-ref line 18))
-             (cons (substring line 0 19) (substring line 20 (- n 1))))))
+             (cons (reformat (substring line 0 19)) (substring line 20 (- n 1))))))
 
     (define (seen-date date run-number method)
       (let ([line (get-line ip)])

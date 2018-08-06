@@ -67,7 +67,11 @@
     [,flag (if flag flag "")]
     [,button (string-param "button" params)])
    (if (= count 0)
-       (respond  (section "Query finished" `(p "Query was:") `(p ,sql) `(p ,(home-link sql))))
+       (respond  (section "Query finished" `(p "Query was:") `(p ,sql)
+                   `(p (@ (style "text-decoration: underline;")) "If you expected this query to return results, try checking:")
+                   `(p "Do you have any saved databases?")
+                   `(p "Is the current active database the database you expected?")
+                   `(p "Check for typos in your search") `(p ,(home-link sql))))
        (respond
         `(table
           (tr (@ (style "text-align: center;"))

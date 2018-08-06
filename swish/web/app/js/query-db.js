@@ -69,9 +69,8 @@ function updateColumnSearch(){
   var e = document.getElementById('table');
   var strUser = e.options[e.selectedIndex].text;
   var elements = $('div.container').children().hide();
-  var value = $(this).val();
-  document.getElementById('column').value = "";
-  elements.filter('.' + value).show(); 
+  document.getElementById('column').value = '';
+  elements.filter('.' + strUser).show();
 }
 
 function updateJoin1(){
@@ -96,31 +95,46 @@ function updateColumnOrder(){
   var e = document.getElementById('table');
   var strUser = e.options[e.selectedIndex].text;
   var elements = $('div.order-contain').children().hide();
-  var value = $(this).val();
-  elements.filter('.' + value).show(); 
+  document.getElementById('order').value = "";
+  elements.filter('.' + strUser).show(); 
 }
 
 function updateColumnExc(){
   var e = document.getElementById('table');
   var strUser = e.options[e.selectedIndex].text;
   var elements = $('div.excCont').children().hide();
-  var value = $(this).val();
-  elements.filter('.' + value).show(); 
+  document.getElementById('exec').value = "";
+  elements.filter('.' + strUser).show(); 
 }
 
 function updateOtherFeildSearch(){
-   var value = $(this).val();
-   document.getElementById('column').value = value;
+  var e = document.getElementById('table');
+  var strUser = e.options[e.selectedIndex].text;
+  var elements = $('div.container').children();
+  var selected = elements.filter('.' + strUser);
+  var selectElm = selected[0].children[0];
+  var val = selectElm.options[selectElm.selectedIndex].text
+  document.getElementById('column').value = val;
 }
 
 function updateOtherExecCol(){
-   var value = $(this).val();
-   document.getElementById('exec').value = value;
+  var e = document.getElementById('table');
+  var strUser = e.options[e.selectedIndex].text;
+  var elements = $('div.excCont').children();
+  var selected = elements.filter('.' + strUser);
+  var selectElm = selected[0].children[0];
+  var val = selectElm.options[selectElm.selectedIndex].text
+  document.getElementById('exec').value = val;
 }
 
 function updateOtherFeildOrder(){
-   var value = $(this).val();
-   document.getElementById('order').value = value;
+  var e = document.getElementById('table');
+  var strUser = e.options[e.selectedIndex].text;
+  var elements = $('div.order-contain').children();
+  var selected = elements.filter('.' + strUser);
+  var selectElm = selected[0].children[0];
+  var val = selectElm.options[selectElm.selectedIndex].text
+  document.getElementById('order').value = val;
 }
 
 function updateOtherFeildJ1(){
