@@ -10,8 +10,9 @@
 @nosafety
 
 @suggestion Update the date.
+:fix: Fixed as of last edit. Do I fix again before distribution?
 
-@suggestion Add `#*#` to `.gitignore` at the root of the repository,
+@fixed Add `#*#` to `.gitignore` at the root of the repository,
   and remove `swish/src/#rawStrings.ss#` and
   `swish/web/app/css/#search.css#`.
 

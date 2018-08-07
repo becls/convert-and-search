@@ -17,12 +17,12 @@
 
 ## General
 
-@suggestion Don't check in binaries such as *.so and *.wpo but instead
+@fixed Don't check in binaries such as *.so and *.wpo but instead
   use a Makefile that builds them.
 
 @fixed Include a LICENSE file like the one in Swish.
 
-@defect Include a NOTICE file like the one in Swish that enumerates
+@fixed Include a NOTICE file like the one in Swish that enumerates
 all other software used in this application.
 
 ## main.js
