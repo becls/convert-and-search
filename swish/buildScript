@@ -6,7 +6,7 @@ swish <<EOF
 EOF
 
 swish-build -b "$(cygpath -w /Applications64/Chez\ Scheme\ 9.5.1/boot/a6nt/petite.boot)" \
--o convert.exe src/main.ss -b 'C:\cygwin64\usr\local\lib\swish2\a6nt\swish.boot' \
+-o convert.exe src/main.ss -b "$(cygpath -w /usr/local/lib/swish2/a6nt/swish.boot)" \
 -b './AppHelpers.boot' \
 --libs-visible -L src
 

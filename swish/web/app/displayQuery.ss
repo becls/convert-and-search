@@ -34,7 +34,7 @@
        c1 c2 ...)]))
 
 ;; Running a query
-(define (do-query db sql limit offset type f)
+(define (do-query db sql limit offset type f . bindings)
   (define (nav-form where from-offset enabled?)
     `(form (@ (name "query") (method "get"))
        (textarea (@ (name "sql") (class "hidden")) ,sql)
@@ -60,12 +60,11 @@
 
   (match-let*
    ([,stmt (sqlite:prepare db (format "~a limit ? offset ?" sql))]
-    [,_ (sqlite:bind stmt (list limit  offset))]
+    [,_ (sqlite:bind stmt (append bindings (list limit offset)))]
     [,results (get-results (lambda () (sqlite:step stmt)) row->tr)]
     [,count (length results)]
     [,flag (string-param "flag" params)]
-    [,flag (if flag flag "")]
-    [,button (string-param "button" params)])
+    [,flag (if flag flag "")])
    (if (= count 0)
        (respond  (section "Query finished" `(p "Query was:") `(p ,sql)
                    `(p (@ (style "text-decoration: underline;")) "If you expected this query to return results, try checking:")

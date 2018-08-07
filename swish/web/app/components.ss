@@ -79,12 +79,14 @@
 (define (active-database)
   `(div (p " ")
     (p "Current Database:")
-     (p ,(get-database-name))))
+    (p ,(get-database-name))))
 
 (define (get-database-name)
   (with-db [db (log-file) SQLITE_OPEN_READONLY]
-    (let* ([stmt (sqlite:prepare db (format "select name from database where file_path = '~a'" (user-log-path)))]
-           [results (sqlite:step stmt)])
+    (match-let*
+     ([,stmt (sqlite:prepare db "select name from database where file_path = ?")]
+      [,_ (sqlite:bind stmt (list (user-log-path)))]
+      [,results (sqlite:step stmt)])
       (if results
           `(p ,(format "~a" (car (vector->list results))))
           `(p "None selected")))))

@@ -11,7 +11,7 @@
 :File:      swish/src/logConverter.ss
 :File:      swish/src/main.ss
 :Approved:
-:Author:    Alyssa Crawford (2)
+:Author:    Alyssa Crawford (5)
 :Inspector: Bob Burger (2)
 @nosafety
 
@@ -36,7 +36,7 @@ all other software used in this application.
 
 ## swish/buildScript
 
-@defect Use `"$(cygpath -w /usr/local/lib/swish2/a6nt/swish.boot)"` on
+@fixed Use `"$(cygpath -w /usr/local/lib/swish2/a6nt/swish.boot)"` on
   line 9 to locate swish.boot in Windows.
 
 ## swish/src/config.ss
@@ -83,21 +83,21 @@ all other software used in this application.
 :fix: The filename regular expression already was case-insensitive, as each letter can be anything from a capital A to a lower case z, which includes upper and lowercase letters.
   There was a discrepancy with the design document, which allowed the filename to be anything that did not include two numbers in a row. Both the regular expression and the design doc where updated for consistency. 
 
-@defect `process-each-file` should use the input list (the num
+@fixed `process-each-file` should use the input list (the num
   variable) to scan only files, not directories.
 
-@suggestion `get-second-val` is very similar to `assoc`. If you delay
+@fixed `get-second-val` is very similar to `assoc`. If you delay
   the binding of `prepared`, you can use `assoc`.
 
-@defect The global mutable variable `status` will not suffice for two
+@fixed The global mutable variable `status` will not suffice for two
   processes that call make-db-and-convert concurrently, and the status
   is set to complete before the transaction completes.
 
-@defect In `make-db-and-convert`, why do you start a new db process
+@fixed In `make-db-and-convert`, why do you start a new db process
   and then immediately stop it? Pass `(logor SQLITE_OPEN_READWRITE
   SQLITE_OPEN_CREATE)` to `with-db` instead.
 
-@suggestion Replace `(lambda (x) (match-let* ([,method x]) ...))` with
+@fixed Replace `(lambda (x) (match-let* ([,method x]) ...))` with
   `(lambda (method) ...)`.
 
 ## swish/src/main.ss

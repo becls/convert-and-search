@@ -32,9 +32,8 @@
        c1 c2 ...)])) 
 
 (define (dispatch)
-  (let* ([val (string-param "val" params)]
-         [valid (regular-file? val)])
-    (if valid
+  (let ([val (string-param "val" params)])
+    (if (regular-file? val)
         (begin
           (user-log-path val)
           (respond `(p "Active database was changed to:") `(p ,(get-database-name))

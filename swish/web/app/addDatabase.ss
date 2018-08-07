@@ -61,8 +61,6 @@ document.getElementById('file-path').value = x} $('.path').bind('change', func).
              (input (@ (id "file-path") (name "file-path") (class "hidden") (value ,file)))
              (p (button (@ (type "submit")) "Save")))))
 
-
-
 (define (update-path name desc file)
   (unless (not (string=? "undefined" file))
     (raise `#(browser-add)))
@@ -70,16 +68,17 @@ document.getElementById('file-path').value = x} $('.path').bind('change', func).
               (ends-with-ci? file ".db")
               (ends-with-ci? file ".sqlite"))
     (raise `#(not-database)))
-  (match (db:transaction 'log-db (lambda () (execute (format "insert into database (name, description, file_path)
-values ('~a', '~a', '~a')" name desc file))))
+  
+  (match (db:transaction 'log-db (lambda () (execute "insert into database (name, description, file_path)
+values (?, ?, ?)" name desc file)))
     [#(ok ,_) (begin (user-log-path file) (redirect "saved?type=database&sql=&limit=100&offset=0&flag=Save+successful,+active+database+changed."))]
     [,error (respond:error error)]))
 
 
 (define (dispatch)
-  (let ([name (string-param-sql "name" params)]
-        [desc (string-param-sql "desc" params)]
-        [file (string-param-sql "file-path" params)])
+  (let ([name (string-param "name" params)]
+        [desc (string-param "desc" params)]
+        [file (string-param "file-path" params)])
     (cond [name
            (match (catch (update-path name desc file))
              [#(EXIT ,reason) (respond:error reason)]

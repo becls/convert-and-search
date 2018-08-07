@@ -22,7 +22,6 @@
 
 
 (http:include "displayQuery.ss")
-;(import (logConverter))
 
 (define (get-page-name)
   "Convert log files")
@@ -95,7 +94,6 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
          [new-file (string-append new-file ".db3")])
     (unless (not (regular-file? new-file))
       (raise `#(file-exists)))
-   ; (respond `(p (@ (id "status") (name "status"))  "Working on conversion"))
     (make-db-and-convert src new-file)
     (conversion-complete dest name)))
 
@@ -107,7 +105,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
 
 
                                         ;Conversion related functions
-(define file-name (pregexp "([A-z ]*[0-9]?[A-z ]*)[0-9]+.*\\.log"))
+(define file-name (pregexp "([A-z ]*[0-9]?[A-z ]+)[0-9]+.*\\.log"))
 (define (processfile table-name file-path db prepared-insert header-insert)
   (let* ([tx (make-transcoder (latin-1-codec))]
          [ip (open-file-input-port file-path (file-options) (buffer-mode block) tx)]
@@ -118,11 +116,10 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
         (cond
          [(eof-object? line) (complete-header)]
          [(parse-method line) =>
-          (lambda (x)
-            (match-let* ([,method x])
-              (display-string line op)
-              (newline op)
-              (header run-number method)))]
+          (lambda (method)
+            (display-string line op)
+            (newline op)
+            (header run-number method))]
          [(parse-date-line line) =>
           (lambda (x)
             (let ([run-number (complete-header)])
@@ -203,20 +200,25 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
   (define (process-each-file remaining-files existing-tables header-insert)
     (match remaining-files
       [((,name . ,num) . ,rest)
-       (let* ([short-name (get-name name)]
-              [path (path-combine src-path name)]
-              [prepared (get-second-val short-name existing-tables)])
-         (cond [(not short-name) (process-each-file rest existing-tables header-insert)] ;Wrong file format, skip
-           [prepared ;Table and prepared statement already created
-            (begin (processfile short-name path db prepared header-insert)
-                   (process-each-file rest existing-tables header-insert))]
+       (if (= num 1)
+           (let* ([short-name (get-name name)]
+                  [path (path-combine src-path name)]
+                  [pair (assoc short-name existing-tables)]
+                  [prepared (match pair
+                              [#f #f]
+                              [(,key . ,value) value])])
+             (cond [(not short-name) (process-each-file rest existing-tables header-insert)] ;Wrong file format, skip
+               [prepared ;Table and prepared statement already created
+                (begin (processfile short-name path db prepared header-insert)
+                       (process-each-file rest existing-tables header-insert))]
 
-           [else ;Need to create table and prepare statment
-            (let*  ([table (create-table short-name)]
-                    [prepared-insert (sqlite:prepare db (format "insert into ~a ([Run number], Method, dateTime, desc) values (?, ?, ?, ?)" short-name))]
-                    [new-table (cons short-name prepared-insert)])
-              (processfile short-name path db prepared-insert header-insert)
-              (process-each-file rest (cons new-table existing-tables)  header-insert))]))]
+               [else ;Need to create table and prepare statment
+                (let*  ([table (create-table short-name)]
+                        [prepared-insert (sqlite:prepare db (format "insert into ~a ([Run number], Method, dateTime, desc) values (?, ?, ?, ?)" short-name))]
+                        [new-table (cons short-name prepared-insert)])
+                  (processfile short-name path db prepared-insert header-insert)
+                  (process-each-file rest (cons new-table existing-tables)  header-insert))]))
+           (process-each-file rest existing-tables header-insert))]
       
       [() "Finished?"]))
 
@@ -225,17 +227,6 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
       (match pattern-match
         [(,full ,name) name]
         (#f #f))))
-
-  (define (get-second-val name list)
-    (if name
-        (match list
-          [((,key . ,value) . ,rest)
-           (if (string=? name key)
-               value
-               (get-second-val name rest))]
-          [() #f]
-          [,_ list])
-        #f))
 
   (define (create-table table-name)
     (let ([sql (format "create table if not exists ~a ([Run number] integer, Method text, dateTime text, desc text, foreign key([Run number]) references Runs([Unique Run Number]))" table-name)]) 
@@ -250,17 +241,14 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
   (fullConvert folder db))
 
 (define (make-db-and-convert folder db-path)
-  (db:start&link 'new-db db-path 'create)
-  (db:stop 'new-db)
-  (with-db [db db-path SQLITE_OPEN_READWRITE]
+  (with-db [db db-path (logor SQLITE_OPEN_READWRITE
+  SQLITE_OPEN_CREATE)]
     (execute-sql db "begin transaction")
     (set-up-conversion folder db)
     (execute-sql db "end transaction")))
-  ;(respond ` `(script "document.getElementById('status').innerHTML = 'Changed';")))
 
 (define (dispatch)
-  (let* (;[status (get-convert-status)]
-         [src (string-param "folder-path" params)]
+  (let* ([src (string-param "folder-path" params)]
          [dest (string-param "dest-path" params)]
          [name (string-param "name" params)]
          [file (string-param "file" params)]

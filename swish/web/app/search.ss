@@ -108,7 +108,7 @@
 
   (check-request-blank-vals)
   (let* ([all-cols (get-columns search-table db)]
-         [timed? (or (member "timestamp" all-cols) (containsStr? all-cols "dateTime"))]
+         [timed? (or (member "timestamp" all-cols) (member "dateTime" all-cols))]
          [time-range (build-time-range all-cols)]
          [where? (if (or (has-value search-column) (has-value range-min)) " where " "")]
          [and? (if (and (has-value search-column) (has-value range-min)) " and " "")]
