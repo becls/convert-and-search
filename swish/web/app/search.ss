@@ -80,7 +80,7 @@
   (define (build-search-str)
     (if (string=? search-column "")
         ""
-        (string-append "[" search-column  "] like ('" search-term "')")))
+        (string-append "[" search-column  "] like (?)")))
 
   (define (format-cols cols)
     (let ([str (apply string-append
@@ -95,13 +95,13 @@
         ""
         (if (member "timestamp" cols)
             (string-append "datetime(timestamp/1000,'unixepoch','localtime')"
-              "between ('" range-min "') and ('" range-max "')")
-            (string-append "dateTime between ('" range-min "') and ('" range-max"')"))))
+              "between (?) and (?)")
+            (string-append "dateTime between (?) and (?)"))))
 
   (define (build-except cols)
     (if (string=? exc-col "")
         ""
-        (string-append " Except Select " cols " from [" search-table "] where [" exc-col "] like ('" exc-term "')"))) 
+        (string-append " Except Select " cols " from [" search-table "] where [" exc-col "] like (?)"))) 
 
   (define (has-value str)
     (not (string=? "" str)))
@@ -267,7 +267,20 @@ select.addEventListener('click', updateDrops, false);")
          (a (@ (href ,(format "search?edit-sql=~a"
                         (http:percent-encode last-sql)))) "Edit Search"))
       (td (@ (style "border: 0px solid; background: #FaFaFa;"))
-         (a (@ (href ,(format "export?inst=&sql=~a" (http:percent-encode last-sql)))) "Export Search")))))  
+        (a (@ (href ,(format "export?inst=&sql=~a" (http:percent-encode last-sql)))) "Export Search")))))
+
+(define (do-query-cleanup db sql limit offset type f . bindings)
+  (define (remove-empty ls)
+    (match ls
+      [(,first . ,rest)
+       (if (string=? first "")
+           (remove-empty rest)
+           (cons first (remove-empty rest)))]
+      [,_ '()]))
+  (let ([valid-bindings (remove-empty bindings)])
+    (if (null? valid-bindings)
+        (do-query  db sql limit offset type f)
+        (do-query  db sql limit offset type f valid-bindings))))
 
 
 ;;Runs each time page loaded, calls intial-setup or do-query
@@ -293,9 +306,10 @@ select.addEventListener('click', updateDrops, false);")
                      [(previous-sql-valid? sql) (do-query db sql limit offset "" (lambda x x))]
                      [table
                       (let ([column (string-param "column" params)])
-                        (match (catch (construct-sql table column keyword min max desc db order-col excludeCol excludeTerm))
+                        (match (catch
+                                (construct-sql table column keyword min max desc db order-col excludeCol excludeTerm))
                           [#(EXIT ,reason) (respond:error reason)]
-                          [,value (do-query db value limit offset "" (lambda x x))]))]
+                          [,value  (do-query-cleanup db value limit offset "" (lambda x x) keyword min max excludeTerm)]))]
                      [edit-sql (edit-setup edit-sql db)]
                      [else (intial-setup db "Please enter the following fields" "" "" "" "" "" "" ""  "" #t)]))))))
 

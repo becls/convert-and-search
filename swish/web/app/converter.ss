@@ -104,11 +104,10 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
     (respond `(p "Conversion sucessful") (link (format "addDatabase?file-path=~a" (http:percent-encode new-file)) "Add to saved databases"))))
 
 
-                                        ;Conversion related functions
+;;Conversion related functions
 (define file-name (pregexp "([A-z ]*[0-9]?[A-z ]+)[0-9]+.*\\.log"))
 (define (processfile table-name file-path db prepared-insert header-insert)
-  (let* ([tx (make-transcoder (latin-1-codec))]
-         [ip (open-file-input-port file-path (file-options) (buffer-mode block) tx)]
+  (let* ([ip (open-file-to-read file-path)]
          [op (open-output-string)])
 
     (define (header run-number method)

@@ -51,8 +51,20 @@
   (define (build-table-info)
     (string-append " from [" (stringify table1) "] join [" (stringify table2) "]"))
 
+  (define (quote-identifier s)
+    (let ([op (open-output-string)])
+      (write-char #\" op)
+      (string-for-each
+       (lambda (c)
+         (write-char c op)
+         (when (char=? c #\")
+           (write-char #\" op)))
+       s)
+      (write-char #\" op)
+      (get-output-string op)))
+
   (define (build-new-col)
-    (string-append (formatCond table1 join1) " as [" newName "], ")) 
+    (string-append (formatCond table1 join1) " as " (quote-identifier newName) ", ")) 
 
   (define (removeTimestamp columns)
     (if (string-ci=? (car columns) "timestamp")
@@ -184,7 +196,7 @@ select.addEventListener('change', updateJoin2, false);")
 
 ;;Runs each time page loaded, calls intial-setup or do-query
 (define (dispatch)
-  (let ([keyword (string-param-sql "keyWord" params)]
+  (let ([keyword (string-param "keyWord" params)]
         [table1 (string-param "t1" params)]
         [table2 (string-param "t2" params)]
         [join1 (string-param "join1Val" params)]

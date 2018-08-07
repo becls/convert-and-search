@@ -11,7 +11,7 @@
 :File:      swish/src/logConverter.ss
 :File:      swish/src/main.ss
 :Approved:
-:Author:    Alyssa Crawford (5)
+:Author:    Alyssa Crawford (10)
 :Inspector: Bob Burger (2)
 @nosafety
 
@@ -59,7 +59,7 @@ all other software used in this application.
   (e.g., web/swish/runningQuery.ss). Update these to use the helpers
   library instead.
 
-@suggestion string-replace uses a lot of memory. The only use of it
+@fixed string-replace uses a lot of memory. The only use of it
   appears to be to build a literal string for SQLite. You shouldn't
   need to do this, since you can use SQLite parameters instead of a
   string literal, which is also more efficient. Refactor to eliminate
@@ -76,7 +76,7 @@ all other software used in this application.
 @defect Use the utf-8 encoder, not latin-1, because Biomek 5 writes
   logs with UTF-8. Use Swish's `open-file-to-read`, which uses UTF-8
   and asynchronous I/O.
-:reject: Using the utf-8 encoder broke a small number of the log files, specifically files that contain a degree symbol. I switched to using latin-1 because that is how emacs was decoding those files that where causing a problem, and it worked for all the files.
+:fix: Since biomek 4 and previous use latin-1, setup so decodes using UTF-8 and silently replaces any failing characters
 
 @defect The file-name regular expression should be case
   insensitive. It doesn't match the design document.

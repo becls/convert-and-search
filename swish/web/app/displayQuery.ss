@@ -60,17 +60,21 @@
 
   (match-let*
    ([,stmt (sqlite:prepare db (format "~a limit ? offset ?" sql))]
-    [,_ (sqlite:bind stmt (append bindings (list limit offset)))]
+    [,_ (sqlite:bind stmt (if (null? bindings)
+                              (list limit offset)
+                              (append (car bindings) (list limit offset))))]
+    [,str (sqlite:expanded-sql stmt)]
+    [,no-limit (format "~a" (pregexp-match "(.*?) limit " str))]
     [,results (get-results (lambda () (sqlite:step stmt)) row->tr)]
     [,count (length results)]
     [,flag (string-param "flag" params)]
     [,flag (if flag flag "")])
    (if (= count 0)
-       (respond  (section "Query finished" `(p "Query was:") `(p ,sql)
+       (respond  (section "Query finished" `(p "Query was:") `(p ,no-limit)
                    `(p (@ (style "text-decoration: underline;")) "If you expected this query to return results, try checking:")
                    `(p "Do you have any saved databases?")
                    `(p "Is the current active database the database you expected?")
-                   `(p "Check for typos in your search") `(p ,(home-link sql))))
+                   `(p "Check for typos in your search") `(p ,(home-link no-limit))))
        (respond
         `(table
           (tr (@ (style "text-align: center;"))
@@ -78,7 +82,7 @@
               ,(nav-form "Previous Page" (max 0 (- offset limit)) (> offset 0)))
             (td (@ (class "navigation"))
               (form (@ (id "rowForm") (method "get"))
-                (textarea (@ (name "sql") (class "hidden")) ,sql)
+                (textarea (@ (name "sql") (class "hidden")) ,no-limit)
                 (input (@ (name "limit") (class "hidden") (value ,(stringify limit))))
                 (input (@ (name "type") (class "hidden") (value ,(stringify type))))
                 (button (@ (id "offsetButton") (type "submit")) "Go to row")
@@ -86,7 +90,7 @@
             (td (@ (class "navigation"))
               ,(nav-form "Next Page" (+ offset limit) (= count limit)))
             (td (@ (class "link"))
-              ,(home-link sql))))
+              ,(home-link no-limit))))
         `(p (@ (style "text-align: center; color: Red; size: +10; font-weight: bold")),flag)
         (section (format "Rows ~d to ~d" (+ offset 1) (+ offset count))
           (match (cons (sqlite:columns stmt) (sqlite:execute stmt '()))
