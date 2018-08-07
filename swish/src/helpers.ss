@@ -29,11 +29,8 @@
    previous-sql-valid?
    stringify
    trim-whitespace
-   containsStr?
-   slist->string
    string-replace
-   flatten
-   valid-file)
+   flatten)
   (import
    (chezscheme)
    (swish imports))
@@ -58,7 +55,7 @@
                (raise `#(bad-integer-param ,name ,min-value ,number-value))))))
 
   (define (previous-sql-valid? sql)
-    (and sql (not (string=? sql ""))))
+    (and (string? sql) (not (string=? sql ""))))
 
 
   ;; String manipulation
@@ -83,18 +80,6 @@
             (substring s start (fx+ i 1)))]))
     (find-start s 0 (string-length s)))
 
-  (define (containsStr? list x)
-    (cond 
-     ((null? list) #f)
-     ((string-ci=? (car list) x) #t)
-     (else (containsStr? (cdr list) x))))
-
-  (define (slist->string slist div)
-    (match slist
-      [(,first) first]
-      [(,first . ,rest) (string-append first div (slist->string rest div))]
-      [,_ ""]))
-
   (define string-replace 
     (lambda (s match replacement)
       (let ((ll (string->list s)))
@@ -113,11 +98,6 @@
       (else
        (cons (car list) (flatten (cdr list))))))
 
-
-  (define (valid-file file-path)
-    (match (catch (read-file file-path))
-      [#(EXIT ,details) #f]
-      [,value #t]))
   )
 
 

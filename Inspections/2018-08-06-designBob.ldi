@@ -1,0 +1,59 @@
+# Database Searcher and Log File Converter Design
+
+:Date:      2018-08-06
+:Type:      design
+:Size:      2 pages
+:Initial:   1f67bf135802eb8d34f54385551a1c04934cc12f..b5147f65a4b54d19e63c67bea1ae08bd7f4aa29b
+:Approved:
+:Author:    Alyssa Crawford ()
+:Inspector: Bob Burger (0.5)
+@nosafety
+
+@suggestion Update the date.
+
+@suggestion Add `#*#` to `.gitignore` at the root of the repository,
+  and remove `swish/src/#rawStrings.ss#` and
+  `swish/web/app/css/#search.css#`.
+
+@fixed Typographical changes:
+
+  "from instrument log files, both sqlite database files and .log
+  files" => "from instrument log files and SQLite database files"
+
+  "preform" => "perform"
+
+  "easier to search" => "easier-to-search"
+
+  "in mind, however other" => "in mind; however, other"
+
+  "runs like it is a local webpage running" => "runs a local web server"
+
+  "swish" => "Swish"
+
+  "webpages" => "web pages"
+
+  "easy to run" => "easy-to-run"
+
+  "program is ran" => "program is run"
+
+  "is closed Swish" => "is closed, Swish"
+
+  "application is referencing" => "application is connected to"
+
+  "user selected database" => "user-selected database"
+
+  "Swish log file" => "Swish log database"
+
+  "Activities that reference saved searches or databases reference
+  these tables" (reference is noun) => "Activities that refer to saved
+  searches or databases use these tables"
+
+  "user referenced database" => "user-selected database"
+
+  "top of the header file" => "top of the file"
+
+  "ie" => "i.e., "
+
+  "generated and references" => "generated and refers to"
+
+  "the following line" => "the following line:"

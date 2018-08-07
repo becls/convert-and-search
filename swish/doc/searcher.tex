@@ -111,8 +111,9 @@ directory. Subdirectories are ignored. This decision was made to
 increase converter speed and because these folders usually
 do not have subdirectories. 
   \item The name of each file to convert must follow the following pattern
-    \textbf{<name>dd-mm-yyyy HH.MM.SS.log}, where \textbf{<name>} can be
-    anything that does not include two numbers in a row and will
+    \textbf{<name>dd-mm-yyyy HH.MM.SS.log}, where \textbf{<name>} can
+    be any number of letters in a row followed by eaither 0 or one numbers, followed by any number of letters.
+    \textbf{<name>} will
     become the name of a table in the database.
     This constraint allows the converter to determine which files to
     convert, as most files that violate this convention also have a

@@ -93,7 +93,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
   
   (let* ([new-file (path-combine dest name)]
          [new-file (string-append new-file ".db3")])
-    (unless (not (valid-file new-file))
+    (unless (not (regular-file? new-file))
       (raise `#(file-exists)))
    ; (respond `(p (@ (id "status") (name "status"))  "Working on conversion"))
     (make-db-and-convert src new-file)
@@ -107,7 +107,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
 
 
                                         ;Conversion related functions
-(define file-name (pregexp "([A-z ]*8?[A-z ]*)[0-9]+.*\\.log"))
+(define file-name (pregexp "([A-z ]*[0-9]?[A-z ]*)[0-9]+.*\\.log"))
 (define (processfile table-name file-path db prepared-insert header-insert)
   (let* ([tx (make-transcoder (latin-1-codec))]
          [ip (open-file-input-port file-path (file-options) (buffer-mode block) tx)]

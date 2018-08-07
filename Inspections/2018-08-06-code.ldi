@@ -1,0 +1,107 @@
+# Database Searcher and Log File Converter Code
+
+:Date:      2018-08-06
+:Type:      code
+:Size:      451 LOC
+:Initial:   1f67bf135802eb8d34f54385551a1c04934cc12f..b5147f65a4b54d19e63c67bea1ae08bd7f4aa29b
+:File:      main.js
+:File:      swish/buildScript
+:File:      swish/src/config.ss
+:File:      swish/src/helpers.ss
+:File:      swish/src/logConverter.ss
+:File:      swish/src/main.ss
+:Approved:
+:Author:    Alyssa Crawford (2)
+:Inspector: Bob Burger (2)
+@nosafety
+
+## General
+
+@suggestion Don't check in binaries such as *.so and *.wpo but instead
+  use a Makefile that builds them.
+
+@fixed Include a LICENSE file like the one in Swish.
+
+@defect Include a NOTICE file like the one in Swish that enumerates
+all other software used in this application.
+
+## main.js
+
+@suggestion Delete commented-out line of code on line 8.
+:reject: This line of code is used when the application is packaged as a standalone application because the packager changes the relative path. Currently I am manually changing which line is commented out, though I am open to suggestions on better ways to do this. 
+
+@fixed Use 127.0.0.1 instead of localhost on line 19 for consistency.
+
+@fixed Call `(app:shutdown)` on line 60.
+
+## swish/buildScript
+
+@defect Use `"$(cygpath -w /usr/local/lib/swish2/a6nt/swish.boot)"` on
+  line 9 to locate swish.boot in Windows.
+
+## swish/src/config.ss
+
+@suggestion I'm surprised that the database and search tables don't
+  use the name as the primary key. Remember that Windows file paths
+  are case insensitive. Does the application work if two databases
+  have the same name?
+:reject: I just checked, works if two databases have the same name. I choose to make the path or the sqlite information unique so that the user can't input two values that are functionally identical, for example two copies of the same database. The name fields are purely for the user's benefit. If they choose to name all their databases the same thing, that just makes it harder on them.
+
+@fixed Add the copyright notice.
+
+## swish/src/helpers.ss
+
+@fixed Instead of `(containsStr? ls x)`, use `(member x ls)`.
+
+@fixed Instead of `(slist->string ls sep)`, use `(join ls sep)`.
+
+@fixed Some of these helper functions are duplicated elsewhere
+  (e.g., web/swish/runningQuery.ss). Update these to use the helpers
+  library instead.
+
+@suggestion string-replace uses a lot of memory. The only use of it
+  appears to be to build a literal string for SQLite. You shouldn't
+  need to do this, since you can use SQLite parameters instead of a
+  string literal, which is also more efficient. Refactor to eliminate
+  the need for string-param-sql and string-replace.
+
+@fixed `valid-file` reads the whole file. It's much more efficient to
+  call `regular-file?`.
+
+@fixed `previous-sql-valid?` should be `(and (string? sql) ...)`
+    instead of `(and sql ...)`.
+
+## swish/src/logConverter.ss
+
+@defect Use the utf-8 encoder, not latin-1, because Biomek 5 writes
+  logs with UTF-8. Use Swish's `open-file-to-read`, which uses UTF-8
+  and asynchronous I/O.
+:reject: Using the utf-8 encoder broke a small number of the log files, specifically files that contain a degree symbol. I switched to using latin-1 because that is how emacs was decoding those files that where causing a problem, and it worked for all the files.
+
+@defect The file-name regular expression should be case
+  insensitive. It doesn't match the design document.
+:fix: The filename regular expression already was case-insensitive, as each letter can be anything from a capital A to a lower case z, which includes upper and lowercase letters.
+  There was a discrepancy with the design document, which allowed the filename to be anything that did not include two numbers in a row. Both the regular expression and the design doc where updated for consistency. 
+
+@defect `process-each-file` should use the input list (the num
+  variable) to scan only files, not directories.
+
+@suggestion `get-second-val` is very similar to `assoc`. If you delay
+  the binding of `prepared`, you can use `assoc`.
+
+@defect The global mutable variable `status` will not suffice for two
+  processes that call make-db-and-convert concurrently, and the status
+  is set to complete before the transaction completes.
+
+@defect In `make-db-and-convert`, why do you start a new db process
+  and then immediately stop it? Pass `(logor SQLITE_OPEN_READWRITE
+  SQLITE_OPEN_CREATE)` to `with-db` instead.
+
+@suggestion Replace `(lambda (x) (match-let* ([,method x]) ...))` with
+  `(lambda (method) ...)`.
+
+## swish/src/main.ss
+
+@fixed Delete commented-out code.
+
+@fixed Remove printing of HERE.

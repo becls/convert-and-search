@@ -33,7 +33,7 @@
 
 (define (dispatch)
   (let* ([val (string-param "val" params)]
-         [valid (valid-file val)])
+         [valid (regular-file? val)])
     (if valid
         (begin
           (user-log-path val)

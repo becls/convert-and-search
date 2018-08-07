@@ -62,7 +62,7 @@
   (let* ([t1-cols (get-columns table1 db join1)]
          [t2-cols (get-columns table2 db join2)]
          [all-cols (append t1-cols t2-cols)]
-         [formated-cols (slist->string all-cols " ")]
+         [formated-cols (join all-cols " ")]
          [formated-cols (substring formated-cols 0 (- (string-length formated-cols) 1))]
          [new-col (build-new-col)]
          [table-info (build-table-info)]

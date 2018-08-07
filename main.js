@@ -36,7 +36,7 @@ function createWindow () {
     mainWindow.loadURL('http://127.0.0.1:54321');
   }
   catch(e){
-    mainWindow.loadURL('http://localhost:54321/app/saved?type=database&sql=&limit=100&offset=0&flag=An+Error+occured+so+returned+home+please+see+debug+tab+for+more+information')
+    mainWindow.loadURL('http://127.0.0.1:54321/app/saved?type=database&sql=&limit=100&offset=0&flag=An+Error+occured+so+returned+home+please+see+debug+tab+for+more+information')
   }
     
 

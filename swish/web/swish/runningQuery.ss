@@ -169,19 +169,6 @@
           (substring s start (fx+ i 1)))]))
   (find-start s 0 (string-length s)))
 
-(define (containsStr? list x)
-    (cond 
-        ((null? list) #f)
-        ((string-ci=? (car list) x) #t)
-        (else (containsStr? (cdr list) x))))
-
-(define (slist->string slst div)
-  (cond ((null? slst) "")
-        ((null? (cdr slst)) (car slst))
-    (else (string-append (car slst)
-            div
-            (slist->string (cdr slst) div)))))
-
 (define string-replace 
    (lambda (s match replacement)
       (let ((ll (string->list s)))

@@ -93,7 +93,7 @@
   (define (build-time-range cols)
     (if (string=? range-min "")
         ""
-        (if (containsStr? cols "timestamp")
+        (if (member "timestamp" cols)
             (string-append "datetime(timestamp/1000,'unixepoch','localtime')"
               "between ('" range-min "') and ('" range-max "')")
             (string-append "dateTime between ('" range-min "') and ('" range-max"')"))))
@@ -108,7 +108,7 @@
 
   (check-request-blank-vals)
   (let* ([all-cols (get-columns search-table db)]
-         [timed? (or (containsStr? all-cols "timestamp") (containsStr? all-cols "dateTime"))]
+         [timed? (or (member "timestamp" all-cols) (containsStr? all-cols "dateTime"))]
          [time-range (build-time-range all-cols)]
          [where? (if (or (has-value search-column) (has-value range-min)) " where " "")]
          [and? (if (and (has-value search-column) (has-value range-min)) " and " "")]

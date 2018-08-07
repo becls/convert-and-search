@@ -30,7 +30,7 @@
    (chezscheme)
    (swish imports))
 
-  (define file-name (pregexp "([A-z]*8?[A-z]*)[0-9]+.*\\.log"))
+  (define file-name (pregexp "([A-z]*[0-9]?[A-z]*)[0-9]+.*\\.log"))
 
   ;Used for communication with display
   (define status "")
