@@ -35,7 +35,7 @@
      [#(db-query-failed not-a-query ,sql)
       (section "Not a SELECT or EXPLAIN statement" `(p ,sql))]
      [,_
-      (section "Query failed" `(p ,(exit-reason->english reason)))])))
+      (section "Query failed" `(p "Check the current database is the correct database") `(p ,(exit-reason->english reason)))])))
 
 ;; Home page
 (define (do-home db last-sql)

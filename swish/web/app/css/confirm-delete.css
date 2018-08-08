@@ -21,8 +21,11 @@
  * SOFTWARE. */
 
 td.nav {
-  padding: 10px;
-  vertical-align: top;
+    padding-top: 30px;
+    padding-right:15px;
+    padding-left:0px;
+  vertical-align: text-bottom;
+  text-align: left;
   border: 0px solid;
 }
 

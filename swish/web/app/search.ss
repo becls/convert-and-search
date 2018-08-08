@@ -43,7 +43,7 @@
      [#(no-timestamp) (section "Search failed: no timestamp" `(p "Please select a table with that has a column named timestamp in order to search by timestamp")(link "Search" "Go Back"))]
      
      [,_
-      (section "Query failed" `(p ,(exit-reason->english reason)) (link "Search" "Go Back"))])))
+      (section "Query failed" `(p "Check the current database is the correct database") `(p ,(exit-reason->english reason)) (link "Search" "Go Back"))])))
 
 
                                         ;: SQL helpers
