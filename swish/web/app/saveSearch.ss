@@ -38,13 +38,13 @@
 
 (define (intial-setup)
   (let ([sql (get-param "sql")])
-    (respond `(form
+    (respond (section "Save search:" `(form (div (@ (style "padding-left: 8px; padding-top: 3px; padding-bottom: 5px;"))
                (table
                 (tr (th (p "Field")) (th (p "Value")))
                 (tr (td (p "Name")) (td (p (textarea (@ (id "name") (name "name") (class "textBox"))))))
-                (tr (td (p "Description")) (td (p (textarea (@ (id "desc") (name "desc") (class "desc")))))))
+                (tr (td (p "Description")) (td (p (textarea (@ (id "desc") (name "desc") (class "desc"))))))))
                (p (button (@ (type "submit")) "Save"))
-               (input (@ (id "sql") (name "sql") (class "hidden") (value ,sql)))))))
+               (input (@ (id "sql") (name "sql") (class "hidden") (value ,sql))))))))
 
 (define (save-query name desc sql)
   (match (db:transaction 'log-db (lambda () (execute "insert into search (name, description, sqlite)

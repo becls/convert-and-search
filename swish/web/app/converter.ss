@@ -27,20 +27,23 @@
   "Convert log files")
 
 (define (respond:error reason)
+  (define (back-link)
+    `(div (@ (style "padding-left: 5px")) ,(link "converter" "Go back")))
+  
   (respond
    (match reason
-     [#(browser-add) (section "Must use desktop app to convert files")]
-     [#(empty-dest) (section "Must select a destination to save the newly created database")]
-     [#(empty-src) (section "Must select a folder to convert")]
-     [#(empty-name) (section "Must enter a file name")]
-     [#(file-exists) (section "That file already exists in that folder. Please select a different name or destination folder")]
+     [#(browser-add) (section "Must use desktop app to convert files" (back-link))]
+     [#(empty-dest) (section "Must select a destination to save the newly created database" (back-link))]
+     [#(empty-src) (section "Must select a folder to convert" (back-link))]
+     [#(empty-name) (section "Must enter a file name" (back-link))]
+     [#(file-exists) (section "That file already exists in that folder. Please select a different name or destination folder" (back-link))]
      [,_ (section "insert failed" `(p ,(exit-reason->english reason)))])))
 
 
 (define (get-paths)
   (respond
    `(form
-     (table (tr (td (@ (style "border: 0px solid;")) (table (tr (th (p "Field")) (th (p "Value")))
+     (table (tr (td (@ (style "border: 0px solid; padding-left: 0px")) (table (tr (th (p "Field")) (th (p "Value")))
                        (tr (td (p "Folder to convert")) (td (p (input (@ (name "folder") (class "path") (type "file") (webkitdirectory) (mozdirectory) (id "folder"))))))
                        (tr (td (p "Destination folder")) (td (p (input (@ (name "dest") (class "path") (type "file") (webkitdirectory) (mozdirectory) (id "dest"))))))
                        (tr (td (p "New file name")) (td (p (textarea (@ (name "name")) ""))))))
@@ -52,19 +55,21 @@ document.getElementById('folder-path').value = x} $('.path').bind('change', func
      (script "function func(){var x = document.getElementById('dest').files[0].path;
 document.getElementById('dest-path').value = x} $('.path').bind('change', func).trigger('change')")
    (p (button (@ (type "submit")) "Convert")))
-   `(p "Depending on folder size the conversion may take a few minutes. If you leave this page the conversion will continue in the background. If you stay on this page you will be notified when the conversion is complete.")))
+   `(p (@ (style "padding-left: 5px; padding-top:7px;")) "Depending on folder size the conversion may take a few minutes. If you leave this page the conversion will continue in the background. If you stay on this page you will be notified when the conversion is complete.")))
 
 (define (file-explain)
-  (respond `(p "The converter only converts files in the current
+  (respond (section "Expected file formating:"
+             `(div (@ (style "padding-left: 3px; padding-top: 2px"))
+                (p "The converter only converts files in the current
 directory. Subdirectories are ignored. Therefore, navigate to the folder that contains the log files themselves.")
-    `(p "Only files whose file name follow the pattern: \"<name>dd-mm-yyyy HH.MM.SS.log\" are converted. Other files in the folder are ignored.")
-    `(p "<name> becomes the name of the table in the database.")
-    `(p "The files themselves can contain some header information, then each data entry should start with \"mm/dd/yyyy HH:MM:SS,\" followed by a value.")
-    `(table (tr (td (@ (style "border: 0px solid;")) ,(link "converter" "Back"))
-              (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Database setup"))))))
+                (p "Only files whose file name follow the pattern: \"<name>dd-mm-yyyy HH.MM.SS.log\" are converted. Other files in the folder are ignored.")
+                (p "<name> becomes the name of the table in the database.")
+                (p "The files themselves can contain some header information, then each data entry should start with \"mm/dd/yyyy HH:MM:SS,\" followed by a value."))
+             `(table (tr (td (@ (style "border: 0px solid;")) ,(link "converter" "Back"))
+                       (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Database setup")))))))
 
 (define (setup-explain)
-  (respond `(div (@ (style "width: 90%")) (p "There are two types of tables created, data tables and header
+  (respond (section "New database setup:" `(div (@ (style "width: 90%; padding-left: 6px;")) (p "There are two types of tables created, data tables and header
     tables. There is only one header table created, called Runs. Each file adds one
     entry to the runs table that describes the information found at
     the top of the runs file. Data tables contain the information
@@ -78,7 +83,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
               (p "desc is everything that follows the dateTime value in the data entry.")
               (p "For instance, the line \"06/19/2018 19:25:58,Run ended.\" would have \"06/19/2018 19:25:58\" as its dateTime value and \"Run ended.\" as its desc."))
     `(table (tr (td (@ (style "border: 0px solid;")) ,(link "converter" "Back"))
-              (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formating"))))))
+              (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formating")))))))
 
 (define (do-conversion src dest name)
   (unless (not (string=? "undefined" src))
@@ -101,7 +106,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
 (define (conversion-complete dest name)
   (let* ([new-file (path-combine dest name)]
          [new-file (string-append new-file ".db3")])
-    (respond `(p "Conversion sucessful") (link (format "addDatabase?file-path=~a" (http:percent-encode new-file)) "Add to saved databases"))))
+    (respond `(p "Conversion sucessful") `(div (@ (style "padding-left: 5px")) ,(link (format "addDatabase?file-path=~a" (http:percent-encode new-file)) "Add to saved databases")))))
 
 
 ;;Conversion related functions
@@ -136,7 +141,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
         [(#(,num)) num]))
 
     (define (parse-method line)
-                                        ;Method = 
+      ;;Method = 
       (let ([n (string-length line)])
         (and (>= n 9)
              (string=? (substring line 0 9) "Method = ")

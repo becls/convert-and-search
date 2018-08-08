@@ -31,9 +31,12 @@ form { display: inline; }
 input.offset { width: 4em; }
 
 td.link {
-  padding: 3px 1px 1px 5px;
-  vertical-align: top;
-  border: 0px solid;
+    padding-left: 1px;
+    padding-right: 1px;
+    padding-top: 0px;
+    padding-bottom: 5px;
+    vertical-align: top;
+    border: 0px solid;
 }
 
 td.navigation {

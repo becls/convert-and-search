@@ -29,9 +29,9 @@
 (define (respond:error reason)
   (respond
    (match reason
-     [#(no-table) (section "Search failed" `(p "You must specify a value for both tables") (link "twoTableSearch" "Go Back"))]
-     [#(no-join) (section "Search failed" `(p "You must specify a value for both join columns") (link "twoTableSearch" "Go Back"))]
-     [,_ (section "Query failed" `(p ,(exit-reason->english reason)) (link "twoTableSearch" "Go Back"))])))
+     [#(no-table) (section "Search failed" `(p "You must specify a value for both tables") `(div (@ (style "padding-left: 7px; padding-top: 3px")) ,(link "twoTableSearch" "Go Back")))]
+     [#(no-join) (section "Search failed" `(p "You must specify a value for both join columns") `(div (@ (style "padding-left: 7px")) ,(link "twoTableSearch" "Go Back")))]
+     [,_ (section "Query failed" `(p ,(exit-reason->english reason)) `(div (@ (style "padding-left: 7px")) ,(link "twoTableSearch" "Go Back")))])))
 
 (define (construct-sql table1 table2 join1 join2 newName db)
   ;;In order to increase query readablity for the user, only alias table if necessary

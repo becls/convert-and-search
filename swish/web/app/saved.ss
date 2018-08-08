@@ -38,10 +38,10 @@
 (define (home-link last-sql)
   (match (get-param "type")
     ["database" `(table
-                   (tr (td (@ (style "border: 0px solid;")) ,(link "addDatabase" "Add database"))
-                    (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "confirm-delete?type=dataAll&val=" "Delete all"))))]
+                   (tr (td (@ (style "border: 0px solid; padding-left:0px")) ,(link "addDatabase" "Add database"))
+                    (td (@ (style "border: 0px solid;")),(link "confirm-delete?type=dataAll&val=" "Delete all"))))]
     
-    ["search" (link "confirm-delete?type=searchAll&val=" "Delete all")]))
+    ["search" `(table (tr (td (@ (style "border: 0px solid;")) ,(link "confirm-delete?type=searchAll&val=" "Delete all"))))]))
 
 (define (dispatch)
   (let ([limit (integer-param "limit" 0 params)]

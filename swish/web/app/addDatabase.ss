@@ -40,17 +40,17 @@
      [,_ (section "insert failed" `(p ,(exit-reason->english reason)))])))
 
 (define (intial-setup)
-  (respond `(form
-             (table
+  (respond (section "Add a new database" `(form
+             (div (@ (style "padding-left: 8px; padding-top: 3px; padding-bottom: 5px;"))(table
               (tr (th (p "Field")) (th (p "Value")))
               (tr (td (p "Name")) (td (p (textarea (@ (id "name") (name "name") (class "textBox"))))))
               (tr (td (p "Description")) (td (p (textarea (@ (id "desc") (name "desc") (class "desc"))))))
-              (tr (td (p "File")) (td (p (input (@ (name "path") (class "path") (type "file") (id "path")))))))
+              (tr (td (p "File")) (td (p (input (@ (name "path") (class "path") (type "file") (id "path"))))))))
              (input (@ (id "file-path") (name "file-path") (class "hidden")))
              (script "document.getElementById('testNot').value = 'WORK'")
              (script "function func(){var x = document.getElementById('path').files[0].path;
 document.getElementById('file-path').value = x} $('.path').bind('change', func).trigger('change')")
-             (p (button (@ (type "submit")) "Save")))))
+             (p (button (@ (type "submit")) "Save"))))))
 
 (define (intial-nofile file)
   (respond `(form

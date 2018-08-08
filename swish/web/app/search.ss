@@ -311,7 +311,7 @@ select.addEventListener('click', updateDrops, false);")
                           [#(EXIT ,reason) (respond:error reason)]
                           [,value  (do-query-cleanup db value limit offset "" (lambda x x) keyword min max excludeTerm)]))]
                      [edit-sql (edit-setup edit-sql db)]
-                     [else (intial-setup db "Please enter the following fields" "" "" "" "" "" "" ""  "" #t)]))))))
+                     [else (intial-setup db "Please enter the following fields:" "" "" "" "" "" "" ""  "" #t)]))))))
 
 
 (dispatch)
