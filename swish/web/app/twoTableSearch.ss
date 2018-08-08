@@ -53,7 +53,7 @@
         (string-append " where "  t1-info " = " t2-info)))
 
     (define (build-table-info)
-      (string-append " from [" table1 "] join [" table2 "] as " table2alias))
+      (string-append " from [" table1 "] join [" table2 "] as " table2alias ))
 
     (define (quote-identifier s)
       (let ([op (open-output-string)])
@@ -68,7 +68,15 @@
         (get-output-string op)))
 
     (define (build-new-col)
-      (string-append (formatCond table1 join1) " as " (quote-identifier newName) ", ")) 
+      (string-append (formatCond table1 join1) " as " (quote-identifier newName) ", "))
+
+    (define (remove-empty ls)
+    (match ls
+      [(,first . ,rest)
+       (if (string=? first "")
+           (remove-empty rest)
+           (cons first (remove-empty rest)))]
+      [,_ '()]))
 
     (define (removeTimestamp columns)
       (if (string-ci=? (car columns) "timestamp")
@@ -78,8 +86,8 @@
     (let* ([t1-cols (get-columns table1 table1 db join1)]
            [t2-cols (get-columns table2 table2alias db join2)]
            [all-cols (append t1-cols t2-cols)]
-           [formated-cols (join all-cols " ")]
-           [formated-cols (substring formated-cols 0 (- (string-length formated-cols) 1))]
+           [all-cols (remove-empty all-cols)]
+           [formated-cols (join all-cols ", ")]
            [new-col (build-new-col)]
            [table-info (build-table-info)]
            [join-cond (build-join-condition)])
@@ -101,7 +109,7 @@
       [,table-name
        (map (lambda(x) (if (string=? (stringify x) remove-col)
                            ""
-                           (string-append "["  tableAlias "].[" (stringify x) "],")))
+                           (string-append "["  tableAlias "].[" (stringify x) "]")))
          (map column-info
            (execute-sql db (format "pragma table_info(~s)" table-name))))]
       [,_ (raise `#(Invalid-table))]))

@@ -107,7 +107,7 @@ function updateDrops(){
 }
 
 function updateColVal(){
-  updateVal('div.container', 'column', 'table');
+  update('div.container', 'column', 'table');
 }
 
 function updateExecVal(){
@@ -118,32 +118,22 @@ function updateOrderVal(){
   updateVal('div.order-contain', 'order', 'table');
 }
 
+
+
 function updateJoin1(){
-  var e = document.getElementById('t1');
-  var strUser = e.options[e.selectedIndex].text;
-  var elements = $('div.contJ1').children().hide();
-  var value = $(this).val();
-  document.getElementById('join1Val').value = "";
-  elements.filter('.' + value).show(); 
+  updateCont('div.contJ1', 'join1Val', 't1');
 }
 
 function updateJoin2(){
-  var e = document.getElementById('t2');
-  var strUser = e.options[e.selectedIndex].text;
-  var elements = $('div.contJ2').children().hide();
-  var value = $(this).val();
-  document.getElementById('join2Val').value = "";
-  elements.filter('.' + value).show(); 
+  updateCont('div.contJ2', 'join2Val', 't2');
 }
 
 function updateOtherFeildJ1(){
-   var value = $(this).val();
-   document.getElementById('join1Val').value = value;
+  updateVal('div.contJ1', 'join1Val', 't1');
 }
 
 function updateOtherFeildJ2(){
-   var value = $(this).val();
-   document.getElementById('join2Val').value = value;
+  updateVal('div.contJ2', 'join2Val', 't2');
 }
 
 $(document).ready(onLoad);
