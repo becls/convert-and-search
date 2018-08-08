@@ -32,21 +32,21 @@
 (define (respond:error reason)
   (respond
    (match reason
-     [#(no-table) (section "Search failed" `(p "You must select a table") (link "Search" "Go Back"))]
+     ["no-table" (section "Search failed" `(p "You must select a table") (link "Search" "Go Back"))]
      
-     [#(search-term-or-column-empty) (section "Search failed" `(p "If you specify a column, you must specify a search term. Similarly, if you specify a search term you must specify a column")(link "Search" "Go Back"))]
+     ["search-term-or-column-empty" (section "Search failed" `(p "If you specify a column, you must specify a search term. Similarly, if you specify a search term you must specify a column")(link "Search" "Go Back"))]
 
-     [#(min-or-max-empty) (section "Search failed" `(p "You must enter both a min and a max if you want to limit by time")(link "Search" "Go Back"))]
+     ["min-or-max-empty" (section "Search failed" `(p "You must enter both a min and a max if you want to limit by time")(link "Search" "Go Back"))]
 
-     [#(exc-empty) (section "Search failed" `(p "If you specify an exclude column, you must specify an exclude term. Similarly, if you specify an exclude term you must specify an exclude column")(link "Search" "Go Back"))]
+     ["exc-empty" (section "Search failed" `(p "If you specify an exclude column, you must specify an exclude term. Similarly, if you specify an exclude term you must specify an exclude column")(link "Search" "Go Back"))]
      
-     [#(no-timestamp) (section "Search failed: no timestamp" `(p "Please select a table with that has a column named timestamp in order to search by timestamp")(link "Search" "Go Back"))]
+     ["no-timestamp" (section "Search failed: no timestamp" `(p "Please select a table with that has a column named timestamp in order to search by timestamp")(link "Search" "Go Back"))]
      
      [,_
       (section "Query failed" `(p "Check the current database is the correct database") `(p ,(exit-reason->english reason)) (link "Search" "Go Back"))])))
 
 
-                                        ;: SQL helpers
+;: SQL helpers
 (define (construct-sql  search-table search-column search-term range-min range-max desc db order-col exc-col exc-term)
   (define (check-none-or-both v1 v2)
     (or (and (not (string=? v1 ""))
@@ -58,13 +58,13 @@
   (define (check-request-blank-vals)
     (cond
      [(string=? "(please select a table)" search-table)
-      (raise `#(no-table))]
+      (raise "no-table")]
      [(check-none-or-both search-column search-term)
-      (raise `#(search-term-or-column-empty))]
+      (raise "search-term-or-column-empty")]
      [(check-none-or-both range-min range-max)
-      (raise `#(min-or-max-empty))]
+      (raise "min-or-max-empty")]
      [(check-none-or-both exc-col exc-term)
-      (raise `#(exc-empty))]))
+      (raise "exc-empty")]))
   (define (removeTimestamp columns)
     (if (string-ci=? (car columns) "timestamp")
         (cdr columns)
@@ -116,7 +116,7 @@
          [except-clause (build-except formated-cols)])
     
     (if (and (has-value time-range) (not timed?))
-        (raise `#(no-timestamp)))
+        (raise "no-timestamp"))
 
     (string-append "select " formated-cols " from [" search-table "]" where? (build-search-str) and? time-range except-clause (build-order))))
 
@@ -131,7 +131,7 @@
       [,table-name
        (map stringify (map column-info
                         (execute-sql db (format "pragma table_info(~s)" table-name))))]
-      [,_ (raise `#(Invalid-table))]))
+      [,_ (raise "Invalid-table")]))
   (define (column-info table-info)
     (match table-info
       [#(,_ ,name ,type ,_ ,_ ,_)

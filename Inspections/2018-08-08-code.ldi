@@ -1,0 +1,145 @@
+# Database Searcher and Log File Converter Code
+
+:Date:      2018-08-08
+:Type:      code
+:Size:      2305 LOC
+:Initial:   1f67bf135802eb8d34f54385551a1c04934cc12f..e8d9302c381574241ff4a3c847af426e08b6a5ef
+:Approved:
+:Author:    Alyssa Crawford ()
+:Inspector: Bob Burger (2)
+:File:      swish/web/index.ss
+:File:      swish/web/app/addDatabase.ss
+:File:      swish/web/app/components.ss
+:File:      swish/web/app/confirm-delete.ss
+:File:      swish/web/app/converter.ss
+:File:      swish/web/app/displayQuery.ss
+:File:      swish/web/app/search.ss
+:File:      swish/web/app/css/charts.css
+:File:      swish/web/app/css/components.css
+:File:      swish/web/app/css/confirm-delete.css
+:File:      swish/web/app/css/drop.css
+:File:      swish/web/app/css/index.css
+:File:      swish/web/app/css/query-db.css
+:File:      swish/web/app/css/saveSearch.css
+:File:      swish/web/app/css/search.css
+:File:      swish/web/app/js/components.js
+:File:      swish/web/app/js/drop.js
+:File:      swish/web/app/js/index.js
+:File:      swish/web/app/js/query-db.js
+:File:      swish/web/app/js/resize.js
+:File:      swish/web/app/export.ss
+:File:      swish/web/app/filter.ss
+:File:      swish/web/app/query-db.ss
+:File:      swish/web/app/saved.ss
+:File:      swish/web/app/saveSearch.ss
+:File:      swish/web/app/updatePath.ss
+@nosafety
+
+## swish/web/app/addDatabase.ss
+
+@suggestion You could use the symbols bad-database and browser-add
+  instead of the single-element vectors containing the symbols. It's
+  simpler and faster this way.
+
+  The same goes for invalid-type in saved.ss. See also errors raised in search.ss.
+
+@defect Initial is misspelled here and in saveSearch.ss, search.ss,
+  twoTableSearch.ss, and js/query-db.ss.
+
+## swish/web/app/components.ss
+
+@suggestion Use the transaction form when doing quick queries against the log-db:
+
+  (define (get-database-name)
+    (match (transaction 'log-db
+             (execute "select name from database where file_path = ?"
+               (user-log-path)))
+      [(#(,name)) `(p ,name)]
+      [() '(p "None selected")]))
+
+## swish/web/app/confirm-delete.ss
+
+@suggestion Don't shadow the system display procedure.
+
+@suggestion `(if value value "")` is equivalent to `(or value "")`.
+
+@defect On line 79, use (br) instead of `\n` to break a line.
+
+@suggestion Use `(transaction 'log-db (execute ...))` instead of
+  `(db:transaction 'log-db (lambda () (execute ...)))`. Same elsewhere
+  including saveSearch.ss.
+
+## swish/web/app/search.ss
+
+@defect Call do-query with apply so that the rest arguments are placed
+  correctly. Also, use remq for convenience:
+
+  (define (do-query-cleanup db sql limit offset type f . bindings)
+    (apply do-query db sql limit offset type f (remq "" bindings)))
+
+  The removal of empty-string bindings doesn't seem right because bindings are ordered.
+
+@suggestion Combine these two lines since str is used nowhere else:
+  [,str (sqlite:expanded-sql stmt)]
+  [,no-limit (remove-limit-offest str)]
+
+## swish/web/app/displayQuery.ss
+
+@defect do-query doesn't handle the rest argument bindings correctly. Instead
+  of `(if (null? bindings) (list limit offset) (append (car bindings) (list limit offset)))`,
+  do `(append bindings (list limit offset))`.
+
+@defect remove-limit-offset is misspelled.
+
+@suggestion Wouldn't it be better to remove the limit & offset from
+  the end in case limit is in the query string somewhere?
+  `(pregexp-match "^(.+) limit \d+ offset \d+$" str)`
+
+@defect The `f` argument to `do-query` is not used.
+
+## swish/web/app/css/components.css
+
+  From https://jigsaw.w3.org/css-validator:
+  Line 29: background-position only 0 can be a length. You must put a unit after your number: 0 -30
+  Line 190: background-color FFA0AF is not a background-color value
+
+## swish/web/app/js/components.js
+
+@defect Run JSHint.com and fix the warnings. Check all the other javascript files, too.
+
+## swish/web/app/js/drop.js
+
+@defect strUser, updateFeild, and updateOtherFeild are unused. (Field
+  is misspelled.) Missing a semicolon on line 29.
+
+## swish/web/app/js/resize.js
+
+@suggestion Remove unnecessary semicolon from line 3.
+
+## swish/web/app/js/query-db.js
+
+@defect Field is misspelled. Fix uses of this in the rest of the
+  code. Line 99 is missing a semicolon.
+
+## swish/web/app/export.ss
+
+@defect Typos
+  "the instruction below" => "the instructions below"
+  "excel" => "Excel"
+  "grayed out" => "greyed out" (preferred spelling)
+  
+@suggestion Use 127.0.0.1 instead of localhost.
+
+@suggestion The indentation of parts of the results procedure is off.
+
+## swish/web/app/filter.ss
+
+@defect Line 37: the sentence should end with a period.
+
+## swish/web/app/saved.ss
+
+@defect  "excel" => "Excel"
+
+## swish/web/app/updatePath.ss
+
+@suggestion "computer's memory" => "computer" and "Remove now?" => "Remove this entry now?"

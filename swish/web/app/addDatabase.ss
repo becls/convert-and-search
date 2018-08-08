@@ -35,8 +35,8 @@
 (define (respond:error reason)
   (respond
    (match reason
-     [#(not-database) (section "insert failed" `(p "Invalid file type") `(p "valid file types are: .db, .db3, .sqlite"))]
-     [#(browser-add) (section "Must use desktop app to add databases")]
+     ["not-database" (section "insert failed" `(p "Invalid file type") `(p "valid file types are: .db, .db3, .sqlite"))]
+     ["browser-add" (section "Must use desktop app to add databases")]
      [,_ (section "insert failed" `(p ,(exit-reason->english reason)))])))
 
 (define (intial-setup)
@@ -63,11 +63,11 @@ document.getElementById('file-path').value = x} $('.path').bind('change', func).
 
 (define (update-path name desc file)
   (unless (not (string=? "undefined" file))
-    (raise `#(browser-add)))
+    (raise "browser-add"))
   (unless (or (ends-with-ci? file ".db3")
               (ends-with-ci? file ".db")
               (ends-with-ci? file ".sqlite"))
-    (raise `#(not-database)))
+    (raise "not-database"))
   
   (match (db:transaction 'log-db (lambda () (execute "insert into database (name, description, file_path)
 values (?, ?, ?)" name desc file)))

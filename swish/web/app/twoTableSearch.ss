@@ -29,8 +29,8 @@
 (define (respond:error reason)
   (respond
    (match reason
-     [#(no-table) (section "Search failed" `(p "You must specify a value for both tables") `(div (@ (style "padding-left: 7px; padding-top: 3px")) ,(link "twoTableSearch" "Go Back")))]
-     [#(no-join) (section "Search failed" `(p "You must specify a value for both join columns") `(div (@ (style "padding-left: 7px")) ,(link "twoTableSearch" "Go Back")))]
+     ["no-table" (section "Search failed" `(p "You must specify a value for both tables") `(div (@ (style "padding-left: 7px; padding-top: 3px")) ,(link "twoTableSearch" "Go Back")))]
+     ["no-join" (section "Search failed" `(p "You must specify a value for both join columns") `(div (@ (style "padding-left: 7px")) ,(link "twoTableSearch" "Go Back")))]
      [,_ (section "Query failed" `(p ,(exit-reason->english reason)) `(div (@ (style "padding-left: 7px")) ,(link "twoTableSearch" "Go Back")))])))
 
 (define (construct-sql table1 table2 join1 join2 newName db)
@@ -42,10 +42,10 @@
       (cond
        [(or (string=? "(please select a table)" table1)
             (string=? "(please select a table)" table2))
-        (raise `#(no-table))]
+        (raise "no-table")]
        [(or (not join1)
             (not join2))
-        (raise `#(no-join))]))
+        (raise "no-join")]))
 
     (define (build-join-condition)
       (let ([t1-info (formatCond table1 join1)]
@@ -112,7 +112,7 @@
                            (string-append "["  tableAlias "].[" (stringify x) "]")))
          (map column-info
            (execute-sql db (format "pragma table_info(~s)" table-name))))]
-      [,_ (raise `#(Invalid-table))]))
+      [,_ (raise "Invalid-table")]))
   (define (column-info table-info)
     (match table-info
       [#(,_ ,name ,type ,_ ,_ ,_)

@@ -32,11 +32,11 @@
   
   (respond
    (match reason
-     [#(browser-add) (section "Must use desktop app to convert files" (back-link))]
-     [#(empty-dest) (section "Must select a destination to save the newly created database" (back-link))]
-     [#(empty-src) (section "Must select a folder to convert" (back-link))]
-     [#(empty-name) (section "Must enter a file name" (back-link))]
-     [#(file-exists) (section "That file already exists in that folder. Please select a different name or destination folder" (back-link))]
+     ["browser-add" (section "Must use desktop app to convert files" (back-link))]
+     ["empty-dest" (section "Must select a destination to save the newly created database" (back-link))]
+     ["empty-src" (section "Must select a folder to convert" (back-link))]
+     ["empty-name" (section "Must enter a file name" (back-link))]
+     ["file-exists" (section "That file already exists in that folder. Please select a different name or destination folder" (back-link))]
      [,_ (section "insert failed" `(p ,(exit-reason->english reason)))])))
 
 
@@ -87,18 +87,18 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
 
 (define (do-conversion src dest name)
   (unless (not (string=? "undefined" src))
-    (raise `#(browser-add)))
+    (raise "browser-add"))
   (unless (not (string=? "" src))
-    (raise `#(empty-src)))
+    (raise "empty-src"))
   (unless (not (string=? "" dest))
-    (raise `#(empty-dest)))
+    (raise "empty-dest"))
   (unless (not (string=? "" name))
-    (raise `#(empty-name)))
+    (raise "empty-name"))
   
   (let* ([new-file (path-combine dest name)]
          [new-file (string-append new-file ".db3")])
     (unless (not (regular-file? new-file))
-      (raise `#(file-exists)))
+      (raise "file-exists"))
     (make-db-and-convert src new-file)
     (conversion-complete dest name)))
 

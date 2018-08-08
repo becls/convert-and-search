@@ -28,12 +28,12 @@
             ["child" "Child Errors"]
             ["gen-server" "Gen-server errors"]
             ["supervisor" "Supervisor errors"]
-            [,_ (raise `#(invalid-type))]))
+            [,_ (raise "invalid-type")]))
 
 (define (respond:error reason)
   (respond
    (match reason
-     [#(invalid-type) (section "Fail" `(p "Invalid type"))]
+     ["invalid-type" (section "Fail" `(p "Invalid type"))]
      [,_ (section "Critical error" `(p ,(exit-reason->english reason)))])))
 
 (define (home-link last-sql)
