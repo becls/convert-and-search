@@ -35,9 +35,9 @@
 
 ;; Running a query
 (define (do-query db sql limit offset type f . bindings)
-  (define (nav-form where from-offset enabled?)
+  (define (nav-form where from-offset enabled? new-sql)
     `(form (@ (name "query") (method "get"))
-       (textarea (@ (name "sql") (class "hidden")) ,sql)
+       (textarea (@ (name "sql") (class "hidden")) ,new-sql)
        (input (@ (name "limit") (class "hidden") (value ,(stringify limit))))
        (input (@ (name "offset") (class "hidden") (value ,(stringify from-offset))))
        (input (@ (name "type") (class "hidden") (value ,(stringify type))))
@@ -58,13 +58,18 @@
            [(not v) "<null>"]
            [else (stringify v)])))
 
+  (define (remove-limit-offest str)
+    (stringify (match (pregexp-match "(.*?) limit " str)
+      [(,full ,match) match]
+      [(,no-limit) no-limit])))
+
   (match-let*
    ([,stmt (sqlite:prepare db (format "~a limit ? offset ?" sql))]
     [,_ (sqlite:bind stmt (if (null? bindings)
                               (list limit offset)
                               (append (car bindings) (list limit offset))))]
     [,str (sqlite:expanded-sql stmt)]
-    [,no-limit (format "~a" (pregexp-match "(.*?) limit " str))]
+    [,no-limit (remove-limit-offest str)]
     [,results (get-results (lambda () (sqlite:step stmt)) row->tr)]
     [,count (length results)]
     [,flag (string-param "flag" params)]
@@ -79,7 +84,7 @@
         `(table
           (tr (@ (style "text-align: center;"))
             (td (@ (class "navigation"))
-              ,(nav-form "Previous Page" (max 0 (- offset limit)) (> offset 0)))
+              ,(nav-form "Previous Page" (max 0 (- offset limit)) (> offset 0) no-limit))
             (td (@ (class "navigation"))
               (form (@ (id "rowForm") (method "get"))
                 (textarea (@ (name "sql") (class "hidden")) ,no-limit)
@@ -88,7 +93,7 @@
                 (button (@ (id "offsetButton") (type "submit")) "Go to row")
                 (p (input (@ (id "offsetInput") (name "offset") (class "offset"))))))
             (td (@ (class "navigation"))
-              ,(nav-form "Next Page" (+ offset limit) (= count limit)))
+              ,(nav-form "Next Page" (+ offset limit) (= count limit) no-limit))
             (td (@ (class "link"))
               ,(home-link no-limit))))
         `(p (@ (style "text-align: center; color: Red; size: +10; font-weight: bold")),flag)
