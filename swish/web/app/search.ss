@@ -167,11 +167,11 @@
       [,_ ""]))
 
   
-  (intial-setup db "The system filled in what fields it could from the existing query. If your active database is different than the one used to create the search some fields may be blank" (get-bracketed "from") (get-bracketed "where") (get-quoted "like") (get-quoted "between") (get-quoted "and") (get-exc-col) (get-exc-term) (get-bracketed "by") (get-desc)))
+  (initial-setup db "The system filled in what fields it could from the existing query. If your active database is different than the one used to create the search some fields may be blank" (get-bracketed "from") (get-bracketed "where") (get-quoted "like") (get-quoted "between") (get-quoted "and") (get-exc-col) (get-exc-term) (get-bracketed "by") (get-desc)))
 
 
-;;Intial setup
-(define (intial-setup db inst table column search-term min max excCol excTerm order desc)
+;;Initial setup
+(define (initial-setup db inst table column search-term min max excCol excTerm order desc)
   
   (define (table-info master-row)
     (match master-row
@@ -248,7 +248,7 @@
           (p (textarea (@ (id "sql") (name "sql") (class "hidden"))))
           
           (script "
-window.addEventListener('load', intialupdate, false);
+window.addEventListener('load', initialupdate, false);
 var select = document.getElementById('table');
 select.addEventListener('click', updateDrops, false);")
           (script "$('.excCol').bind('change', updateExecVal).trigger('change')")
@@ -283,7 +283,7 @@ select.addEventListener('click', updateDrops, false);")
         (do-query  db sql limit offset type f valid-bindings))))
 
 
-;;Runs each time page loaded, calls intial-setup or do-query
+;;Runs each time page loaded, calls initial-setup or do-query
 (define (dispatch)
   (let ([keyword (string-param "keyWord" params)]
         [table (string-param "table" params)]
@@ -311,7 +311,9 @@ select.addEventListener('click', updateDrops, false);")
                           [#(EXIT ,reason) (respond:error reason)]
                           [,value  (do-query-cleanup db value limit offset "" (lambda x x) keyword min max excludeTerm)]))]
                      [edit-sql (edit-setup edit-sql db)]
-                     [else (intial-setup db "Please enter the following fields:" "" "" "" "" "" "" ""  "" #t)]))))))
+                     [else (initial-setup db "Please enter the following fields:" "" "" "" "" "" "" ""  "" #t)])))
+      [#(EXIT ,reason) (respond:error reason)]
+      [,value value])))
 
 
 (dispatch)

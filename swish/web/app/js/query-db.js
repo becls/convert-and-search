@@ -65,7 +65,7 @@ function rowToOffset() {
   return true;
 }
 
-function intialupdate(){
+function initialupdate(){
   hideAll();
   updateCont('div.container', 'column', 'table');
   updateCont('div.excCont', 'exec', 'table');

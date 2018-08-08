@@ -37,18 +37,18 @@
 
 ## swish/web/app/addDatabase.ss
 
-@suggestion You could use the symbols bad-database and browser-add
+@fixed You could use the symbols bad-database and browser-add
   instead of the single-element vectors containing the symbols. It's
   simpler and faster this way.
 
   The same goes for invalid-type in saved.ss. See also errors raised in search.ss.
 
-@defect Initial is misspelled here and in saveSearch.ss, search.ss,
+@fixed Initial is misspelled here and in saveSearch.ss, search.ss,
   twoTableSearch.ss, and js/query-db.ss.
 
 ## swish/web/app/components.ss
 
-@suggestion Use the transaction form when doing quick queries against the log-db:
+@fixed Use the transaction form when doing quick queries against the log-db:
 
   (define (get-database-name)
     (match (transaction 'log-db

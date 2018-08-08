@@ -39,7 +39,7 @@
      ["browser-add" (section "Must use desktop app to add databases")]
      [,_ (section "insert failed" `(p ,(exit-reason->english reason)))])))
 
-(define (intial-setup)
+(define (initial-setup)
   (respond (section "Add a new database" `(form
              (div (@ (style "padding-left: 8px; padding-top: 3px; padding-bottom: 5px;"))(table
               (tr (th (p "Field")) (th (p "Value")))
@@ -52,7 +52,7 @@
 document.getElementById('file-path').value = x} $('.path').bind('change', func).trigger('change')")
              (p (button (@ (type "submit")) "Save"))))))
 
-(define (intial-nofile file)
+(define (initial-nofile file)
   (respond `(form
              (table
               (tr (th (p "Field")) (th (p "Value")))
@@ -83,7 +83,7 @@ values (?, ?, ?)" name desc file)))
            (match (catch (update-path name desc file))
              [#(EXIT ,reason) (respond:error reason)]
              [,value value])]
-      [file (intial-nofile file)]
-      [else (intial-setup)])))
+      [file (initial-nofile file)]
+      [else (initial-setup)])))
 
 (dispatch)

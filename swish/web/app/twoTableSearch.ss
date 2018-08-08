@@ -119,8 +119,8 @@
        (string->symbol name)]))
   (table-info table))
 
-;;Intial setup
-(define (intial-setup db)
+;;Initial setup
+(define (initial-setup db)
   (define (table-info master-row)
     (match master-row
       [#(,table-name)
@@ -201,7 +201,7 @@ select.addEventListener('change', updateJoin2, false);")
                   (http:percent-encode last-sql))))
      "Save Search"))
 
-;;Runs each time page loaded, calls intial-setup or do-query
+;;Runs each time page loaded, calls initial-setup or do-query
 (define (dispatch)
   (let ([keyword (string-param "keyWord" params)]
         [table1 (string-param "t1" params)]
@@ -225,7 +225,7 @@ select.addEventListener('change', updateJoin2, false);")
                         [,value (match (catch (do-query db value limit offset "" (lambda x x)))
                                   [#(EXIT ,reason) (respond:error reason)]
                                   [,val val])])]
-                     [else (intial-setup db)]))))))
+                     [else (initial-setup db)]))))))
 
 
 (dispatch)

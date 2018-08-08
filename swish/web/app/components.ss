@@ -82,14 +82,11 @@
     (p ,(get-database-name))))
 
 (define (get-database-name)
-  (with-db [db (log-file) SQLITE_OPEN_READONLY]
-    (match-let*
-     ([,stmt (sqlite:prepare db "select name from database where file_path = ?")]
-      [,_ (sqlite:bind stmt (list (user-log-path)))]
-      [,results (sqlite:step stmt)])
-      (if results
-          `(p ,(format "~a" (car (vector->list results))))
-          `(p "None selected")))))
+  (match (transaction 'log-db
+             (execute "select name from database where file_path = ?"
+               (user-log-path)))
+      [(#(,name)) `(p ,name)]
+      [() '(p "None selected")]))
 
 (define (docked-navigation)
   (column-with-id "main-nav" "docked menu left" (navigation)))
