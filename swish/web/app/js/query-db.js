@@ -107,7 +107,7 @@ function updateDrops(){
 }
 
 function updateColVal(){
-  update('div.container', 'column', 'table');
+  updateVal('div.container', 'column', 'table');
 }
 
 function updateExecVal(){
@@ -135,5 +135,6 @@ function updateOtherFeildJ1(){
 function updateOtherFeildJ2(){
   updateVal('div.contJ2', 'join2Val', 't2');
 }
+
 
 $(document).ready(onLoad);
