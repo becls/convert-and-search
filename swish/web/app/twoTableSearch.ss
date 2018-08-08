@@ -34,56 +34,60 @@
      [,_ (section "Query failed" `(p ,(exit-reason->english reason)) (link "twoTableSearch" "Go Back"))])))
 
 (define (construct-sql table1 table2 join1 join2 newName db)
-  (define (check-request-blank-vals)
-    (cond
-     [(or (string=? "(please select a table)" table1)
-          (string=? "(please select a table)" table2))
-          (raise `#(no-table))]
-     [(or (not join1)
-          (not join2))
-          (raise `#(no-join))]))
+  ;;In order to increase query readablity for the user, only alias table if necessary
+  (let ([table2alias (if (string=? table1 table2)
+                         (string-append table2 "2")
+                         table2)])
+    (define (check-request-blank-vals)
+      (cond
+       [(or (string=? "(please select a table)" table1)
+            (string=? "(please select a table)" table2))
+        (raise `#(no-table))]
+       [(or (not join1)
+            (not join2))
+        (raise `#(no-join))]))
 
-  (define (build-join-condition)
-    (let ([t1-info (formatCond table1 join1)]
-          [t2-info (formatCond table2 join2)])
-      (string-append " where "  t1-info " = " t2-info)))
+    (define (build-join-condition)
+      (let ([t1-info (formatCond table1 join1)]
+            [t2-info (formatCond table2alias join2)])
+        (string-append " where "  t1-info " = " t2-info)))
 
-  (define (build-table-info)
-    (string-append " from [" (stringify table1) "] join [" (stringify table2) "]"))
+    (define (build-table-info)
+      (string-append " from [" table1 "] join [" table2 "] as " table2alias))
 
-  (define (quote-identifier s)
-    (let ([op (open-output-string)])
-      (write-char #\" op)
-      (string-for-each
-       (lambda (c)
-         (write-char c op)
-         (when (char=? c #\")
-           (write-char #\" op)))
-       s)
-      (write-char #\" op)
-      (get-output-string op)))
+    (define (quote-identifier s)
+      (let ([op (open-output-string)])
+        (write-char #\" op)
+        (string-for-each
+         (lambda (c)
+           (write-char c op)
+           (when (char=? c #\")
+             (write-char #\" op)))
+         s)
+        (write-char #\" op)
+        (get-output-string op)))
 
-  (define (build-new-col)
-    (string-append (formatCond table1 join1) " as " (quote-identifier newName) ", ")) 
+    (define (build-new-col)
+      (string-append (formatCond table1 join1) " as " (quote-identifier newName) ", ")) 
 
-  (define (removeTimestamp columns)
-    (if (string-ci=? (car columns) "timestamp")
-        (cdr columns)
-        (cons (car columns) (removeTimestamp (cdr columns)))))
-  (check-request-blank-vals)
-  (let* ([t1-cols (get-columns table1 db join1)]
-         [t2-cols (get-columns table2 db join2)]
-         [all-cols (append t1-cols t2-cols)]
-         [formated-cols (join all-cols " ")]
-         [formated-cols (substring formated-cols 0 (- (string-length formated-cols) 1))]
-         [new-col (build-new-col)]
-         [table-info (build-table-info)]
+    (define (removeTimestamp columns)
+      (if (string-ci=? (car columns) "timestamp")
+          (cdr columns)
+          (cons (car columns) (removeTimestamp (cdr columns)))))
+    (check-request-blank-vals)
+    (let* ([t1-cols (get-columns table1 table1 db join1)]
+           [t2-cols (get-columns table2 table2alias db join2)]
+           [all-cols (append t1-cols t2-cols)]
+           [formated-cols (join all-cols " ")]
+           [formated-cols (substring formated-cols 0 (- (string-length formated-cols) 1))]
+           [new-col (build-new-col)]
+           [table-info (build-table-info)]
            [join-cond (build-join-condition)])
-         (string-append "select " new-col formated-cols table-info join-cond)))
-  
+      (string-append "select " new-col formated-cols table-info join-cond))))
+
 
 (define (formatCond table column)
-  (string-append "[" (stringify table) "].[" (stringify column) "]"))
+  (string-append "["  table "].[" column "]"))
 
 
 (define (remove-tags val)
@@ -91,13 +95,13 @@
     [#(,table-name)
      (string->symbol table-name)]))
 
-(define (get-columns table db remove-col)
+(define (get-columns table tableAlias db remove-col)
   (define (table-info master-row)
     (match master-row
       [,table-name
        (map (lambda(x) (if (string=? (stringify x) remove-col)
                            ""
-                           (string-append "[" (stringify table) "].[" (stringify x) "],")))
+                           (string-append "["  tableAlias "].[" (stringify x) "],")))
          (map column-info
            (execute-sql db (format "pragma table_info(~s)" table-name))))]
       [,_ (raise `#(Invalid-table))]))
@@ -189,10 +193,6 @@ select.addEventListener('change', updateJoin2, false);")
   `(a (@ (href ,(format "saveSearch?sql=~a"
                   (http:percent-encode last-sql))))
      "Save Search"))
-
-(define (temp table1 table2 join1 join2)
-  (respond `(p ,join1) `(p ,join2)))
-
 
 ;;Runs each time page loaded, calls intial-setup or do-query
 (define (dispatch)
