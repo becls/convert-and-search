@@ -212,7 +212,8 @@ select.addEventListener('change', updateJoin2, false);")
                     (cond
                      [(previous-sql-valid? sql) (do-query db sql limit offset "" (lambda x x))]
                      [table2
-                      (match (catch (construct-sql table1 table2 join1 join2 newName db))
+                      (match (catch
+                              (construct-sql table1 table2 join1 join2 (if (string=? newName "") " " newName) db))
                         [#(EXIT ,reason) (respond:error reason)]
                         [,value (do-query db value limit offset "" (lambda x x))])]
                      [else (intial-setup db)]))))))
