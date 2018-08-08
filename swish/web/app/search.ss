@@ -285,10 +285,10 @@ select.addEventListener('click', updateDrops, false);")
 
 ;;Runs each time page loaded, calls intial-setup or do-query
 (define (dispatch)
-  (let ([keyword (string-param-sql "keyWord" params)]
+  (let ([keyword (string-param "keyWord" params)]
         [table (string-param "table" params)]
-        [min (string-param-sql "min" params)]
-        [max (string-param-sql "max" params)]
+        [min (string-param "min" params)]
+        [max (string-param "max" params)]
         [desc (find-param "desc")]
         [limit (integer-param "limit" 0 params)]
         [offset (integer-param "offset" 0 params)]

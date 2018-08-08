@@ -25,11 +25,9 @@
   (export
    string-param
    integer-param
-   string-param-sql
    previous-sql-valid?
    stringify
    trim-whitespace
-   string-replace
    flatten)
   (import
    (chezscheme)
@@ -39,12 +37,6 @@
   (define (string-param name params)
     (let ([value (http:find-param name params)])
       (and value (trim-whitespace value))))
-
-  (define (string-param-sql name params)
-    (let ([val (string-param name params)])
-      (if val
-          (string-replace val "'" "''")
-          val)))
 
   (define (integer-param name min-value params)
     (let* ([string-value (http:find-param name params)]
@@ -79,18 +71,6 @@
             s
             (substring s start (fx+ i 1)))]))
     (find-start s 0 (string-length s)))
-
-  (define string-replace 
-    (lambda (s match replacement)
-      (let ((ll (string->list s)))
-
-        (let ((z (map (lambda (x)
-                        (if (string-ci=? (stringify x) match)
-                            (string->list replacement)
-                            x))
-                   ll)))
-          (list->string (flatten z))))))
-
 
   (define (flatten list)
     (cond ((null? list) '())
