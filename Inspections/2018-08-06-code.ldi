@@ -80,7 +80,7 @@ all other software used in this application.
 
 @defect The file-name regular expression should be case
   insensitive. It doesn't match the design document.
-:fix: The filename regular expression already was case-insensitive, as each letter can be anything from a capital A to a lower case z, which includes upper and lowercase letters.
+:fix: The name portion of the regular expression was already case-insensitive, as each letter can be anything from a capital A to a lower case z, which includes upper and lowercase letters. Added a noncapturing case insenistive cluster in order to make the log portion case insesitive 
   There was a discrepancy with the design document, which allowed the filename to be anything that did not include two numbers in a row. Both the regular expression and the design doc where updated for consistency. 
 
 @fixed `process-each-file` should use the input list (the num

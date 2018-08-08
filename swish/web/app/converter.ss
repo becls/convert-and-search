@@ -105,7 +105,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
 
 
 ;;Conversion related functions
-(define file-name (pregexp "([A-z ]*[0-9]?[A-z ]+)[0-9]+.*\\.log"))
+(define file-name (pregexp "([A-z ]*[0-9]?[A-z ]+)[0-9]+.*(?i:\\.log)"))
 (define (processfile table-name file-path db prepared-insert header-insert)
   (let* ([ip (open-file-to-read file-path)]
          [op (open-output-string)])
