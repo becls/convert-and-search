@@ -47,12 +47,10 @@
                (input (@ (id "sql") (name "sql") (class "hidden") (value ,sql))))))))
 
 (define (save-query name desc sql)
-  (match (db:transaction 'log-db (lambda () (execute "insert into search (name, description, sqlite)
+  (match (catch (transaction 'log-db (execute "insert into search (name, description, sqlite)
 values (?, ?, ?)" name desc sql)))
-    [#(ok ,_) (redirect "saved?type=search&sql=&limit=100&offset=0&flag=Save successful")]
-    [,error (respond:error error)]))
-
-
+    [#(EXIT ,reason) (respond:error reason)]
+    [,val (redirect "saved?type=search&sql=&limit=100&offset=0&flag=Save successful")]))
 
 (define (dispatch)
   (let ([name (string-param "name" params)]

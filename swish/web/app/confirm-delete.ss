@@ -31,7 +31,7 @@
        (list (css-include "css/confirm-delete.css"))
        c1 c2 ...)]))
 
-(define (display message value link type)
+(define (instruct message value link type)
   (respond message `(p ,value) 
     `(table (tr (td (@ (class "nav")) ,link)
               (td (@ (class "nav")) (form
@@ -51,22 +51,22 @@
 
   (define (do-delete)
     (cond [(string=? "dataAll" type)
-           (db:transaction 'log-db (lambda () (execute "delete from database")))]
+           (transaction 'log-db (execute "delete from database"))]
       [(string=? "searchAll" type)
-           (db:transaction 'log-db (lambda () (execute "delete from search")))]
-      [else  (db:transaction 'log-db (lambda () (execute
-                                                 (format "delete from ~a where ~a = '~a'" type
-                                                   (match type ["database" "file_path"] ["search" "sqlite"])
-                                                   (string-replace value "'" "''")))))]))
-  (match (do-delete)
-    [#(ok ,_) (return-to-saved)]
-    [,error (respond `(p ,error))]))
+       (transaction 'log-db (execute "delete from search"))]
+      [else  (transaction 'log-db (execute
+                                   (format "delete from ~a where ~a = '~a'" type
+                                     (match type ["database" "file_path"] ["search" "sqlite"])
+                                     (string-replace value "'" "''"))))]))
+  (match (catch (do-delete)) 
+    [#(EXIT ,reason) (respond `(p ,reason))]
+    [,val (return-to-saved)]))
 
 
 (define (dispatch)
   (let* ([delete-clicked (string-param "click" params)]
          [value (string-param "val" params)]
-         [value (if value value "")]
+         [value (or value "")]
          [type (get-param "type")]
          [link
           (match type
@@ -76,14 +76,14 @@
             ["searchAll"  (link "saved?type=search&sql=&limit=100&offset=0" "Cancel")])]
          [message
           (match type
-            ["database" `(p "Are you sure you wish to delete this database? \n The database will not be removed from memory, just from this application")]
+            ["database" `(p "Are you sure you wish to delete this database?" (br) "The database will not be removed from memory, just from this application.")]
             ["dataAll" `(p "Are you sure you would like to remove ALL databases?")]
             ["search" `(p "Are you sure you want to remove this search?")]
             ["searchAll" `(p "Are you sure you would like to remove ALL saved searches?")])])
 
     (if delete-clicked
         (delete-and-show-confirmation value type)
-        (display message value link type))))
+        (instruct message value link type))))
 
 
 (dispatch)

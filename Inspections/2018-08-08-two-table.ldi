@@ -1,0 +1,53 @@
+# Two-table search
+
+:Date:      2018-08-08
+:Type:      code
+:Size:      233 LOC
+:Initial:   1f67bf135802eb8d34f54385551a1c04934cc12f..1f67bf135802eb8d34f54385551a1c04934cc12f
+:Approved:
+:Author:    Alyssa Crawford ()
+:Inspector: Bob Burger (0.5)
+:File:      swish/web/app/twoTableSearch.ss
+@nosafety
+
+@suggestion Use symbols for error conditions, not strings, because
+  they compare with eq?.
+
+@defect In respond:error, end the sentences "You must ..." with
+  periods. Similarly for the sentences on lines 173, 174, 178, and 216.
+
+@defect Field and formatted-cols are misspelled.
+
+@suggestion In construct-sql, how do you know that table1 is a string?
+  It could be #f if there is no "t1" parameter. You might guard
+  against this on line 221: (and table1 table2).
+
+@suggestion In get-columns, collapse the nested map into a single
+  map. Then update column-info to return the string instead of a
+  symbol so that you don't need to call stringify. Update the pragma
+  format statement to use ~a so that it doesn't add quotation marks
+  for the string.
+
+@suggestion An edit query button would be useful.
+
+@suggestion `home-link` doesn't appear to be used.
+
+@suggestion Make stringify more efficient in the common cases:
+
+  (define (stringify x)
+    (cond
+     [(string? x) x]
+     [(symbol? x) (symbol->string x)]
+     [else (format "~a" x)]))
+
+@suggestion The keyword binding in dispatch appears unused.
+
+@suggestion removeTimestamp appears unused.
+
+@suggestion Use `(remq "" x)` instead of `(remove-empty x)`.
+
+@suggestion Move quote-identifier to (helpers) as quote-sqlite-identifier.
+
+@suggestion There are several local helper functions duplicated
+  throughout the web pages. Consolidate them into (helpers).
+

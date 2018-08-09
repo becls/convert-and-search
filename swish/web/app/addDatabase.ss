@@ -37,7 +37,7 @@
    (match reason
      ["not-database" (section "insert failed" `(p "Invalid file type") `(p "valid file types are: .db, .db3, .sqlite"))]
      ["browser-add" (section "Must use desktop app to add databases")]
-     [,_ (section "insert failed" `(p ,(exit-reason->english reason)))])))
+     [,_ (section "Insert failed" `(p "It is possible you tried to add the same database twice") `(p ,(exit-reason->english reason)))])))
 
 (define (initial-setup)
   (respond (section "Add a new database" `(form
@@ -53,13 +53,13 @@ document.getElementById('file-path').value = x} $('.path').bind('change', func).
              (p (button (@ (type "submit")) "Save"))))))
 
 (define (initial-nofile file)
-  (respond `(form
+  (respond (section "Add a new database" `(form
              (table
               (tr (th (p "Field")) (th (p "Value")))
               (tr (td (p "Name")) (td (p (textarea (@ (id "name") (name "name") (class "textBox"))))))
               (tr (td (p "Description")) (td (p (textarea (@ (id "desc") (name "desc") (class "desc")))))))
              (input (@ (id "file-path") (name "file-path") (class "hidden") (value ,file)))
-             (p (button (@ (type "submit")) "Save")))))
+             (p (button (@ (type "submit")) "Save"))))))
 
 (define (update-path name desc file)
   (unless (not (string=? "undefined" file))
@@ -69,10 +69,11 @@ document.getElementById('file-path').value = x} $('.path').bind('change', func).
               (ends-with-ci? file ".sqlite"))
     (raise "not-database"))
   
-  (match (db:transaction 'log-db (lambda () (execute "insert into database (name, description, file_path)
+  (match (catch (transaction 'log-db (execute "insert into database (name, description, file_path)
 values (?, ?, ?)" name desc file)))
-    [#(ok ,_) (begin (user-log-path file) (redirect "saved?type=database&sql=&limit=100&offset=0&flag=Save+successful,+active+database+changed."))]
-    [,error (respond:error error)]))
+    
+    [#(EXIT ,reason)  (respond:error reason)]
+    [,val (begin (user-log-path file) (redirect "saved?type=database&sql=&limit=100&offset=0&flag=Save+successful,+active+database+changed."))]))
 
 
 (define (dispatch)

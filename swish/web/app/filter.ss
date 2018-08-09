@@ -34,7 +34,7 @@
 (define (respond:error reason)
   (respond
    (match reason
-     [,_ (section "Failed to create a view" `(p "It is possible the application does not have permission to edit the database file, possibly because another program is editing the database")`(p ,(exit-reason->english reason)))])))
+     [,_ (section "Failed to create a view" `(p "It is possible the application does not have permission to edit the database file, possibly because another program is editing the database.")`(p ,(exit-reason->english reason)))])))
 
 (define (instruct sql)
   (respond `(div (@ (style "padding-left:4px;")) (p  "Would you like to create a view out of the results of this search?")

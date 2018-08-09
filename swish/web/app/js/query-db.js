@@ -128,11 +128,11 @@ function updateJoin2(){
   updateCont('div.contJ2', 'join2Val', 't2');
 }
 
-function updateOtherFeildJ1(){
+function updateOtherFieldJ1(){
   updateVal('div.contJ1', 'join1Val', 't1');
 }
 
-function updateOtherFeildJ2(){
+function updateOtherFieldJ2(){
   updateVal('div.contJ2', 'join2Val', 't2');
 }
 

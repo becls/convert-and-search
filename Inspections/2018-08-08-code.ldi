@@ -5,7 +5,7 @@
 :Size:      2305 LOC
 :Initial:   1f67bf135802eb8d34f54385551a1c04934cc12f..e8d9302c381574241ff4a3c847af426e08b6a5ef
 :Approved:
-:Author:    Alyssa Crawford ()
+:Author:    Alyssa Crawford (3)
 :Inspector: Bob Burger (2)
 :File:      swish/web/index.ss
 :File:      swish/web/app/addDatabase.ss
@@ -59,13 +59,13 @@
 
 ## swish/web/app/confirm-delete.ss
 
-@suggestion Don't shadow the system display procedure.
+@fixed Don't shadow the system display procedure.
 
-@suggestion `(if value value "")` is equivalent to `(or value "")`.
+@fixed `(if value value "")` is equivalent to `(or value "")`.
 
-@defect On line 79, use (br) instead of `\n` to break a line.
+@fixed On line 79, use (br) instead of `\n` to break a line.
 
-@suggestion Use `(transaction 'log-db (execute ...))` instead of
+@fixed Use `(transaction 'log-db (execute ...))` instead of
   `(db:transaction 'log-db (lambda () (execute ...)))`. Same elsewhere
   including saveSearch.ss.
 
@@ -78,24 +78,27 @@
     (apply do-query db sql limit offset type f (remq "" bindings)))
 
   The removal of empty-string bindings doesn't seem right because bindings are ordered.
+:fix: Used suggested code. The empty sting-bindings are unused parameters, which are never put into the string, see construct-sql
 
 @suggestion Combine these two lines since str is used nowhere else:
   [,str (sqlite:expanded-sql stmt)]
   [,no-limit (remove-limit-offest str)]
+:fix: Fixed as described in displayQuery, think was in the wrong section.
 
 ## swish/web/app/displayQuery.ss
 
-@defect do-query doesn't handle the rest argument bindings correctly. Instead
+@fixed do-query doesn't handle the rest argument bindings correctly. Instead
   of `(if (null? bindings) (list limit offset) (append (car bindings) (list limit offset)))`,
   do `(append bindings (list limit offset))`.
 
-@defect remove-limit-offset is misspelled.
+@fixed remove-limit-offset is misspelled.
 
-@suggestion Wouldn't it be better to remove the limit & offset from
+@fixed Wouldn't it be better to remove the limit & offset from
   the end in case limit is in the query string somewhere?
   `(pregexp-match "^(.+) limit \d+ offset \d+$" str)`
 
 @defect The `f` argument to `do-query` is not used.
+:reject: It is passed to data->html-table where it is used. However, I fixed the shadowing in get-results
 
 ## swish/web/app/css/components.css
 
@@ -111,34 +114,35 @@
 
 @defect strUser, updateFeild, and updateOtherFeild are unused. (Field
   is misspelled.) Missing a semicolon on line 29.
+:fix: Apparently I am bad at removing unused files. This whole file is unused because it was using in a .ss file create purely to simplify code when I was figuring out how to do something. Final fix: deleted whole file
 
 ## swish/web/app/js/resize.js
 
-@suggestion Remove unnecessary semicolon from line 3.
+@fixed Remove unnecessary semicolon from line 3.
 
 ## swish/web/app/js/query-db.js
 
-@defect Field is misspelled. Fix uses of this in the rest of the
+@fixed Field is misspelled. Fix uses of this in the rest of the
   code. Line 99 is missing a semicolon.
 
 ## swish/web/app/export.ss
 
-@defect Typos
+@fixed Typos
   "the instruction below" => "the instructions below"
   "excel" => "Excel"
   "grayed out" => "greyed out" (preferred spelling)
   
-@suggestion Use 127.0.0.1 instead of localhost.
+@fixed Use 127.0.0.1 instead of localhost.
 
-@suggestion The indentation of parts of the results procedure is off.
+@fixed The indentation of parts of the results procedure is off.
 
 ## swish/web/app/filter.ss
 
-@defect Line 37: the sentence should end with a period.
+@fixed Line 37: the sentence should end with a period.
 
 ## swish/web/app/saved.ss
 
-@defect  "excel" => "Excel"
+@fixed  "excel" => "Excel"
 
 ## swish/web/app/updatePath.ss
 

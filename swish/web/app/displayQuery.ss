@@ -45,11 +45,11 @@
                     '(@ (type "submit"))
                     '(@ (type "submit") (disabled)))
          ,(stringify where))))
-  (define (get-results next-row f)
+  (define (get-results next-row func)
     (let lp ([results '()])
       (match (next-row)
         [#f (reverse results)]
-        [,row (lp (cons (f row) results))])))
+        [,row (lp (cons (func row) results))])))
   (define (row->tr row)
     `(tr ,@(map value->td (vector->list row))))
   (define (value->td v)
@@ -58,18 +58,15 @@
            [(not v) "<null>"]
            [else (stringify v)])))
 
-  (define (remove-limit-offest str)
-    (stringify (match (pregexp-match "(.*?) limit " str)
+  (define (remove-limit-offset str)
+    (stringify (match (pregexp-match "^(.*?) limit \\d+ offset \\d+$" str)
       [(,full ,match) match]
       [(,no-limit) no-limit])))
 
   (match-let*
    ([,stmt (sqlite:prepare db (format "~a limit ? offset ?" sql))]
-    [,_ (sqlite:bind stmt (if (null? bindings)
-                              (list limit offset)
-                              (append (car bindings) (list limit offset))))]
-    [,str (sqlite:expanded-sql stmt)]
-    [,no-limit (remove-limit-offest str)]
+    [,_ (sqlite:bind stmt (append bindings (list limit offset)))]
+    [,no-limit (remove-limit-offset (sqlite:expanded-sql stmt))]
     [,results (get-results (lambda () (sqlite:step stmt)) row->tr)]
     [,count (length results)]
     [,flag (string-param "flag" params)]

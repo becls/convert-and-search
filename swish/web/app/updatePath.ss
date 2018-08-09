@@ -38,7 +38,7 @@
           (user-log-path val)
           (respond `(p "Active database was changed to:") `(p ,(get-database-name))
             `(div (@ (style "padding-left: 3px")) ,(link "search"  "Go to search page"))))
-        (respond `(p "This database no longer exists in your computer's memory at the specified location. Remove now?") (link (format "confirm-delete?type=database&val=~a" (http:percent-encode val)) "Delete database")))))
+        (respond `(p "This database no longer exists in your computer at the specified location. Remove now this entry now?") `(div (@ (style "padding:left 3px")) ,(link (format "confirm-delete?type=database&val=~a" (http:percent-encode val)) "Delete database"))))))
 
 
 (dispatch)

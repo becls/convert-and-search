@@ -43,7 +43,7 @@
      ["no-timestamp" (section "Search failed: no timestamp" `(p "Please select a table with that has a column named timestamp in order to search by timestamp")(link "Search" "Go Back"))]
      
      [,_
-      (section "Query failed" `(p "Check the current database is the correct database") `(p ,(exit-reason->english reason)) (link "Search" "Go Back"))])))
+      (section "Query failed" `(p "Suggestion: Check the current database is the correct database") `(p ,(exit-reason->english reason)) (link "Search" "Go Back"))])))
 
 
 ;: SQL helpers
@@ -270,17 +270,7 @@ select.addEventListener('click', updateDrops, false);")
         (a (@ (href ,(format "export?inst=&sql=~a" (http:percent-encode last-sql)))) "Export Search")))))
 
 (define (do-query-cleanup db sql limit offset type f . bindings)
-  (define (remove-empty ls)
-    (match ls
-      [(,first . ,rest)
-       (if (string=? first "")
-           (remove-empty rest)
-           (cons first (remove-empty rest)))]
-      [,_ '()]))
-  (let ([valid-bindings (remove-empty bindings)])
-    (if (null? valid-bindings)
-        (do-query  db sql limit offset type f)
-        (do-query  db sql limit offset type f valid-bindings))))
+  (apply do-query db sql limit offset type f (remq "" bindings)))
 
 
 ;;Runs each time page loaded, calls initial-setup or do-query

@@ -56,7 +56,7 @@
                           (link (format "query-db?limit=100&offset=0&sql=~a" (http:percent-encode sqlite)) (format "~a" display-name))
                           desc sqlite
                           (link (format "search?edit-sql=~a" (http:percent-encode sqlite))  "Edit")
-                          (link (format "export?inst=&sql=~a" (http:percent-encode sqlite))  "Export to excel")
+                          (link (format "export?inst=&sql=~a" (http:percent-encode sqlite))  "Export to Excel")
                           (link (format "filter?sql=~a" (http:percent-encode sqlite))  "Create view")
                           (link (format "confirm-delete?type=search&val=~a" (http:percent-encode sqlite))  "Delete"))))]
         [data-func (lambda (name desc filePath delete)

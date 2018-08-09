@@ -190,8 +190,8 @@ select.addEventListener('change', updateJoin1, false);")
           (script "$('div.contJ2').children().hide();
 var select = document.getElementById('t2');
 select.addEventListener('change', updateJoin2, false);")
-          (script "$('.j1').bind('change', updateOtherFeildJ1).trigger('change')")
-          (script "$('.j2').bind('change', updateOtherFeildJ2).trigger('change')")))
+          (script "$('.j1').bind('change', updateOtherFieldJ1).trigger('change')")
+          (script "$('.j2').bind('change', updateOtherFieldJ2).trigger('change')")))
      
      (section "Schema"
        (schema->html db-tables)))))
