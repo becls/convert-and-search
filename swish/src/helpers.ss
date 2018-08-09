@@ -27,6 +27,7 @@
    integer-param
    previous-sql-valid?
    stringify
+   quote-sqlite-identifier
    trim-whitespace
    flatten)
   (import
@@ -51,7 +52,11 @@
 
 
   ;; String manipulation
-  (define (stringify x) (format "~a" x))
+  (define (stringify x)
+    (cond
+     [(string? x) x]
+     [(symbol? x) (symbol->string x)]
+     [else (format "~a" x)]))
 
   (define (trim-whitespace s)
     (define (find-start s i len)
@@ -77,6 +82,18 @@
       ((list? (car list)) (append (flatten (car list)) (flatten (cdr list))))
       (else
        (cons (car list) (flatten (cdr list))))))
+
+  (define (quote-sqlite-identifier s)
+      (let ([op (open-output-string)])
+        (write-char #\" op)
+        (string-for-each
+         (lambda (c)
+           (write-char c op)
+           (when (char=? c #\")
+             (write-char #\" op)))
+         s)
+        (write-char #\" op)
+        (get-output-string op)))
 
   )
 

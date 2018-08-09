@@ -29,8 +29,8 @@
 (define (respond:error reason)
   (respond
    (match reason
-     ["no-table" (section "Search failed" `(p "You must specify a value for both tables") `(div (@ (style "padding-left: 7px; padding-top: 3px")) ,(link "twoTableSearch" "Go Back")))]
-     ["no-join" (section "Search failed" `(p "You must specify a value for both join columns") `(div (@ (style "padding-left: 7px")) ,(link "twoTableSearch" "Go Back")))]
+     [no-table (section "Search failed" `(p "You must specify a value for both tables.") `(div (@ (style "padding-left: 7px; padding-top: 3px")) ,(link "twoTableSearch" "Go Back")))]
+     [no-join (section "Search failed" `(p "You must specify a value for both join columns.") `(div (@ (style "padding-left: 7px")) ,(link "twoTableSearch" "Go Back")))]
      [,_ (section "Query failed" `(p ,(exit-reason->english reason)) `(div (@ (style "padding-left: 7px")) ,(link "twoTableSearch" "Go Back")))])))
 
 (define (construct-sql table1 table2 join1 join2 newName db)
@@ -42,10 +42,10 @@
       (cond
        [(or (string=? "(please select a table)" table1)
             (string=? "(please select a table)" table2))
-        (raise "no-table")]
+        (raise 'no-table)]
        [(or (not join1)
             (not join2))
-        (raise "no-join")]))
+        (raise 'no-join)]))
 
     (define (build-join-condition)
       (let ([t1-info (formatCond table1 join1)]
@@ -55,43 +55,19 @@
     (define (build-table-info)
       (string-append " from [" table1 "] join [" table2 "] as " table2alias ))
 
-    (define (quote-identifier s)
-      (let ([op (open-output-string)])
-        (write-char #\" op)
-        (string-for-each
-         (lambda (c)
-           (write-char c op)
-           (when (char=? c #\")
-             (write-char #\" op)))
-         s)
-        (write-char #\" op)
-        (get-output-string op)))
-
     (define (build-new-col)
-      (string-append (formatCond table1 join1) " as " (quote-identifier newName) ", "))
-
-    (define (remove-empty ls)
-    (match ls
-      [(,first . ,rest)
-       (if (string=? first "")
-           (remove-empty rest)
-           (cons first (remove-empty rest)))]
-      [,_ '()]))
-
-    (define (removeTimestamp columns)
-      (if (string-ci=? (car columns) "timestamp")
-          (cdr columns)
-          (cons (car columns) (removeTimestamp (cdr columns)))))
+      (string-append (formatCond table1 join1) " as " (quote-sqlite-identifier newName) ", "))
+    
     (check-request-blank-vals)
     (let* ([t1-cols (get-columns table1 table1 db join1)]
            [t2-cols (get-columns table2 table2alias db join2)]
            [all-cols (append t1-cols t2-cols)]
-           [all-cols (remove-empty all-cols)]
-           [formated-cols (join all-cols ", ")]
+           [all-cols (remq ""  all-cols)]
+           [formatted-cols (join all-cols ", ")]
            [new-col (build-new-col)]
            [table-info (build-table-info)]
            [join-cond (build-join-condition)])
-      (string-append "select " new-col formated-cols table-info join-cond))))
+      (string-append "select " new-col formatted-cols table-info join-cond))))
 
 
 (define (formatCond table column)
@@ -170,12 +146,12 @@
            (tr (td (p "Table 1")) (td ,(make-table-drop-down "t1")) (td (p "Required")))
            (tr (td (p "Table 2")) (td ,(make-table-drop-down "t2")) (td (p "Required")))
            
-           (tr (td (p "Join column 1")) (td ,(make-col-drop-downs db-tables "contJ1" "j1")) (td (p "Select table 1 first") (p "The system combines rows with the same value in this column and join column 2")))
-           (tr (td (p "Join column 2")) (td ,(make-col-drop-downs db-tables "contJ2" "j2")) (td (p "Select table 2 first")))
+           (tr (td (p "Join column 1")) (td ,(make-col-drop-downs db-tables "contJ1" "j1")) (td (p "Select table 1 first.") (p "The system combines rows with the same value in this column and join column 2.")))
+           (tr (td (p "Join column 2")) (td ,(make-col-drop-downs db-tables "contJ2" "j2")) (td (p "Select table 2 first.")))
            
            (tr (td (p "New name for joined columns")) (td (p (textarea (@ (id "newName") (name "newName") (class "textBox")),"")))
              (td (p "Since the two join columns contain the same value, only one of them is displayed.")
-               (p "This feild is the name of that newly created column"))))
+               (p "This field is the name of that newly created column."))))
           (input (@ (name "limit") (class "hidden") (value 100)))
           (input (@ (name "offset") (class "hidden") (value 0)))
           (input (@ (name "type") (class "hidden") (value "")))
@@ -203,8 +179,7 @@ select.addEventListener('change', updateJoin2, false);")
 
 ;;Runs each time page loaded, calls initial-setup or do-query
 (define (dispatch)
-  (let ([keyword (string-param "keyWord" params)]
-        [table1 (string-param "t1" params)]
+  (let ([table1 (string-param "t1" params)]
         [table2 (string-param "t2" params)]
         [join1 (string-param "join1Val" params)]
         [join2 (string-param "join2Val" params)]
@@ -213,12 +188,12 @@ select.addEventListener('change', updateJoin2, false);")
         [offset (integer-param "offset" 0 params)]
         [sql (string-param "sql" params)])
     (unless (user-log-path)
-      (respond `(p "Please select a database first")))
+      (respond `(p "Please select a database first.")))
 
     (match (catch (with-db [db (user-log-path) SQLITE_OPEN_READONLY]
                     (cond
                      [(previous-sql-valid? sql) (do-query db sql limit offset "" (lambda x x))]
-                     [table2
+                     [(and table2 table1)
                       (match (catch
                               (construct-sql table1 table2 join1 join2 (if (string=? newName "") " " newName) db))
                         [#(EXIT ,reason) (respond:error reason)]

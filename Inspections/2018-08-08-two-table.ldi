@@ -13,12 +13,12 @@
 @suggestion Use symbols for error conditions, not strings, because
   they compare with eq?.
 
-@defect In respond:error, end the sentences "You must ..." with
+@fixed In respond:error, end the sentences "You must ..." with
   periods. Similarly for the sentences on lines 173, 174, 178, and 216.
 
-@defect Field and formatted-cols are misspelled.
+@fixed Field and formatted-cols are misspelled.
 
-@suggestion In construct-sql, how do you know that table1 is a string?
+@fixed In construct-sql, how do you know that table1 is a string?
   It could be #f if there is no "t1" parameter. You might guard
   against this on line 221: (and table1 table2).
 
@@ -31,8 +31,9 @@
 @suggestion An edit query button would be useful.
 
 @suggestion `home-link` doesn't appear to be used.
+:reject: Home link is used by do-query in displayQuery
 
-@suggestion Make stringify more efficient in the common cases:
+@fixed Make stringify more efficient in the common cases:
 
   (define (stringify x)
     (cond
@@ -40,13 +41,13 @@
      [(symbol? x) (symbol->string x)]
      [else (format "~a" x)]))
 
-@suggestion The keyword binding in dispatch appears unused.
+@fixed The keyword binding in dispatch appears unused.
 
-@suggestion removeTimestamp appears unused.
+@fixed removeTimestamp appears unused.
 
-@suggestion Use `(remq "" x)` instead of `(remove-empty x)`.
+@fixed Use `(remq "" x)` instead of `(remove-empty x)`.
 
-@suggestion Move quote-identifier to (helpers) as quote-sqlite-identifier.
+@fixed Move quote-identifier to (helpers) as quote-sqlite-identifier.
 
 @suggestion There are several local helper functions duplicated
   throughout the web pages. Consolidate them into (helpers).

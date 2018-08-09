@@ -34,7 +34,16 @@
 (define (respond:error reason)
   (respond
    (match reason
-     [,_ (section "Failed to create a view" `(p "It is possible the application does not have permission to edit the database file, possibly because another program is editing the database.")`(p ,(exit-reason->english reason)))])))
+     ["Invalid Search"
+      (section "Invalid search"
+        `(p "The selected search causes an error in the current database. Therefore, you can't create view of the selected search in the current database. Please select a different search or change the current database.")
+        `(table
+          (tr (td (@ (style "border: 0px solid; padding-left:0px"))
+                ,(link "saved?type=database&sql=&limit=100&offset=0" "Change database"))
+            (td (@ (style "border: 0px solid;"))
+              ,(link "saved?type=search&sql=&limit=100&offset=0" "Back to saved searches")))))]
+
+     [,_ (section "Failed to create a view" `(p "Suggestion: Make sure you have permission to edit this database and that no other programs are editing the database.")`(p ,(exit-reason->english reason)) (link "saved?type=search&sql=&limit=100&offset=0" "Back to saved searches"))])))
 
 (define (instruct sql)
   (respond `(div (@ (style "padding-left:4px;")) (p  "Would you like to create a view out of the results of this search?")
@@ -51,30 +60,21 @@
                     (input (@ (id "sql") (name "sql") (class "hidden") (value ,sql)))
                     (p (button (@ (type "submit")) "Create view")))))))))
 
-(define (create-view sql viewName)
-   (define (quote-identifier s)
-      (let ([op (open-output-string)])
-        (write-char #\" op)
-        (string-for-each
-         (lambda (c)
-           (write-char c op)
-           (when (char=? c #\")
-             (write-char #\" op)))
-         s)
-        (write-char #\" op)
-        (get-output-string op)))
-  (with-db [db (user-log-path) SQLITE_OPEN_READWRITE]
-    (execute-sql db (format "create view ~a as ~a" (quote-identifier viewName) sql)))
+(define (create-view sql viewName db)
+  (execute-sql db (format "create view ~a as ~a" (quote-quote-identifier viewName) sql))
   (respond `(p "A new view was created") `(div  (@ (style "padding-left:4px;")),(link "search"  "Go to search page"))))
 
 
 (define (dispatch)
   (let ([create-clicked (string-param "viewName" params)]
         [sql (string-param "sql" params)])
-    (if create-clicked
-        (match (catch (create-view sql create-clicked))
-          [#(EXIT ,reason) (respond:error reason)]
-          [,value value])
-        (instruct sql))))
+    (with-db [db (user-log-path) SQLITE_OPEN_READWRITE]
+      (match (catch (execute-sql db sql))
+        [#(EXIT ,reason) (respond:error "Invalid Search")]
+        [,val (if create-clicked
+                  (match (catch (create-view sql create-clicked db))
+                    [#(EXIT ,reason) (respond:error reason)]
+                    [,value value])
+                  (instruct sql))]))))
 
 (dispatch)

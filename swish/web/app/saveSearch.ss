@@ -36,7 +36,7 @@
    (match reason
      [,_ (section "insert failed" `(p ,(exit-reason->english reason)))])))
 
-(define (intial-setup)
+(define (initial-setup)
   (let ([sql (get-param "sql")])
     (respond (section "Save search:" `(form (div (@ (style "padding-left: 8px; padding-top: 3px; padding-bottom: 5px;"))
                (table
@@ -58,7 +58,7 @@ values (?, ?, ?)" name desc sql)))
         [sql (string-param "sql" params)])
     (if name
         (save-query name desc sql)
-        (intial-setup))))
+        (initial-setup))))
 
 (dispatch)
 
