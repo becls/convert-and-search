@@ -96,7 +96,7 @@ function updateVal(container, elmId, match){
   var elements = $(container).children();
   var selected = elements.filter('.' + strUser);
   var selectElm = selected[0].children[0];
-  var val = selectElm.options[selectElm.selectedIndex].text
+  var val = selectElm.options[selectElm.selectedIndex].text;
   document.getElementById(elmId).value = val;
 }
 

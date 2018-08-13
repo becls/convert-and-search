@@ -101,14 +101,14 @@
 :reject: It is passed to data->html-table where it is used. However, I fixed the shadowing in get-results
 
 ## swish/web/app/css/components.css
-
+@fixed
   From https://jigsaw.w3.org/css-validator:
   Line 29: background-position only 0 can be a length. You must put a unit after your number: 0 -30
   Line 190: background-color FFA0AF is not a background-color value
 
 ## swish/web/app/js/components.js
 
-@defect Run JSHint.com and fix the warnings. Check all the other javascript files, too.
+@fixed Run JSHint.com and fix the warnings. Check all the other javascript files, too.
 
 ## swish/web/app/js/drop.js
 
@@ -146,4 +146,4 @@
 
 ## swish/web/app/updatePath.ss
 
-@suggestion "computer's memory" => "computer" and "Remove now?" => "Remove this entry now?"
+@fixed "computer's memory" => "computer" and "Remove now?" => "Remove this entry now?"

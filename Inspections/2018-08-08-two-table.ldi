@@ -10,7 +10,7 @@
 :File:      swish/web/app/twoTableSearch.ss
 @nosafety
 
-@suggestion Use symbols for error conditions, not strings, because
+@fixed Use symbols for error conditions, not strings, because
   they compare with eq?.
 
 @fixed In respond:error, end the sentences "You must ..." with
@@ -27,6 +27,7 @@
   symbol so that you don't need to call stringify. Update the pragma
   format statement to use ~a so that it doesn't add quotation marks
   for the string.
+:fix: All suggestions taken as described except collaspisng the nested map. get-columns does not appear to result in a nested map
 
 @suggestion An edit query button would be useful.
 
@@ -49,6 +50,6 @@
 
 @fixed Move quote-identifier to (helpers) as quote-sqlite-identifier.
 
-@suggestion There are several local helper functions duplicated
+@fixed There are several local helper functions duplicated
   throughout the web pages. Consolidate them into (helpers).
 

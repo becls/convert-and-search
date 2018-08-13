@@ -29,6 +29,11 @@
    stringify
    quote-sqlite-identifier
    trim-whitespace
+   column-info
+   get-db-tables
+   remove-tags
+   make-table-drop-down
+   make-col-drop-downs
    flatten)
   (import
    (chezscheme)
@@ -83,6 +88,7 @@
       (else
        (cons (car list) (flatten (cdr list))))))
 
+  ;;SQLite helpers
   (define (quote-sqlite-identifier s)
       (let ([op (open-output-string)])
         (write-char #\" op)
@@ -94,6 +100,60 @@
          s)
         (write-char #\" op)
         (get-output-string op)))
+
+  (define (column-info table-info)
+    (match table-info
+      [#(,_ ,name ,type ,_ ,_ ,_)
+       name]))
+
+  
+
+  (define (remove-tags val)
+  (match val
+    [#(,table-name)
+     (string->symbol table-name)]))
+
+  (define (make-table-drop-down db table-name selected)
+    (let ((tables (map remove-tags
+                    (execute-sql db
+                      "select tbl_name from SQLITE_MASTER where type in (?, ?) order by tbl_name" "table" "view"))))
+      `(select (@ (name ,table-name) (id ,table-name))
+         (option (@ (style "color: grey")) "(please select a table)") 
+         ,@(map (lambda (c) `(option ,(if (string=? selected (stringify c)) `(@ (selected "selected"))) ,(stringify c))) tables))))
+
+  (define (make-col-drop-downs db-tables cont-name drop-name val)
+    (define (db-table->selection table)
+      (match table
+        [(,name . ,columns)
+         `(div (@ (class ,cont-name))
+            (div (@ (class ,(stringify name)))
+              (select (@ (name ,drop-name) (class ,drop-name))
+                (option "")
+                ,@(map column->option columns))))]))
+    (define (column->option column-type)
+      (match column-type
+        [(,column . ,type)
+         `(option ,(if (string=? val (stringify column)) `(@ (selected "selected"))) ,(stringify column))]))
+    `(div
+      ,@(map db-table->selection db-tables)))
+
+  (define (get-db-tables db)
+    (define (table-info master-row)
+      (define (column-info-type table-info)
+        (match table-info
+          [#(,_ ,name ,type ,_ ,_ ,_)
+           (cons (string->symbol name) type)]))
+      (match master-row
+        [#(,table-name)
+         (cons
+          (string->symbol table-name)
+          (map column-info-type
+            (execute-sql db (format "pragma table_info(~s)" table-name))))]))
+    (map table-info
+           (execute-sql db
+             "select tbl_name from SQLITE_MASTER where type in (?, ?) order by tbl_name" "table" "view")))
+
+  
 
   )
 

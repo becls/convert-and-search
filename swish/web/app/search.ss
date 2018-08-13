@@ -120,22 +120,15 @@
 
     (string-append "select " formated-cols " from [" search-table "]" where? (build-search-str) and? time-range except-clause (build-order))))
 
-(define (remove-tags val)
-  (match val
-    [#(,table-name)
-     (string->symbol table-name)]))
 
 (define (get-columns table db)
   (define (table-info master-row)
     (match master-row
       [,table-name
-       (map stringify (map column-info
-                        (execute-sql db (format "pragma table_info(~s)" table-name))))]
+       (map column-info
+                        (execute-sql db (format "pragma table_info(~a)" table-name)))]
       [,_ (raise `Invalid-table)]))
-  (define (column-info table-info)
-    (match table-info
-      [#(,_ ,name ,type ,_ ,_ ,_)
-       (string->symbol name)]))
+
   (table-info table))
 
 
@@ -173,52 +166,14 @@
 ;;Initial setup
 (define (initial-setup db inst table column search-term min max excCol excTerm order desc)
   
-  (define (table-info master-row)
-    (match master-row
-      [#(,table-name)
-       (cons
-        (string->symbol table-name)
-        (map column-info
-          (execute-sql db (format "pragma table_info(~s)" table-name))))]))
-  (define (column-info table-info)
-    (match table-info
-      [#(,_ ,name ,type ,_ ,_ ,_)
-       (cons (string->symbol name) type)]))
-  
-  (define (make-table-drop-down)
-    (let ((tables (map remove-tags (execute-sql db
-                                     "select tbl_name from SQLITE_MASTER where type in (?, ?) order by tbl_name" "table" "view"))))
-      `(select (@ (name "table") (id "table"))
-         (option (@ (style "color: grey")) "(please select a table)") ;;Consider: changing to blank option
-         ,@(map (lambda (c) `(option ,(if (string=? table (stringify c)) `(@ (selected "selected"))) ,(stringify c))) tables))))
-
-  (define (make-col-drop-downs db-tables cont-name drop-name val)
-    (define (db-table->selection table)
-      (match table
-        [(,name . ,columns)
-         `(div (@ (class ,cont-name))
-            (div (@ (class ,(stringify name)))
-              (select (@ (name ,drop-name) (class ,drop-name))
-                (option "")
-                ,@(map column->option columns))))]))
-    (define (column->option column-type)
-      (match column-type
-        [(,column . ,type)
-         `(option ,(if (string=? val (stringify column)) `(@ (selected "selected"))) ,(stringify column))]))
-    `(div
-      ,@(map db-table->selection db-tables)))
-
-  (let ([db-tables
-         (map table-info
-           (execute-sql db
-             "select tbl_name from SQLITE_MASTER where type in (?, ?) order by tbl_name" "table" "view"))])
+  (let ([db-tables (get-db-tables db)])
     (respond
      (section inst
        `(form (@ (method "get") (class "schema"))
           (table
            (tr
              (th (p "Field")) (th (p "Value")) (th (p "Explination")) (th (p "Example")))
-           (tr (td (p "Table")) (td (form ,(make-table-drop-down))) (td (p (@ (style "color:red")) "Required") (p "The table to search")) (td (p "")))
+           (tr (td (p "Table")) (td (form ,(make-table-drop-down db "table" table))) (td (p (@ (style "color:red")) "Required") (p "The table to search")) (td (p "")))
            (tr (td (p "Column")) (td ,(make-col-drop-downs db-tables "container" "cols" column))
              (td (@ (rowspan "2")) (p "Optional, use if you wish to search for a specifc term in a specifc column") (p "Does an exact match search. You can do a keyword search using % to represent don't care characters")) (td (@ (rowspan "2")) (p "Selecting \"Desc\" and entering  \"%light curtain%\" will show you all results where the desc column contains the phrase  \"light curtain\".") (p "You can also use % only at the begining or end, for example \"#%\" returns all results that start with #")))
            (tr (@ (style "background-color: #FaFaFa;")) (td (p "Search term")) (td (p (textarea (@ (id "keyWord") (name "keyWord") (class "textBox")),search-term))))

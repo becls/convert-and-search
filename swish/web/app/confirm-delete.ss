@@ -55,9 +55,9 @@
       [(string=? "searchAll" type)
        (transaction 'log-db (execute "delete from search"))]
       [else  (transaction 'log-db (execute
-                                   (format "delete from ~a where ~a = '~a'" type
+                                   (format "delete from ~a where ~a = ~a" type
                                      (match type ["database" "file_path"] ["search" "sqlite"])
-                                     (string-replace value "'" "''"))))]))
+                                     (quote-sqlite-identifier value))))]))
   (match (catch (do-delete)) 
     [#(EXIT ,reason) (respond `(p ,reason))]
     [,val (return-to-saved)]))

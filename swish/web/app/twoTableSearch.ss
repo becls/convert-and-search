@@ -74,80 +74,35 @@
   (string-append "["  table "].[" column "]"))
 
 
-(define (remove-tags val)
-  (match val
-    [#(,table-name)
-     (string->symbol table-name)]))
+
 
 (define (get-columns table tableAlias db remove-col)
-  (define (table-info master-row)
+  (define (format-table-info master-row)
     (match master-row
       [,table-name
-       (map (lambda(x) (if (string=? (stringify x) remove-col)
+       (map (lambda(x) (if (string=? x remove-col)
                            ""
-                           (string-append "["  tableAlias "].[" (stringify x) "]")))
+                           (string-append "["  tableAlias "].[" x "]")))
          (map column-info
-           (execute-sql db (format "pragma table_info(~s)" table-name))))]
+           (execute-sql db (format "pragma table_info(~a)" table-name))))]
       [,_ (raise "Invalid-table")]))
-  (define (column-info table-info)
-    (match table-info
-      [#(,_ ,name ,type ,_ ,_ ,_)
-       (string->symbol name)]))
-  (table-info table))
+
+  (format-table-info table))
 
 ;;Initial setup
-(define (initial-setup db)
-  (define (table-info master-row)
-    (match master-row
-      [#(,table-name)
-       (cons
-        (string->symbol table-name)
-        (map column-info
-          (execute-sql db (format "pragma table_info(~s)" table-name))))]))
-  (define (column-info table-info)
-    (match table-info
-      [#(,_ ,name ,type ,_ ,_ ,_)
-       (cons (string->symbol name) type)]))
-  
-  (define (make-table-drop-down table-name)
-    (let ((tables (map remove-tags (execute-sql db
-                                     "select tbl_name from SQLITE_MASTER where type in (?, ?) order by tbl_name" "table" "view"))))
-      `(select (@ (name ,table-name) (id ,table-name))
-         (option (@ (style "color: grey")) "(please select a table)")
-         ,@(map (lambda (c) `(option ,(stringify c))) tables))))
-
-  (define (make-col-drop-downs db-tables cont-name drop-name)
-    (define (db-table->selection table)
-      (match table
-        [(,name . ,columns)
-         `(div (@ (class ,cont-name))
-            (div (@ (class ,(stringify name)))
-              (select (@ (name ,drop-name) (class ,drop-name))
-                (option "")
-                ,@(map column->option columns))))]))
-    (define (column->option column-type)
-      (match column-type
-        [(,column . ,type)
-         `(option ,(stringify column))]))
-    `(div
-      ,@(map db-table->selection db-tables)))
-  
-  
-  (let ([db-tables
-         (map table-info
-           (execute-sql db
-             "select tbl_name from SQLITE_MASTER where type in (?, ?) order by tbl_name" "table" "view"))])
+(define (initial-setup db) 
+  (let ([db-tables (get-db-tables db)])
     (respond
      (section "Please enter the following fields"
        `(form (@ (method "get") (class "schema"))
           (table
            (tr (@ (style "text-align:center;"))
              (th (p "Field")) (th (p "Value")) (th (p "Notes")))
-           (tr (td (p "Table 1")) (td ,(make-table-drop-down "t1")) (td (p "Required")))
-           (tr (td (p "Table 2")) (td ,(make-table-drop-down "t2")) (td (p "Required")))
+           (tr (td (p "Table 1")) (td ,(make-table-drop-down db "t1" "")) (td (p "Required")))
+           (tr (td (p "Table 2")) (td ,(make-table-drop-down db "t2" "")) (td (p "Required")))
            
-           (tr (td (p "Join column 1")) (td ,(make-col-drop-downs db-tables "contJ1" "j1")) (td (p "Select table 1 first.") (p "The system combines rows with the same value in this column and join column 2.")))
-           (tr (td (p "Join column 2")) (td ,(make-col-drop-downs db-tables "contJ2" "j2")) (td (p "Select table 2 first.")))
+           (tr (td (p "Join column 1")) (td ,(make-col-drop-downs db-tables "contJ1" "j1" "")) (td (p "Select table 1 first.") (p "The system combines rows with the same value in this column and join column 2.")))
+           (tr (td (p "Join column 2")) (td ,(make-col-drop-downs db-tables "contJ2" "j2" "")) (td (p "Select table 2 first.")))
            
            (tr (td (p "New name for joined columns")) (td (p (textarea (@ (id "newName") (name "newName") (class "textBox")),"")))
              (td (p "Since the two join columns contain the same value, only one of them is displayed.")

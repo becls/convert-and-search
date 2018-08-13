@@ -29,9 +29,9 @@ function AddEvent(elem, type, eventHandle)
   } else if ( elem.attachEvent ) {
     elem.attachEvent("on" + type, eventHandle);
   }
-};
+}
 
-var FunctionStack = new Array();
+var FunctionStack = [];
 var IsOnLoadingSet = false;
 function OnLoad(func)
 {
@@ -41,20 +41,24 @@ function OnLoad(func)
     return;
 
   IsOnLoadingSet = true;
-  AddEvent(window, "load", function(){ DoOnLoad()});
+  AddEvent(window, "load", function(){ DoOnLoad();});
 }
 
 function DoOnLoad()
 {
-  for (x in FunctionStack)
+  for (var x in FunctionStack)
   {
-    func = FunctionStack[x];
-    func();
+    if(typeof x == "function"){
+    	var func = FunctionStack[x];
+    	func();
+    }
   }
 }
 
 function SetWidth()
 {
+  var winW;
+  var winH;
   if (document.body && document.body.offsetWidth) {
     winW = document.body.offsetWidth;
     winH = document.body.offsetHeight;

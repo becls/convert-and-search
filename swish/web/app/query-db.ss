@@ -39,20 +39,7 @@
 
 ;; Home page
 (define (do-home db last-sql)
-  (define (table-info master-row)
-    (match master-row
-      [#(,table-name)
-       (cons
-        (string->symbol table-name)
-        (map column-info
-          (execute-sql db (format "pragma table_info(~s)" table-name))))]))
-  (define (column-info table-info)
-    (match table-info
-      [#(,_ ,name ,type ,_ ,_ ,_)
-       (cons (string->symbol name) type)]))
-  (let ([db-tables
-         (map table-info
-           (execute-sql db "select tbl_name from SQLITE_MASTER where type in (?, ?) order by tbl_name" "table" "view"))])
+  (let ([db-tables (get-db-tables db)])
     (respond
      `(div
        (p "Please enter a SELECT or EXPLAIN statement in "
