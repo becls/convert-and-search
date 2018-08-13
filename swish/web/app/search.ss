@@ -134,16 +134,6 @@
 
 
 (define (edit-setup sql db)
-  (define (get-bracketed priorKeyword)
-    (match (pregexp-match  (format "~a \\[(.*?)]" priorKeyword) sql)
-      [(,full . (,val)) val]
-      [,_ ""]))
-
-  (define (get-quoted priorKeyword)
-    (match (pregexp-match (format "~a \\('(.*?)'" priorKeyword) sql)
-      [(,full . (,val)) val]
-      [,_ ""]))
-
   (define (get-desc)
     (match (pregexp-match "DESC" sql)
       [(,val) #t]
@@ -160,7 +150,7 @@
       [,_ ""]))
 
   
-  (initial-setup db "The system filled in what fields it could from the existing query. If your active database is different than the one used to create the search some fields may be blank" (get-bracketed "from") (get-bracketed "where") (get-quoted "like") (get-quoted "between") (get-quoted "and") (get-exc-col) (get-exc-term) (get-bracketed "by") (get-desc)))
+  (initial-setup db "The system filled in what fields it could from the existing query. If your active database is different than the one used to create the search some fields may be blank" (get-bracketed "from " sql) (get-bracketed "where " sql) (get-quoted "like " sql) (get-quoted "between " sql) (get-quoted "and " sql) (get-exc-col) (get-exc-term) (get-bracketed "by " sql) (get-desc)))
 
 
 ;;Initial setup

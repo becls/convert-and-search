@@ -21,56 +21,23 @@
 ;;; DEALINGS IN THE SOFTWARE.
 
 (http:include "components.ss")
+(import (helpers))
 
 ;; HTML responses
 (define-syntax respond
   (syntax-rules ()
     [(_ c1 c2 ...)
-      (hosted-page (get-page-name) 
-        (list (css-include "css/query-db.css")
-          (js-include "js/jquery-1.4.4.min.js")
-          (js-include "js/query-db.js"))
-        c1 c2 ...)]))
-
-;;Helpers
-(define (stringify x) (format "~a" x))
-
-(define (string-param name)
-    (let ([value (find-param name)])
-      (and value (trim-whitespace value))))
-
-(define (integer-param name min-value)
-    (let* ([string-value (find-param name)]
-           [number-value (and string-value (string->number string-value))])
-      (and string-value
-           (if (and (integer? number-value) (>= number-value min-value))
-               number-value
-               (raise `#(bad-integer-param ,name ,min-value ,number-value))))))
-
-(define (trim-whitespace s)
-  (define (find-start s i len)
-    (cond
-     [(eqv? i len) ""]
-     [(char-whitespace? (string-ref s i)) (find-start s (fx+ i 1) len)]
-     [else (find-end s (fx- len 1) i len)]))
-  (define (find-end s i start len)
-    (cond
-     [(eqv? i start)
-      (if (eqv? len 1)
-          s
-          (string (string-ref s i)))]
-     [(char-whitespace? (string-ref s i)) (find-end s (fx- i 1) start len)]
-     [else
-      (if (and (eqv? start 0) (eqv? (fx- len 1) i))
-          s
-          (substring s start (fx+ i 1)))]))
-  (find-start s 0 (string-length s)))
+     (hosted-page (get-page-name) 
+       (list (css-include "css/query-db.css")
+         (js-include "js/jquery-1.4.4.min.js")
+         (js-include "js/query-db.js"))
+       c1 c2 ...)]))
 
 ;; Running a query
-(define (do-query db sql limit offset type f)
-  (define (nav-form where from-offset enabled?)
+(define (do-query db sql limit offset type f . bindings)
+  (define (nav-form where from-offset enabled? new-sql)
     `(form (@ (name "query") (method "get"))
-       (textarea (@ (name "sql") (class "hidden")) ,sql)
+       (textarea (@ (name "sql") (class "hidden")) ,new-sql)
        (input (@ (name "limit") (class "hidden") (value ,(stringify limit))))
        (input (@ (name "offset") (class "hidden") (value ,(stringify from-offset))))
        (input (@ (name "type") (class "hidden") (value ,(stringify type))))
@@ -78,11 +45,11 @@
                     '(@ (type "submit"))
                     '(@ (type "submit") (disabled)))
          ,(stringify where))))
-  (define (get-results next-row f)
+  (define (get-results next-row func)
     (let lp ([results '()])
       (match (next-row)
         [#f (reverse results)]
-        [,row (lp (cons (f row) results))])))
+        [,row (lp (cons (func row) results))])))
   (define (row->tr row)
     `(tr ,@(map value->td (vector->list row))))
   (define (value->td v)
@@ -90,29 +57,43 @@
            [(bytevector? v) `(i "Binary data")]
            [(not v) "<null>"]
            [else (stringify v)])))
+
+  (define (remove-limit-offset str)
+    (stringify (match (pregexp-match "^(.*?) limit \\d+ offset \\d+$" str)
+      [(,full ,match) match]
+      [(,no-limit) no-limit])))
+
   (match-let*
    ([,stmt (sqlite:prepare db (format "~a limit ? offset ?" sql))]
-    [,_ (sqlite:bind stmt (list limit  offset))]
+    [,_ (sqlite:bind stmt (append bindings (list limit offset)))]
+    [,no-limit (remove-limit-offset (sqlite:expanded-sql stmt))]
     [,results (get-results (lambda () (sqlite:step stmt)) row->tr)]
-    [,count (length results)])
+    [,count (length results)]
+    [,flag (string-param "flag" params)]
+    [,flag (if flag flag "")])
    (if (= count 0)
-       (respond  (section "Query finished" `(p ,(home-link sql))))
+       (respond  (section "Query finished" `(p "Query was:") `(p ,no-limit)
+                   `(p (@ (style "text-decoration: underline;")) "If you expected this query to return results, try checking:")
+                   `(p "Do you have any saved databases?")
+                   `(p "Is the current active database the database you expected?")
+                   `(p "Check for typos in your search") `(p ,(home-link no-limit))))
        (respond
         `(table
           (tr (@ (style "text-align: center;"))
             (td (@ (class "navigation"))
-              ,(nav-form "Previous Page" (max 0 (- offset limit)) (> offset 0)))
+              ,(nav-form "Previous Page" (max 0 (- offset limit)) (> offset 0) no-limit))
             (td (@ (class "navigation"))
               (form (@ (id "rowForm") (method "get"))
-                (textarea (@ (name "sql") (class "hidden")) ,sql)
+                (textarea (@ (name "sql") (class "hidden")) ,no-limit)
                 (input (@ (name "limit") (class "hidden") (value ,(stringify limit))))
                 (input (@ (name "type") (class "hidden") (value ,(stringify type))))
                 (button (@ (id "offsetButton") (type "submit")) "Go to row")
                 (p (input (@ (id "offsetInput") (name "offset") (class "offset"))))))
             (td (@ (class "navigation"))
-              ,(nav-form "Next Page" (+ offset limit) (= count limit)))
+              ,(nav-form "Next Page" (+ offset limit) (= count limit) no-limit))
             (td (@ (class "link"))
-              ,(home-link sql))))
+              ,(home-link no-limit))))
+        `(p (@ (style "text-align: center; color: Red; size: +10; font-weight: bold")),flag)
         (section (format "Rows ~d to ~d" (+ offset 1) (+ offset count))
           (match (cons (sqlite:columns stmt) (sqlite:execute stmt '()))
             [(,cols . ,rows) (data->html-table 1 cols rows f)]))))))
@@ -132,27 +113,20 @@
       `(td (@ (class "wide")) ,text)]
      [else
       (let ([id (symbol->string (gensym))])
-          `(td (@ (class "extra-wide")) (div (@ (class ,(format "elide ~a" c)) (word-break "break-all"))
-            (input (@ (class "elide") (id ,id) (type "checkbox") (checked "yes")))
-            (label (@ (for ,id) (class "elide")) ,text))))])))
-     
-(define (data->html-table border columns rows f)
-  (define (widths ls-cols)
-    (let* ([num-cols (length ls-cols)]
-           [min (round (/ (/ 100 num-cols) 2))]
-           [max (round (* (/ 100 num-cols) 2))])
-      `(@ (max-width ,max) (min-width ,min) )))
+        `(td (@ (class "extra-wide")) (div (@ (class ,(format "elide ~a" c)) (word-break "break-all"))
+                                        (input (@ (class "elide") (id ,id) (type "checkbox") (checked "yes")))
+                                        (label (@ (for ,id) (class "elide")) ,text))))])))
 
-           
+(define (data->html-table border columns rows f)
   (let ([columns (vector->list columns)])
     `(div (@ (class "dataCont"))
-    (table (@ (class "dataTable"))
-     (tbody
-       (tr ,@(map (lambda (c) `(th  ,c)) columns))
-       ,@(map
-          (lambda (row)
-            `(tr ,@(map make-td columns (apply f (vector->list row)))))
-          rows))))))
+       (table (@ (class "dataTable"))
+         (tbody
+          (tr ,@(map (lambda (c) `(th  ,c)) columns))
+          ,@(map
+             (lambda (row)
+               `(tr ,@(map make-td columns (apply f (vector->list row)))))
+             rows))))))
 
 
 
@@ -169,3 +143,4 @@
           (td ,type))]))
   `(div (@ (class "schema"))
      ,@(map db-table->tr db-tables)))
+

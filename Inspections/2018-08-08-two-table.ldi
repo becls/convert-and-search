@@ -29,7 +29,7 @@
   for the string.
 :fix: All suggestions taken as described except collaspisng the nested map. get-columns does not appear to result in a nested map
 
-@suggestion An edit query button would be useful.
+@fixed An edit query button would be useful.
 
 @suggestion `home-link` doesn't appear to be used.
 :reject: Home link is used by do-query in displayQuery

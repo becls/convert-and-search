@@ -20,7 +20,7 @@
 ;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 ;;; DEALINGS IN THE SOFTWARE.
 
-(http:include "displayingQueries.ss")
+(http:include "displayQuery.ss")
 
 ;;HTTP/HTML responses
 (define (get-page-name)
@@ -29,12 +29,6 @@
             ["gen-server" "Gen-server errors"]
             ["supervisor" "Supervisor errors"]
             [,_ (raise "invalid-type")]))
-
-(define (respond:error reason)
-  (respond
-   (match reason
-     ["invalid-type" (section "Fail" `(p "Invalid type"))]
-     [,_ (section "Critical error" `(p ,(exit-reason->english reason)))])))
 
 (define (home-link last-sql)
     (void))
@@ -67,14 +61,12 @@
         (format "~2,'0d:~2,'0d.~3,'0d" minutes seconds milliseconds))))
 
 (define (dispatch)
-  (define (previous-sql-valid? sql)
-    (and sql (not (string=? sql ""))))
-  (let ([limit (integer-param "limit" 0)]
-        [offset (integer-param "offset" 0)]
+  (let ([limit (integer-param "limit" 0 params)]
+        [offset (integer-param "offset" 0 params)]
         [child-sql "SELECT id, name, supervisor, restart_type, type, shutdown, datetime(start/1000,'unixepoch','localtime') as start, duration, killed, reason, null as stack FROM child WHERE reason IS NOT NULL AND reason NOT IN ('normal', 'shutdown') ORDER BY id DESC"]
         [gen-sql "SELECT datetime(timestamp/1000,'unixepoch','localtime') as timestamp, name, last_message, state, reason, null as stack  FROM gen_server_terminating ORDER BY ROWID DESC"]
         [super-sql "SELECT datetime(timestamp/1000,'unixepoch','localtime') as timestamp, supervisor, error_context, reason, child_pid, child_name, null as stack FROM supervisor_error ORDER BY ROWID DESC"]
-        [sql (string-param "sql")]
+        [sql (string-param "sql" params)]
         [child-func  (lambda (id name supervisor restart-type type shutdown start duration killed reason _stack)
                        (let-values ([(reason stack) (get-reason-and-stack reason)])
                          (list id name supervisor restart-type type shutdown start (nice-duration duration)

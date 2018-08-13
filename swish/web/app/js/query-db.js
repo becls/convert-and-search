@@ -76,10 +76,20 @@ function initialupdate(){
   updateVal('div.excCont', 'exec', 'table');  
 }
 
+function joinInitialupdate(){
+  hideAll();
+  updateJoin1();
+  updateJoin2();
+  updateOtherFieldJ1();
+  updateOtherFieldJ2();
+}
+
 function hideAll(){
   $('div.container').children().hide();
   $('div.excCont').children().hide();
   $('div.order-contain').children().hide();
+  $('div.contJ2').children().hide();
+  $('div.contJ1').children().hide();
 }
 
 function updateCont(container, elmId, match){

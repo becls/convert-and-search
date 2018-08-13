@@ -34,7 +34,8 @@
    remove-tags
    make-table-drop-down
    make-col-drop-downs
-   flatten)
+   get-bracketed
+   get-quoted)
   (import
    (chezscheme)
    (swish imports))
@@ -81,12 +82,6 @@
             s
             (substring s start (fx+ i 1)))]))
     (find-start s 0 (string-length s)))
-
-  (define (flatten list)
-    (cond ((null? list) '())
-      ((list? (car list)) (append (flatten (car list)) (flatten (cdr list))))
-      (else
-       (cons (car list) (flatten (cdr list))))))
 
   ;;SQLite helpers
   (define (quote-sqlite-identifier s)
@@ -152,6 +147,16 @@
     (map table-info
            (execute-sql db
              "select tbl_name from SQLITE_MASTER where type in (?, ?) order by tbl_name" "table" "view")))
+
+   (define (get-bracketed priorKeyword sql)
+    (match (pregexp-match  (format "~a\\[(.*?)]" priorKeyword) sql)
+      [(,full . (,val)) val]
+      [,_ ""]))
+
+  (define (get-quoted priorKeyword sql)
+    (match (pregexp-match (format "~a\\('(.*?)'" priorKeyword) sql)
+      [(,full . (,val)) val]
+      [,_ ""]))
 
   
 

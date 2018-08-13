@@ -74,8 +74,6 @@
   (string-append "["  table "].[" column "]"))
 
 
-
-
 (define (get-columns table tableAlias db remove-col)
   (define (format-table-info master-row)
     (match master-row
@@ -89,8 +87,15 @@
 
   (format-table-info table))
 
+(define (edit-setup sql db)
+  (define (get-newName)
+    (match (pregexp-match "as \"(.*?)\"" sql)
+      [(,full . (,val)) val]
+      [,_ ""]))
+  (initial-setup db (get-bracketed "from " sql) (get-bracketed "join " sql) (get-bracketed "where \\[(?:.*?)]\\." sql) (get-bracketed "= \\[(?:.*?)]\\." sql) (get-newName))) 
+
 ;;Initial setup
-(define (initial-setup db) 
+(define (initial-setup db t1 t2 c1 c2 newName) 
   (let ([db-tables (get-db-tables db)])
     (respond
      (section "Please enter the following fields"
@@ -98,13 +103,13 @@
           (table
            (tr (@ (style "text-align:center;"))
              (th (p "Field")) (th (p "Value")) (th (p "Notes")))
-           (tr (td (p "Table 1")) (td ,(make-table-drop-down db "t1" "")) (td (p "Required")))
-           (tr (td (p "Table 2")) (td ,(make-table-drop-down db "t2" "")) (td (p "Required")))
+           (tr (td (p "Table 1")) (td ,(make-table-drop-down db "t1" t1)) (td (p "Required")))
+           (tr (td (p "Table 2")) (td ,(make-table-drop-down db "t2" t2)) (td (p "Required")))
            
-           (tr (td (p "Join column 1")) (td ,(make-col-drop-downs db-tables "contJ1" "j1" "")) (td (p "Select table 1 first.") (p "The system combines rows with the same value in this column and join column 2.")))
-           (tr (td (p "Join column 2")) (td ,(make-col-drop-downs db-tables "contJ2" "j2" "")) (td (p "Select table 2 first.")))
+           (tr (td (p "Join column 1")) (td ,(make-col-drop-downs db-tables "contJ1" "j1" c1)) (td (p "Select table 1 first.") (p "The system combines rows with the same value in this column and join column 2.")))
+           (tr (td (p "Join column 2")) (td ,(make-col-drop-downs db-tables "contJ2" "j2" c2)) (td (p "Select table 2 first.")))
            
-           (tr (td (p "New name for joined columns")) (td (p (textarea (@ (id "newName") (name "newName") (class "textBox")),"")))
+           (tr (td (p "New name for joined columns")) (td (p (textarea (@ (id "newName") (name "newName") (class "textBox")),newName)))
              (td (p "Since the two join columns contain the same value, only one of them is displayed.")
                (p "This field is the name of that newly created column."))))
           (input (@ (name "limit") (class "hidden") (value 100)))
@@ -114,11 +119,12 @@
           (input (@ (id "join2Val") (name "join2Val") (class "hidden") (value "")))
           (p (button (@ (type "submit")) "Run Search"))
           (p (textarea (@ (id "sql") (name "sql") (class "hidden"))))
-          (script "$('div.contJ1').children().hide();
+          (script "
+window.addEventListener('load', joinInitialupdate, false)
 var select = document.getElementById('t1');
 select.addEventListener('change', updateJoin1, false);")
           
-          (script "$('div.contJ2').children().hide();
+          (script "
 var select = document.getElementById('t2');
 select.addEventListener('change', updateJoin2, false);")
           (script "$('.j1').bind('change', updateOtherFieldJ1).trigger('change')")
@@ -128,9 +134,15 @@ select.addEventListener('change', updateJoin2, false);")
        (schema->html db-tables)))))
 
 (define (home-link last-sql)
-  `(a (@ (href ,(format "saveSearch?sql=~a"
-                  (http:percent-encode last-sql))))
-     "Save Search"))
+  `(table
+    (tr (td (@ (style "border: 0px solid;"))
+          (a (@ (href ,(format "saveSearch?sql=~a"
+                         (http:percent-encode last-sql)))) "Save Search"))
+      (td (@ (style "border: 0px solid; background: #FaFaFa;"))
+         (a (@ (href ,(format "twoTableSearch?edit-sql=~a"
+                        (http:percent-encode last-sql)))) "Edit Search"))
+      (td (@ (style "border: 0px solid; background: #FaFaFa;"))
+        (a (@ (href ,(format "export?inst=&sql=~a" (http:percent-encode last-sql)))) "Export Search")))))
 
 ;;Runs each time page loaded, calls initial-setup or do-query
 (define (dispatch)
@@ -141,7 +153,8 @@ select.addEventListener('change', updateJoin2, false);")
         [newName (string-param "newName" params)]
         [limit (integer-param "limit" 0 params)]
         [offset (integer-param "offset" 0 params)]
-        [sql (string-param "sql" params)])
+        [sql (string-param "sql" params)]
+        [edit-sql (string-param "edit-sql" params)])
     (unless (user-log-path)
       (respond `(p "Please select a database first.")))
 
@@ -152,10 +165,12 @@ select.addEventListener('change', updateJoin2, false);")
                       (match (catch
                               (construct-sql table1 table2 join1 join2 (if (string=? newName "") " " newName) db))
                         [#(EXIT ,reason) (respond:error reason)]
+                        #;[,value (respond `(p ,value))]
                         [,value (match (catch (do-query db value limit offset "" (lambda x x)))
                                   [#(EXIT ,reason) (respond:error reason)]
                                   [,val val])])]
-                     [else (initial-setup db)]))))))
+                     [edit-sql (edit-setup edit-sql db)]
+                     [else (initial-setup db "" "" "" "" "")]))))))
 
 
 (dispatch)

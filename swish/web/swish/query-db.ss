@@ -20,22 +20,13 @@
 ;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 ;;; DEALINGS IN THE SOFTWARE.
 
-(http:include "displayingQueries.ss")
+(http:include "displayQuery.ss")
 
 ;; HTTP/HTML responses
 
 (define (get-page-name)
   "Log database query")
 
-(define (respond:error reason sql)
-  (respond
-   (match reason
-     [#(db-query-failed empty-query ,sql)
-      (section "No query given" `(p ,sql))]
-     [#(db-query-failed not-a-query ,sql)
-      (section "Not a SELECT or EXPLAIN statement" `(p ,sql))]
-     [,_
-      (section "Query failed" `(p ,(exit-reason->english reason)))])))
 
 ;; Home page
 
@@ -95,10 +86,10 @@
 ;; Dispatching requests
 
 (define (dispatch)
-  (let ([sql (string-param "sql")]
-        [last-sql (string-param "lastSql")]
-        [limit (integer-param "limit" 0)]
-        [offset (integer-param "offset" 0)])
+  (let ([sql (string-param "sql" params)]
+        [last-sql (string-param "lastSql" params)]
+        [limit (integer-param "limit" 0 params)]
+        [offset (integer-param "offset" 0 params)])
     (with-db [db (log-file) SQLITE_OPEN_READONLY]
       (if sql
           (match (catch (check-run-query db sql limit offset))
