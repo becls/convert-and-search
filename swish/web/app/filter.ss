@@ -45,7 +45,10 @@
 
      [,_ (section "Failed to create a view" `(p "Suggestion: Make sure you have permission to edit this database and that no other programs are editing the database.")`(p ,(exit-reason->english reason)) (link "saved?type=search&sql=&limit=100&offset=0" "Back to saved searches"))])))
 
-(define (instruct sql)
+(define (instruct sql db)
+  (match (catch (execute-sql db (format "~a limit 1" sql)))
+        [#(EXIT ,reason) (respond:error "Invalid Search")]
+        [,val
   (respond `(div (@ (style "padding-left:4px;")) (p  "Would you like to create a view out of the results of this search?")
               (p "This is similar to creating a table in the active database from the search results.")
               (p "The selected search is:")
@@ -58,10 +61,10 @@
          (table (tr (td (@ (class "nav")) ,(link "saved?type=search&sql=&limit=100&offset=0" "Cancel"))
                   (td (@ (class "nav"))
                     (input (@ (id "sql") (name "sql") (class "hidden") (value ,sql)))
-                    (p (button (@ (type "submit")) "Create view")))))))))
+                    (p (button (@ (type "submit")) "Create view"))))))))]))
 
 (define (create-view sql viewName db)
-  (execute-sql db (format "create view ~a as ~a" (quote-quote-identifier viewName) sql))
+  (execute-sql db (format "create view ~a as ~a" (quote-sqlite-identifier viewName) sql))
   (respond `(p "A new view was created") `(div  (@ (style "padding-left:4px;")),(link "search"  "Go to search page"))))
 
 
@@ -69,12 +72,10 @@
   (let ([create-clicked (string-param "viewName" params)]
         [sql (string-param "sql" params)])
     (with-db [db (user-log-path) SQLITE_OPEN_READWRITE]
-      (match (catch (execute-sql db sql))
-        [#(EXIT ,reason) (respond:error "Invalid Search")]
-        [,val (if create-clicked
+       (if create-clicked
                   (match (catch (create-view sql create-clicked db))
                     [#(EXIT ,reason) (respond:error reason)]
                     [,value value])
-                  (instruct sql))]))))
+                  (instruct sql db)))))
 
 (dispatch)

@@ -43,8 +43,8 @@
        [(or (string=? "(please select a table)" table1)
             (string=? "(please select a table)" table2))
         (raise 'no-table)]
-       [(or (not join1)
-            (not join2))
+       [(or (string=? "" join1)
+            (string=? "" join2))
         (raise 'no-join)]))
 
     (define (build-join-condition)
@@ -82,7 +82,7 @@
                            ""
                            (string-append "["  tableAlias "].[" x "]")))
          (map column-info
-           (execute-sql db (format "pragma table_info(~a)" table-name))))]
+           (execute-sql db (format "pragma table_info(~a)" (quote-sqlite-identifier table-name)))))]
       [,_ (raise "Invalid-table")]))
 
   (format-table-info table))
@@ -163,9 +163,8 @@ select.addEventListener('change', updateJoin2, false);")
                      [(previous-sql-valid? sql) (do-query db sql limit offset "" (lambda x x))]
                      [(and table2 table1)
                       (match (catch
-                              (construct-sql table1 table2 join1 join2 (if (string=? newName "") " " newName) db))
+                              (construct-sql table1 table2 join1 join2 (if (string=? newName "") "\"\"" newName) db))
                         [#(EXIT ,reason) (respond:error reason)]
-                        #;[,value (respond `(p ,value))]
                         [,value (match (catch (do-query db value limit offset "" (lambda x x)))
                                   [#(EXIT ,reason) (respond:error reason)]
                                   [,val val])])]

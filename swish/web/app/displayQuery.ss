@@ -122,7 +122,7 @@
     `(div (@ (class "dataCont"))
        (table (@ (class "dataTable"))
          (tbody
-          (tr ,@(map (lambda (c) `(th  ,c)) columns))
+          (tr ,@(map (lambda (c) `(th  (@ (style "max-width: 100px;")) ,c)) columns))
           ,@(map
              (lambda (row)
                `(tr ,@(map make-td columns (apply f (vector->list row)))))

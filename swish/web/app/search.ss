@@ -107,6 +107,7 @@
     (not (string=? "" str)))
 
   (check-request-blank-vals)
+  
   (let* ([all-cols (get-columns search-table db)]
          [timed? (or (member "timestamp" all-cols) (member "dateTime" all-cols))]
          [time-range (build-time-range all-cols)]
@@ -114,10 +115,10 @@
          [and? (if (and (has-value search-column) (has-value range-min)) " and " "")]
          [formated-cols (format-cols all-cols)]
          [except-clause (build-except formated-cols)])
-    
     (if (and (has-value time-range) (not timed?))
         (raise `no-timestamp))
 
+    
     (string-append "select " formated-cols " from [" search-table "]" where? (build-search-str) and? time-range except-clause (build-order))))
 
 
@@ -126,9 +127,8 @@
     (match master-row
       [,table-name
        (map column-info
-                        (execute-sql db (format "pragma table_info(~a)" table-name)))]
+         (execute-sql db (format "pragma table_info(~a)" (quote-sqlite-identifier table-name))))]
       [,_ (raise `Invalid-table)]))
-
   (table-info table))
 
 
@@ -234,7 +234,6 @@ select.addEventListener('click', updateDrops, false);")
         [edit-sql (string-param "edit-sql" params)])
     (unless (user-log-path)
       (respond `(p "Please select a database first")))
-    
 
     (match (catch (with-db [db (user-log-path) SQLITE_OPEN_READONLY]
                     (cond

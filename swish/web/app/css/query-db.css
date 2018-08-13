@@ -60,8 +60,8 @@ textarea.sql {
 }
 
 .narrow{
-    max-width: 150px;
     min-width: 0px;
+    max-width: 150px;
 }
 
 .normal{
