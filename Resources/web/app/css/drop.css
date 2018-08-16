@@ -1,0 +1,17 @@
+table {
+    word-break: break-all;
+}
+
+table th.resizing{
+    resize: both;
+}
+
+.work {
+    overflow: auto;
+    resize: both;
+    width: 100%;
+}
+
+
+
+
