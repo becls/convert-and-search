@@ -46,8 +46,8 @@
 (define (dispatch)
   (let ([limit (integer-param "limit" 0 params)]
         [offset (integer-param "offset" 0 params)]
-        [search-sql "Select name, description, sqlite, null as [Edit], null as [Export],null as [Create view], null as [Delete] from search order by name collate nocase"]
-        [data-sql "Select name, description, file_path, null as [delete] from database order by name collate nocase"]
+        [search-sql "Select Name, Description, SQLite, null as [Edit], null as [Export],null as [Create view], null as [Delete] from search order by name collate nocase"]
+        [data-sql "Select Name, Description, File_Path, null as [Delete] from database order by name collate nocase"]
         [type (get-param "type")]
         [sql (string-param "sql" params)]
         [search-func (lambda (name desc sqlite edit export view delete)

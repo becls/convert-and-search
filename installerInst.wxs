@@ -42,7 +42,8 @@
                 <File Id="filF44CF9CD5FCB44DAEAD0A90C39993DEE"
                       KeyPath="yes"
                       Source="Infozam-win32-x64\Infozam.exe">
-                  
+                  <Shortcut Id="startmenuInfozam" Directory="ProgramMenuDir" Name="Infozam" WorkingDirectory='INSTALLDIR' Icon="Infozam.exe" IconIndex="0" Advertise="yes" />
+                <Shortcut Id="desktopInfozam" Directory="DesktopFolder" Name="Infozam" WorkingDirectory='INSTALLDIR' Icon="Infozam.exe" IconIndex="0" Advertise="yes" />
                 </File>
             </Component>
             <Component Id="cmp8AB6382503E9553F275CD99C808B03C8"  Guid="{8DEA2F4C-3FE7-4F94-A1F7-C5E3A54E0D6C}">
@@ -103,9 +104,6 @@
             </Component>
             <Component Id="cmp70A42108A833E8DD15374A8D90A462DA"  Guid="{DB504FDE-98C6-4757-91EB-563481D673D3}">
                 <File Id="filC0FE61DF18BAF1CE4FCBB3F3FF25A022" KeyPath="yes" Source="Infozam-win32-x64\resources\electron.asar" />
-            </Component>
-            <Component Id="cmpE744FBAEF06B372F8E617AFA9447AEC0"  Guid="{168B1297-353A-48B3-B69E-1BE5DDB0D1E4}">
-                <File Id="filEB7BF784AE1BF4BBA343B69DE7B3408C" KeyPath="yes" Source="Infozam-win32-x64\resources\go" />
             </Component>
 
             <Directory Id='srcDir' Name='src'>
@@ -233,7 +231,7 @@
             </Directory>
           </Directory>
 
-            <Directory Id='swishDir' Name='Swish'>
+            <Directory Id='swishDir' Name='swish'>
             <Component Id="cmp101821525B2147BDA8AED55E202D19DA"  Guid="{F67B49A0-B111-47D0-9CD9-4D37C2694576}">
                 <File Id="filDD4E45D3128A4C86E96F70C546B78418" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\charts.ss" />
             </Component>
@@ -264,6 +262,8 @@
             <Component Id="cmpDB205C201E072D46116E010F25415425" Guid="{A819023D-D2E7-4EE8-96A0-D2E893AF2308}">
                 <File Id="fil707B92A2AB7726F3F6C119B4369D072D" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\reboot.ss" />
             </Component>
+
+            <Directory Id='cssDir' Name='css'>
             <Component Id="cmp004EF69047975DEC6A14C0CF2445B58E"  Guid="{2D543E2B-2125-4177-9F1D-E7B029577DB5}">
                 <File Id="fil9B4796BCCFD7C3A8C4A9A69A7B3F82C9" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\css\charts.css" />
             </Component>
@@ -282,6 +282,9 @@
             <Component Id="cmp1E16209F598037C6C14742DB6B59840B"  Guid="{EF3FBD48-9AA0-4DD4-B48B-2B43632D9B50}">
                 <File Id="fil6379442878469466E46ED82FF459A055" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\css\sub-rounded-panel-header.png" />
             </Component>
+            </Directory>
+            
+            <Directory Id='jsDir' Name='js'>
             <Component Id="cmpDA1DB8A5F4F015E32127C0275B95B730"  Guid="{1FD8B490-3CEF-47BB-9354-782786EC5B4B}">
                 <File Id="filE1EAAB4B59946CAD6817B1008E82FFC8" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\js\components.js" />
             </Component>
@@ -297,6 +300,7 @@
     </Directory>
   </Directory>
 </Directory>
+</Directory>
 
     <Directory Id="ProgramMenuFolder" Name="Programs">
         <Directory Id="ProgramMenuDir" Name="Infozam">
@@ -305,7 +309,8 @@
             <RegistryValue Root='HKCU' Key='Software\BeckManCoulter\Infozam' Type='string' Value='' KeyPath='yes' />
           </Component>
         </Directory>
-      </Directory>
+    </Directory>
+    <Directory Id="DesktopFolder" Name="Desktop" />
   </Directory>
 
     <Feature Id='Complete' Level='1'>
@@ -335,7 +340,6 @@
 <ComponentRef Id='cmp061BA1EB93D21D4B61AF50CE558DCEE0' />
 <ComponentRef Id='cmp8B381B10015D2D5B8B89A9ABABC7FA11' />
 <ComponentRef Id='cmp70A42108A833E8DD15374A8D90A462DA' />
-<ComponentRef Id='cmpE744FBAEF06B372F8E617AFA9447AEC0' />
 <ComponentRef Id='cmp1CC561FAE35C25827726FDE48596A46A' />
 <ComponentRef Id='cmpA6BE2E5AA3B3B5ED3AC6AA421F91E944' />
 <ComponentRef Id='cmp28F5C0A8AC99BC4E0C5064227FD7BB75' />
@@ -396,6 +400,7 @@
     </Feature>
 
 
-
+    <Icon Id="Infozam.exe" SourceFile="Infozam-win32-x64\Infozam.exe" />
+    
   </Product>
 </Wix>

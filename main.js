@@ -5,8 +5,9 @@ var path = require('path');
 const fixPath = require('fix-path');
 fixPath();
 const spawn = require('cross-spawn');
-//const child = spawn('resources\\app\\swish\\convert.exe', {detached: true});
-const child = spawn('swish\\convert.exe', {detached: true});
+const child = spawn('resources\\convert.exe', {detached: true});
+//const child = spawn('swish\\convert.exe', {detached: true});
+
 
 let mainWindow
 
@@ -31,6 +32,7 @@ function createWindow () {
 				  backgroundColor: '#283A4E'})
   mainWindow.maximize()
   mainWindow.show()
+
 
   try{
     mainWindow.loadURL('http://127.0.0.1:54321');

@@ -50,13 +50,13 @@
     (define (build-join-condition)
       (let ([t1-info (formatCond table1 join1)]
             [t2-info (formatCond table2alias join2)])
-        (string-append " where "  t1-info " = " t2-info)))
+        (string-append " WHERE "  t1-info " = " t2-info)))
 
     (define (build-table-info)
-      (string-append " from [" table1 "] join [" table2 "] as " table2alias ))
+      (string-append " FROM [" table1 "] JOIN [" table2 "] AS " table2alias ))
 
     (define (build-new-col)
-      (string-append (formatCond table1 join1) " as " (quote-sqlite-identifier newName) ", "))
+      (string-append (formatCond table1 join1) " AS " (quote-sqlite-identifier newName) ", "))
     
     (check-request-blank-vals)
     (let* ([t1-cols (get-columns table1 table1 db join1)]
@@ -67,7 +67,7 @@
            [new-col (build-new-col)]
            [table-info (build-table-info)]
            [join-cond (build-join-condition)])
-      (string-append "select " new-col formatted-cols table-info join-cond))))
+      (string-append "SELECT " new-col formatted-cols table-info join-cond))))
 
 
 (define (formatCond table column)
@@ -89,7 +89,7 @@
 
 (define (edit-setup sql db)
   (define (get-newName)
-    (match (pregexp-match "as \"(.*?)\"" sql)
+    (match (pregexp-match "(?i:as) \"(.*?)\"" sql)
       [(,full . (,val)) val]
       [,_ ""]))
   (initial-setup db (get-bracketed "from " sql) (get-bracketed "join " sql) (get-bracketed "where \\[(?:.*?)]\\." sql) (get-bracketed "= \\[(?:.*?)]\\." sql) (get-newName))) 
@@ -158,7 +158,7 @@ select.addEventListener('change', updateJoin2, false);")
     (unless (user-log-path)
       (respond `(p "Please select a database first.")))
 
-    (match (catch (with-db [db (user-log-path) SQLITE_OPEN_READONLY]
+    (catch (with-db [db (user-log-path) SQLITE_OPEN_READONLY]
                     (cond
                      [(previous-sql-valid? sql) (do-query db sql limit offset "" (lambda x x))]
                      [(and table2 table1)
@@ -169,7 +169,7 @@ select.addEventListener('change', updateJoin2, false);")
                                   [#(EXIT ,reason) (respond:error reason)]
                                   [,val val])])]
                      [edit-sql (edit-setup edit-sql db)]
-                     [else (initial-setup db "" "" "" "" "")]))))))
+                     [else (initial-setup db "" "" "" "" "")])))))
 
 
 (dispatch)

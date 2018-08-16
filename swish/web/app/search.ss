@@ -32,15 +32,15 @@
 (define (respond:error reason)
   (respond
    (match reason
-     [no-table (section "Search failed" `(p "You must select a table") (link "Search" "Go Back"))]
+     [no-table (section "Search failed" `(p "You must select a table.") (link "Search" "Go Back"))]
      
-     [search-term-or-column-empty (section "Search failed" `(p "If you specify a column, you must specify a search term. Similarly, if you specify a search term you must specify a column")(link "Search" "Go Back"))]
+     [search-term-or-column-empty (section "Search failed" `(p "If you specify a column, you must specify a search term. Similarly, if you specify a search term you must specify a column.")(link "Search" "Go Back"))]
 
-     [min-or-max-empty (section "Search failed" `(p "You must enter both a min and a max if you want to limit by time")(link "Search" "Go Back"))]
+     [min-or-max-empty (section "Search failed" `(p "You must enter both a min and a max if you want to limit by time.")(link "Search" "Go Back"))]
 
-     [exc-empty (section "Search failed" `(p "If you specify an exclude column, you must specify an exclude term. Similarly, if you specify an exclude term you must specify an exclude column")(link "Search" "Go Back"))]
+     [exc-empty (section "Search failed" `(p "If you specify an exclude column, you must specify an exclude term. Similarly, if you specify an exclude term you must specify an exclude column.")(link "Search" "Go Back"))]
      
-     [no-timestamp (section "Search failed: no timestamp" `(p "Please select a table with that has a column named timestamp in order to search by timestamp")(link "Search" "Go Back"))]
+     [no-timestamp (section "Search failed: no timestamp" `(p "Please select a table with that has a column named timestamp in order to search by timestamp.")(link "Search" "Go Back"))]
      
      [,_
       (section "Query failed" `(p "Suggestion: Check the current database is the correct database") `(p ,(exit-reason->english reason)) (link "Search" "Go Back"))])))
@@ -101,7 +101,7 @@
   (define (build-except cols)
     (if (string=? exc-col "")
         ""
-        (string-append " Except Select " cols " from [" search-table "] where [" exc-col "] like (?)"))) 
+        (string-append " EXCEPT SELECT " cols " FROM [" search-table "] WHERE [" exc-col "] LIKE (?)"))) 
 
   (define (has-value str)
     (not (string=? "" str)))
@@ -111,15 +111,15 @@
   (let* ([all-cols (get-columns search-table db)]
          [timed? (or (member "timestamp" all-cols) (member "dateTime" all-cols))]
          [time-range (build-time-range all-cols)]
-         [where? (if (or (has-value search-column) (has-value range-min)) " where " "")]
-         [and? (if (and (has-value search-column) (has-value range-min)) " and " "")]
+         [where? (if (or (has-value search-column) (has-value range-min)) " WHERE " "")]
+         [and? (if (and (has-value search-column) (has-value range-min)) " AND " "")]
          [formated-cols (format-cols all-cols)]
          [except-clause (build-except formated-cols)])
     (if (and (has-value time-range) (not timed?))
         (raise `no-timestamp))
 
     
-    (string-append "select " formated-cols " from [" search-table "]" where? (build-search-str) and? time-range except-clause (build-order))))
+    (string-append "SELECT " formated-cols " FROM [" search-table "]" where? (build-search-str) and? time-range except-clause (build-order))))
 
 
 (define (get-columns table db)
@@ -140,17 +140,17 @@
       [,_ #f]))
 
   (define (get-exc-col)
-    (match (pregexp-match "Except (?:.*?) where \\[(.*?)]" sql)
+    (match (pregexp-match "(?i:Except) (?:.*?) (?i:where) \\[(.*?)]" sql)
       [(,full . (,val)) val]
       [,_ ""]))
 
   (define (get-exc-term)
-    (match (pregexp-match "Except (?:.*?) like \\('(.*?)'" sql)
+    (match (pregexp-match "(?i:Except) (?:.*?) (?i:like) \\('(.*?)'" sql)
       [(,full . (,val)) val]
       [,_ ""]))
 
   
-  (initial-setup db "The system filled in what fields it could from the existing query. If your active database is different than the one used to create the search some fields may be blank" (get-bracketed "from " sql) (get-bracketed "where " sql) (get-quoted "like " sql) (get-quoted "between " sql) (get-quoted "and " sql) (get-exc-col) (get-exc-term) (get-bracketed "by " sql) (get-desc)))
+  (initial-setup db "The system filled in what fields it could from the existing query. If your active database is different than the one used to create the search some fields may be blank." (get-bracketed "from " sql) (get-bracketed "where " sql) (get-quoted "like " sql) (get-quoted "between " sql) (get-quoted "and " sql) (get-exc-col) (get-exc-term) (get-bracketed "by " sql) (get-desc)))
 
 
 ;;Initial setup
@@ -163,26 +163,26 @@
           (table
            (tr
              (th (p "Field")) (th (p "Value")) (th (p "Explination")) (th (p "Example")))
-           (tr (td (p "Table")) (td (form ,(make-table-drop-down db "table" table))) (td (p (@ (style "color:red")) "Required") (p "The table to search")) (td (p "")))
+           (tr (td (p "Table")) (td (form ,(make-table-drop-down db "table" table))) (td (p (@ (style "color:red")) "Required") (p "The table to search.")) (td (p "")))
            (tr (td (p "Column")) (td ,(make-col-drop-downs db-tables "container" "cols" column))
-             (td (@ (rowspan "2")) (p "Optional, use if you wish to search for a specifc term in a specifc column") (p "Does an exact match search. You can do a keyword search using % to represent don't care characters")) (td (@ (rowspan "2")) (p "Selecting \"Desc\" and entering  \"%light curtain%\" will show you all results where the desc column contains the phrase  \"light curtain\".") (p "You can also use % only at the begining or end, for example \"#%\" returns all results that start with #")))
+             (td (@ (rowspan "2")) (p "Optional, use if you wish to search for a specifc term in a specifc column.") (p "Does an exact match search. You can do a keyword search using % to represent don't care characters.")) (td (@ (rowspan "2")) (p "Selecting \"Desc\" and entering  \"%light curtain%\" will show you all results where the desc column contains the phrase  \"light curtain\".") (p "You can also use % only at the begining or end, for example \"#%\" returns all results that start with #.")))
            (tr (@ (style "background-color: #FaFaFa;")) (td (p "Search term")) (td (p (textarea (@ (id "keyWord") (name "keyWord") (class "textBox")),search-term))))
 
            (tr (@ (style "background-color: #DDE;")) (td (p "Exclude column")) (td ,(make-col-drop-downs db-tables "excCont" "excCol" excCol))
-             (td  (@ (rowspan "2"))(p "Optional, similar to the above two rows, except excludes results from the search that match this condition") (p "Still shows this column, just not the rows that match the condition") (p "Same guidelines as above for the keyword")) (td (@ (rowspan "2")) (p "Selecting \"Method\" and entering  \"Clinical%\" will remove all rows where the method name starts with clinical")))
+             (td  (@ (rowspan "2"))(p "Optional, similar to the above two rows, except excludes results from the search that match this condition.") (p "Still shows this column, just not the rows that match the condition.") (p "Same guidelines as above for the keyword.")) (td (@ (rowspan "2")) (p "Selecting \"Method\" and entering  \"Clinical%\" will remove all rows where the method name starts with clinical.")))
            (tr (td (p "Exclude term")) (td (p (textarea (@ (id "execTerm") (name "execTerm") (class "textBox")) ,excTerm))))
            
            (tr (td (p "Minimum date-time"))
              (td (p (textarea (@ (id "min") (name "min") (class "textBox")),min)))
-             (td (@ (rowspan "2")) (p "Optional, limits the time range of results shown") (p "Inclusive")
-               (p "Table must include a column labeled eaither \"timestamp\" or \"dateTime\""))
-             (td (@ (rowspan "2"))(p "Formats:  yyyy-mm-dd HH:MM:SS or yyyy-mm-dd") (p "For example, 2018-06-17 15:38:59")))
+             (td (@ (rowspan "2")) (p "Optional, limits the time range of results shown.") (p "Inclusive")
+               (p "Table must include a column labeled eaither \"timestamp\" or \"dateTime\"."))
+             (td (@ (rowspan "2"))(p "Formats:  yyyy-mm-dd HH:MM:SS or yyyy-mm-dd.") (p "For example, 2018-06-17 15:38:59")))
            (tr (@ (style "background-color: #FaFaFa;"))
              (td (p "Maximum date-time")) (td (p (textarea (@ (id "max") (name "max") (class "textBox")),max))))
-           (tr (@ (style "background-color: #DDE;")) (td (p "Order by")) (td ,(make-col-drop-downs db-tables "order-contain" "orders" order)) (td (p "Optional, defaults to the order entered into the database")) (td (p ""))) 
+           (tr (@ (style "background-color: #DDE;")) (td (p "Order by")) (td ,(make-col-drop-downs db-tables "order-contain" "orders" order)) (td (p "Optional, defaults to the order entered into the database.")) (td (p ""))) 
            (tr (@ (style "background-color: #FaFaFa;")) (td (p "Desc")) (td (label (@ (class "checkbox-inline"))
                                      (input (@ (name "desc")
-                                               (type "checkbox") ,(if desc `(checked)))))) (td (p "If left order by blank, shows most recent first")) (td (p ""))))
+                                               (type "checkbox") ,(if desc `(checked)))))) (td (p "If left order by blank, shows most recent first.")) (td (p ""))))
           (input (@ (name "limit") (class "hidden") (value 100)))
           (input (@ (name "offset") (class "hidden") (value 0)))
           (input (@ (name "type") (class "hidden") (value "")))

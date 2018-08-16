@@ -52,15 +52,16 @@ application is closed Swish is also closed.
 \subsection*{Information Storage and Database Access}
 At any given time, the application is connected to two databases: the
 user selected database and the Swish log database. The user-selected
-database is used by the two types of searches and is never edited.
+database is used by the two types of searches and is only edited if
+the user creates a view.
 
 The Swish log file is modified during initial setup in order to facilitate storing
 databases and searches. The setup process adds two tables,
 one for databases and one for searches. Activities that refer to saved
   searches or databases use these tables. Unlike the user-selected database,
-the Swish log file can be edited, such as when the user saves a
+the Swish log file is often edited, such as when the user saves a
 search.
-
+q1
 \subsection*{Searcher}
 The goal behind the different search pages is to provide the user maximum
 flexibility while still providing an easy to use interface. The user

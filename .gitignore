@@ -8,6 +8,8 @@
 /swish/src/data/
 /Builds/
 *drop.ss
+*.msi
+*.wix*
 *.wpo
 *.so
 *#*#

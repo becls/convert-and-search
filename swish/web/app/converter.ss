@@ -44,18 +44,28 @@
   (respond
    `(form
      (table (tr (td (@ (style "border: 0px solid; padding-left: 0px")) (table (tr (th (p "Field")) (th (p "Value")))
-                       (tr (td (p "Folder to convert")) (td (p (input (@ (name "folder") (class "path") (type "file") (webkitdirectory) (mozdirectory) (id "folder"))))))
-                       (tr (td (p "Destination folder")) (td (p (input (@ (name "dest") (class "path") (type "file") (webkitdirectory) (mozdirectory) (id "dest"))))))
+                       (tr (td (p "Folder to convert")) (td (p (input (@ (name "folder") (class "path") (type "button") (value "Choose a folder") (id "folder"))))))
+                       (tr (td (p "Destination folder")) (td (p (input (@ (name "dest") (class "path") (type "button") (value "Choose a folder")  (id "dest"))))))
                        (tr (td (p "New file name")) (td (p (textarea (@ (name "name")) ""))))))
               (td (@ (style "border: 0px solid;")) (table (tr (th (@ (style "border: 0px solid; background: #FaFaFa;")) (h1 (@ (style "text-decoration: underline;" )) "Help"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formating"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Generated database setup")))))))
      (input (@ (id "folder-path") (name "folder-path") (class "hidden")))
      (input (@ (id "dest-path") (name "dest-path") (class "hidden")))
-     (script "function func(){var x = document.getElementById('folder').files[0].path;
-document.getElementById('folder-path').value = x} $('.path').bind('change', func).trigger('change')")
-     (script "function func(){var x = document.getElementById('dest').files[0].path;
-document.getElementById('dest-path').value = x} $('.path').bind('change', func).trigger('change')")
+     (script "var app = require('electron').remote; 
+            var dialog = app.dialog;
+            var fs = require('fs');
+document.getElementById('folder').addEventListener('click', function(){
+dialog.showOpenDialog({title:\"Select a folder\",
+    properties: [\"openDirectory\"]}, function (fileNames){
+ document.getElementById('folder-path').value = fileNames;})});
+
+document.getElementById('dest').addEventListener('click', function(){
+dialog.showOpenDialog({title:\"Select a folder\",
+    properties: [\"openDirectory\"]}, function (fileNames){
+ document.getElementById('dest-path').value = fileNames;})});")
+
    (p (button (@ (type "submit")) "Convert")))
    `(p (@ (style "padding-left: 5px; padding-top:7px;")) "Depending on folder size the conversion may take a few minutes. If you leave this page the conversion will continue in the background. If you stay on this page you will be notified when the conversion is complete.")))
+
 
 (define (file-explain)
   (respond (section "Expected file formating:"
@@ -110,7 +120,8 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
 
 
 ;;Conversion related functions
-(define file-name (pregexp "([A-z ]*[0-9]?[A-z ]+)[0-9]+.*(?i:\\.log)"))
+;;(define file-name (pregexp "([A-z ]*[0-9]?[A-z ]+)[0-9]+.*(?i:\\.log)"))
+(define file-name (pregexp "(.+?)[-0-9\\/ .]*(?i:\\.log)"))
 (define (processfile table-name file-path db prepared-insert header-insert)
   (let* ([ip (open-file-to-read file-path)]
          [op (open-output-string)])
@@ -218,7 +229,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
 
                [else ;Need to create table and prepare statment
                 (let*  ([table (create-table short-name)]
-                        [prepared-insert (sqlite:prepare db (format "insert into ~a ([Run number], Method, dateTime, desc) values (?, ?, ?, ?)" short-name))]
+                        [prepared-insert (sqlite:prepare db (format "insert into ~a ([Run number], Method, dateTime, desc) values (?, ?, ?, ?)" (quote-sqlite-identifier short-name)))]
                         [new-table (cons short-name prepared-insert)])
                   (processfile short-name path db prepared-insert header-insert)
                   (process-each-file rest (cons new-table existing-tables)  header-insert))]))
@@ -233,7 +244,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
         (#f #f))))
 
   (define (create-table table-name)
-    (let ([sql (format "create table if not exists ~a ([Run number] integer, Method text, dateTime text, desc text, foreign key([Run number]) references Runs([Unique Run Number]))" table-name)]) 
+    (let ([sql (format "create table if not exists ~a ([Run number] integer, Method text, dateTime text, desc text, foreign key([Run number]) references Runs([Unique Run Number]))" (quote-sqlite-identifier table-name))]) 
       (execute-sql db sql)))
 
   (let ([file-list (list-directory src-path)]

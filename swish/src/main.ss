@@ -22,23 +22,30 @@
 
 (import (config) (helpers) (scheme) (swish imports))
 (http-port-number 54321)
+
 (app-sup-spec
  (make-swish-sup-spec
   (list swish-event-logger
     (<event-logger> make [setup setup-config-db] [log (lambda (e) #f)]))))
 (match (command-line)
   [("") (swish-start
-    (lambda (cmdline)
-      (printf "starting as stand-alone application\n")
-      (base-dir (path-parent (osi_get_executable_path))) (eval '(import (config) (helpers) (scheme) (swish imports))) 
-      (app:start)
-      (hook-console-input)
-      (new-cafe))
-      )]
+         (lambda (cmdline)
+           (printf "starting as stand-alone application\n")
+           (base-dir (path-parent (osi_get_executable_path))) (eval '(import (config) (helpers) (scheme) (swish imports)))
+           (data-dir (path-combine (getenv "USERPROFILE") "AppData\\Local\\Beckman Coulter\\Infozam"))
+           (log-file (path-combine (data-dir) "Log.db3"))
+           (tmp-dir (path-combine (data-dir) "tmp"))
+           (app:start)
+           (hook-console-input)
+           (new-cafe))
+         )]
 
   [(,me . ,rest)
    (printf "running in debug mode\n")
    (base-dir "..")
+   (data-dir (path-combine (getenv "USERPROFILE") "AppData\\Local\\Beckman Coulter\\Infozam"))
+   (log-file (path-combine (data-dir) "Log.db3"))
+   (tmp-dir (path-combine (data-dir) "tmp"))
    (app:start)
    ((swish-start) (cons "--" rest))
    ])

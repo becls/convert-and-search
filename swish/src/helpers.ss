@@ -114,7 +114,7 @@
                       "select tbl_name from SQLITE_MASTER where type in (?, ?) order by tbl_name" "table" "view"))))
       `(select (@ (name ,table-name) (id ,table-name))
          (option (@ (style "color: grey")) "(please select a table)") 
-         ,@(map (lambda (c) `(option ,(if (string=? selected (stringify c)) `(@ (selected "selected"))) ,(stringify c))) tables))))
+         ,@(map (lambda (c) `(option ,(if (string-ci=? selected (stringify c)) `(@ (selected "selected"))) ,(stringify c))) tables))))
 
   (define (make-col-drop-downs db-tables cont-name drop-name val)
     (define (db-table->selection table)
@@ -128,7 +128,7 @@
     (define (column->option column-type)
       (match column-type
         [(,column . ,type)
-         `(option ,(if (string=? val (stringify column)) `(@ (selected "selected"))) ,(stringify column))]))
+         `(option ,(if (string-ci=? val (stringify column)) `(@ (selected "selected"))) ,(stringify column))]))
     `(div
       ,@(map db-table->selection db-tables)))
 
@@ -149,12 +149,12 @@
              "select tbl_name from SQLITE_MASTER where type in (?, ?) order by tbl_name" "table" "view")))
 
    (define (get-bracketed priorKeyword sql)
-    (match (pregexp-match  (format "~a\\[(.*?)]" priorKeyword) sql)
+    (match (pregexp-match  (format "(?i:~a)\\[(.*?)]" priorKeyword) sql)
       [(,full . (,val)) val]
       [,_ ""]))
 
   (define (get-quoted priorKeyword sql)
-    (match (pregexp-match (format "~a\\('(.*?)'" priorKeyword) sql)
+    (match (pregexp-match (format "(?i:~a)\\('(.*?)'" priorKeyword) sql)
       [(,full . (,val)) val]
       [,_ ""]))
 
