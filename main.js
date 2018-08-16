@@ -6,7 +6,6 @@ const fixPath = require('fix-path');
 fixPath();
 const spawn = require('cross-spawn');
 const child = spawn('resources\\convert.exe', {detached: true});
-//const child = spawn('swish\\convert.exe', {detached: true});
 
 
 let mainWindow

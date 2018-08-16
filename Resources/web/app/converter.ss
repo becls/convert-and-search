@@ -43,25 +43,31 @@
 (define (get-paths)
   (respond
    `(form
-     (table (tr (td (@ (style "border: 0px solid; padding-left: 0px")) (table (tr (th (p "Field")) (th (p "Value")))
-                       (tr (td (p "Folder to convert")) (td (p (input (@ (name "folder") (class "path") (type "button") (value "Choose a folder") (id "folder"))))))
-                       (tr (td (p "Destination folder")) (td (p (input (@ (name "dest") (class "path") (type "button") (value "Choose a folder")  (id "dest"))))))
-                       (tr (td (p "New file name")) (td (p (textarea (@ (name "name")) ""))))))
-              (td (@ (style "border: 0px solid;")) (table (tr (th (@ (style "border: 0px solid; background: #FaFaFa;")) (h1 (@ (style "text-decoration: underline;" )) "Help"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formating"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Generated database setup")))))))
+     (table (tr
+             (td (@ (style "border: 0px solid; padding-left: 0px"))
+               (table (tr (th (p "Field")) (th (p "Value")))
+                 (tr (td (p "Folder to convert")) (td (table (tr (td (p (input (@ (name "folder") (class "path") (type "button") (value "Choose a folder") (id "folder"))))) (td (p (@ (id "path-name")) "No file selected"))))))
+                 (tr (td (p "Destination folder"))(td (table (tr (td (p (input (@ (name "dest") (class "path") (type "button") (value "Choose a folder")  (id "dest"))))) (td (p (@ (id "dest-name")) "No file selected"))))))
+                 (tr (td (p "New file name")) (td (p (textarea (@ (name "name")) ""))))
+                 (tr (td (p "Only convert files where "(br) "the filename ends in a date.") (td (@ (style "text-align: center; zoom: 1.25;")) (input (@ (name "datesOnly") (type "checkbox") (checked))))))))
+             (td (@ (style "border: 0px solid;")) (table (tr (th (@ (style "border: 0px solid; background: #FaFaFa;")) (h1 (@ (style "text-decoration: underline;" )) "Help"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formating"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Generated database setup")))))))
      (input (@ (id "folder-path") (name "folder-path") (class "hidden")))
      (input (@ (id "dest-path") (name "dest-path") (class "hidden")))
      (script "var app = require('electron').remote; 
             var dialog = app.dialog;
             var fs = require('fs');
+const {basename} = require('path');
 document.getElementById('folder').addEventListener('click', function(){
-dialog.showOpenDialog({title:\"Select a folder\",
+dialog.showOpenDialog({title:\"Select a folder to convert\",
     properties: [\"openDirectory\"]}, function (fileNames){
- document.getElementById('folder-path').value = fileNames;})});
+ document.getElementById('folder-path').value = fileNames;
+document.getElementById('path-name').innerHTML = basename(fileNames[0]);})});
 
 document.getElementById('dest').addEventListener('click', function(){
-dialog.showOpenDialog({title:\"Select a folder\",
+dialog.showOpenDialog({title:\"Select a destination folder\",
     properties: [\"openDirectory\"]}, function (fileNames){
- document.getElementById('dest-path').value = fileNames;})});")
+ document.getElementById('dest-path').value = fileNames;
+document.getElementById('dest-name').innerHTML = basename(fileNames[0]);})});")
 
    (p (button (@ (type "submit")) "Convert")))
    `(p (@ (style "padding-left: 5px; padding-top:7px;")) "Depending on folder size the conversion may take a few minutes. If you leave this page the conversion will continue in the background. If you stay on this page you will be notified when the conversion is complete.")))
@@ -72,8 +78,10 @@ dialog.showOpenDialog({title:\"Select a folder\",
              `(div (@ (style "padding-left: 3px; padding-top: 2px"))
                 (p "The converter only converts files in the current
 directory. Subdirectories are ignored. Therefore, navigate to the folder that contains the log files themselves.")
-                (p "Only files whose file name follow the pattern: \"<name>dd-mm-yyyy HH.MM.SS.log\" are converted. Other files in the folder are ignored.")
-                (p "<name> becomes the name of the table in the database.")
+                (p "If you convert files that end in a date, only files that end in some combination of digits, periods, and dashes are converted")
+                (P "For example, this mode would convert Details05-22-2018 12.42.04.log but not DeckEditor.log")
+                (p "Otherwise all files are converted")
+                (p "In eaither mode, the table name is the part of the filename that is not the ending date.")
                 (p "The files themselves can contain some header information, then each data entry should start with \"mm/dd/yyyy HH:MM:SS,\" followed by a value."))
              `(table (tr (td (@ (style "border: 0px solid;")) ,(link "converter" "Back"))
                        (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Database setup")))))))
@@ -95,7 +103,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
     `(table (tr (td (@ (style "border: 0px solid;")) ,(link "converter" "Back"))
               (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formating")))))))
 
-(define (do-conversion src dest name)
+(define (do-conversion src dest name datesOnly)
   (unless (not (string=? "undefined" src))
     (raise "browser-add"))
   (unless (not (string=? "" src))
@@ -106,10 +114,13 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
     (raise "empty-name"))
   
   (let* ([new-file (path-combine dest name)]
-         [new-file (string-append new-file ".db3")])
+         [new-file (string-append new-file ".db3")]
+         [file-name (if datesOnly
+                       (pregexp "(.+?)[-0-9 .]+(?i:\\.log)")
+                       (pregexp "(.+?)[-0-9 .]*(?i:\\.log)"))])
     (unless (not (regular-file? new-file))
       (raise "file-exists"))
-    (make-db-and-convert src new-file)
+    (make-db-and-convert src new-file file-name)
     (conversion-complete dest name)))
 
 
@@ -120,8 +131,6 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
 
 
 ;;Conversion related functions
-;;(define file-name (pregexp "([A-z ]*[0-9]?[A-z ]+)[0-9]+.*(?i:\\.log)"))
-(define file-name (pregexp "(.+?)[-0-9\\/ .]*(?i:\\.log)"))
 (define (processfile table-name file-path db prepared-insert header-insert)
   (let* ([ip (open-file-to-read file-path)]
          [op (open-output-string)])
@@ -211,7 +220,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
     (on-exit (close-input-port ip)
       (header -1 ""))))
 
-(define (fullConvert src-path db)
+(define (fullConvert src-path db file-name)
   (define (process-each-file remaining-files existing-tables header-insert)
     (match remaining-files
       [((,name . ,num) . ,rest)
@@ -251,15 +260,15 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
         [header-insert (sqlite:prepare db "insert into Runs ([header contents]) values (?)")])
     (process-each-file file-list '() header-insert)))
 
-(define (set-up-conversion folder db)
+(define (set-up-conversion folder db file-name)
   (execute-sql db "create table if not exists  Runs ([Unique Run Number] integer primary key, [header contents] text)")
-  (fullConvert folder db))
+  (fullConvert folder db file-name))
 
-(define (make-db-and-convert folder db-path)
+(define (make-db-and-convert folder db-path file-name)
   (with-db [db db-path (logor SQLITE_OPEN_READWRITE
   SQLITE_OPEN_CREATE)]
     (execute-sql db "begin transaction")
-    (set-up-conversion folder db)
+    (set-up-conversion folder db file-name)
     (execute-sql db "end transaction")))
 
 (define (dispatch)
@@ -267,10 +276,11 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
          [dest (string-param "dest-path" params)]
          [name (string-param "name" params)]
          [file (string-param "file" params)]
-         [setup (string-param "setup" params)])
+         [setup (string-param "setup" params)]
+         [datesOnly (string-param "datesOnly" params)])
     (cond
      [src
-      (match (catch (do-conversion src dest name))
+      (match (catch (do-conversion src dest name datesOnly))
         [#(EXIT ,reason) (respond:error reason)]
         [,value value])]
      [file (file-explain)]

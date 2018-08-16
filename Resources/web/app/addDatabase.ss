@@ -45,14 +45,17 @@
               (tr (th (p "Field")) (th (p "Value")))
               (tr (td (p "Name")) (td (p (textarea (@ (id "name") (name "name") (class "textBox"))))))
               (tr (td (p "Description")) (td (p (textarea (@ (id "desc") (name "desc") (class "desc"))))))
-              (tr (td (p "File")) (td (p (input (@ (name "path") (class "path") (type "button") (value "Choose a database") (id "path"))))))))
+              (tr (td (p "File")) (td (table (tr (td  (p (input (@ (name "path") (class "path") (type "button") (value "Choose a database") (id "path"))) (td (p (@ (id "filename")) "No file choosen"))))))))))
              (input (@ (id "file-path") (name "file-path") (class "hidden")))
              (script "var app = require('electron').remote; 
             var dialog = app.dialog;
             var fs = require('fs');
+const {basename} = require('path');
 document.getElementById('path').addEventListener('click', function(){
 dialog.showOpenDialog({title: 'Choose database'}, function (fileNames){
-document.getElementById('file-path').value = fileNames[0];})});")
+document.getElementById('file-path').value = fileNames[0];
+document.getElementById('filename').innerHTML = basename(fileNames[0]);})
+});")
              (p (button (@ (type "submit")) "Save"))))))
 
 (define (initial-nofile file)

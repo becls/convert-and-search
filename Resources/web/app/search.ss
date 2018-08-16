@@ -180,7 +180,7 @@
            (tr (@ (style "background-color: #FaFaFa;"))
              (td (p "Maximum date-time")) (td (p (textarea (@ (id "max") (name "max") (class "textBox")),max))))
            (tr (@ (style "background-color: #DDE;")) (td (p "Order by")) (td ,(make-col-drop-downs db-tables "order-contain" "orders" order)) (td (p "Optional, defaults to the order entered into the database.")) (td (p ""))) 
-           (tr (@ (style "background-color: #FaFaFa;")) (td (p "Desc")) (td (label (@ (class "checkbox-inline"))
+           (tr (@ (style "background-color: #FaFaFa;")) (td (p "Desc")) (td  (@ (style "text-align: center; zoom: 1.25;"))(label (@ (class "checkbox-inline"))
                                      (input (@ (name "desc")
                                                (type "checkbox") ,(if desc `(checked)))))) (td (p "If left order by blank, shows most recent first.")) (td (p ""))))
           (input (@ (name "limit") (class "hidden") (value 100)))
