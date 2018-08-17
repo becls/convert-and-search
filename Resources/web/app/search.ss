@@ -134,6 +134,17 @@
 
 
 (define (edit-setup sql db)
+  ;Only match if does not include except before the keyword
+  (define (get-search-col)
+    (match (pregexp-match "^(?i:select)(?i:(?!except).)*?(?i:where) \\[(.*?)]" sql)
+      [(,full . (,val)) val]
+      [,_ ""]))
+
+   (define (get-search-term)
+    (match (pregexp-match "^(?i:select)(?i:(?!except).)*?(?i:where).*?(?i:like) \\('(.*?)'" sql)
+      [(,full . (,val)) val]
+      [,_ ""]))
+  
   (define (get-desc)
     (match (pregexp-match "DESC" sql)
       [(,val) #t]
@@ -148,9 +159,9 @@
     (match (pregexp-match "(?i:Except) (?:.*?) (?i:like) \\('(.*?)'" sql)
       [(,full . (,val)) val]
       [,_ ""]))
-
-  
-  (initial-setup db "The system filled in what fields it could from the existing query. If your active database is different than the one used to create the search some fields may be blank." (get-bracketed "from " sql) (get-bracketed "where " sql) (get-quoted "like " sql) (get-quoted "between " sql) (get-quoted "and " sql) (get-exc-col) (get-exc-term) (get-bracketed "by " sql) (get-desc)))
+;(respond `(p ,sql) #;(p ,(get-bracketed "^select.*(?i:where) " sql)))
+  (initial-setup db "The system filled in what fields it could from the existing query. If your active database is different than the one used to create the search some fields may be blank."
+    (get-bracketed "from " sql) (get-search-col) (get-search-term) (get-quoted "between " sql) (get-quoted "and " sql) (get-exc-col) (get-exc-term) (get-bracketed "by " sql) (get-desc)))
 
 
 ;;Initial setup

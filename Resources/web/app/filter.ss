@@ -43,7 +43,7 @@
             (td (@ (style "border: 0px solid;"))
               ,(link "saved?type=search&sql=&limit=100&offset=0" "Back to saved searches")))))]
 
-     [,_ (section "Failed to create a view" `(p "Suggestion: Make sure you have permission to edit this database and that no other programs are editing the database.")`(p ,(exit-reason->english reason)) (link "saved?type=search&sql=&limit=100&offset=0" "Back to saved searches"))])))
+     [,_ (section "Failed to create a view" `(p "Suggestion: Make sure you have permission to edit this database and that no other programs are editing the database.")`(p ,(exit-reason->english reason)) `(div (@ (style "padding-left:5px")) ,(link "saved?type=search&sql=&limit=100&offset=0" "Back to saved searches")))])))
 
 (define (instruct sql db)
   (match (catch (execute-sql db (format "~a limit 1" sql)))
