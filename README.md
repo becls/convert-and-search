@@ -34,6 +34,7 @@ A windows installer is avalible for those who want to use the application rather
 
 #### Build the installer
 - Run `buildInstaller`
+- This will create the `.msi` file in the base directory of the project
 
 ## License
 
