@@ -13,9 +13,8 @@ also convert textual log files into an easier-to-search database.
 A windows installer is avalible for those who want to use the application rather than contribute to its development. The following instructions are for development mode.
 
 ### Prerequisites
-```
-Npm
-```
+- Chez Scheme 9.5.1 from June 14, 2018 or later
+- Cygwin with bash, git, graphviz, grep, perl, texlive, etc.
 
 ### Installing
 * Run `make` to get started
