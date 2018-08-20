@@ -2,8 +2,6 @@
 const {app, BrowserWindow} = require('electron');
 const ipcRenderer = require('electron').ipcRenderer;
 var path = require('path');
-const fixPath = require('fix-path');
-fixPath();
 const spawn = require('cross-spawn');
 const child = spawn('resources\\convert.exe', {detached: true});
 

@@ -1,0 +1,3 @@
+npm install electron-packager
+electron-packager . --overwrite --icon=assets/icons/win/icon.ico --asar
+MOVE STUFF
