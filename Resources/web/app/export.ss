@@ -70,7 +70,19 @@
              `(p "5) Click the small yellow arrow in the top left corner to select all content on the page.")
              `(p "6) Click import in the bottom right corner.")
              `(p "7) Select where to import the data.")
-             `(p "8) The import may take a moment, but your data should load."))))
+             `(p "8) The import may take a moment, but your data should load.")
+             `(script "function getURL(bigurl)
+{
+    $.getJSON(
+      'http://json-tinyurl.appspot.com/?&callback=?',
+      {url: bigurl},
+      function(data){
+       alert(data.tinyurl);
+      }
+    );
+}
+
+getURL('http://127.0.0.1:54321/app/export?sql=SELECT%20%5BRun%20number%5D%2C%20%5BMethod%5D%2C%20%5BdateTime%5D%2C%20%5Bdesc%5D%20FROM%20%5BDetails%5D%20WHERE%20%5BRun%20number%5D%20like%20%28%27%255%25%27%29%20EXCEPT%20SELECT%20%5BRun%20number%5D%2C%20%5BMethod%5D%2C%20%5BdateTime%5D%2C%20%5Bdesc%5D%20FROM%20%5BDetails%5D%20WHERE%20%5BMethod%5D%20LIKE%20%28%27c%25%27%29%20ORDER%20by%201%20DESC'"))))
 
 (define (results sql db)
   (define (get-results next-row f)

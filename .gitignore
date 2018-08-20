@@ -1,11 +1,7 @@
-/swish/data/
-/node_modules/
-/swish/node_modules/
-/Infozam-win32-x64/
-/Infozam-win32-x64.zip*
-/swish/Infozam-win32-x64/
-/swish/web/app/testFiles/
-/swish/src/data/
+*node_modules/
+*Infozam-win32-x64*
+*testFiles/
+*data/
 /Builds/
 *drop.ss
 *.msi

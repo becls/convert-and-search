@@ -111,15 +111,21 @@ information. Some important information about the expected formats:
 directory. Subdirectories are ignored. This decision was made to
 increase converter speed and because these folders usually
 do not have subdirectories. 
-  \item The name of each file to convert must follow the following pattern
-    \textbf{<name>dd-mm-yyyy HH.MM.SS.log}, where \textbf{<name>} can
-    be any number of letters in a row followed by eaither 0 or one numbers, followed by any number of letters.
+  \item There are two conversion modes. In only convert files that end
+    in a date, the system only converts files which end in some
+    combination of digits, periods, spaces and slashes. Other files
+    are skipped. In convert all files, all files are converted, which
+    can lead to converting files whose contents do not match the
+    expected form. In eaither case, the first part of the filename
+    becomes the name of the table in the database.
+
+    For example, if the filename fits the following pattern:
+    \textbf{<name>dd-mm-yyyy HH.MM.SS.log},
     \textbf{<name>} will
-    become the name of a table in the database.
-    This constraint allows the converter to determine which files to
-    convert, as most files that violate this convention also have a
-    different internal structure and require very different
-    processing. Files that violate this convention are ignored.
+    become the name of a table in the database. If the filename is
+    \textbf{<name>.log}, it will only be converted if the user chooses
+    to convert all files. If the file is converted, \textbf{<name>}
+    will be the name of the table in the database.
   \item There are two types of tables created, data tables and header
     tables. There is only one header table created. Each file adds one
     entry to the header table that describes the information found at
