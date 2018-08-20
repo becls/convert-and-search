@@ -3,4 +3,4 @@ npm install electron-packager -g
 electron-packager . --overwrite --icon=assets/icons/win/icon.ico --asar
 cp -r Resources/* Infozam-win32-x64/resources/
 "C:/Program Files (x86)/WiX Toolset v3.11/bin/candle.exe" InfozamInstaller.wxs
-"C:/Program Files (x86)/WiX Toolset v3.11/bin/light.exe" InfozamInstaller.wixobj
+"C:/Program Files (x86)/WiX Toolset v3.11/bin/light.exe" -ext WixUIExtension InfozamInstaller.wixobj
