@@ -46,7 +46,8 @@
      (table (tr
              (td (@ (style "border: 0px solid; padding-left: 0px"))
                (table (tr (th (p "Field")) (th (p "Value")))
-                 (tr (td (p "Folder to convert")) (td (table (tr (td (p (input (@ (name "folder") (class "path") (type "button") (value "Choose a folder") (id "folder"))))) (td (p (@ (id "path-name")) "No file selected"))))))
+                 (tr (td (p "Folder to convert")) (td (table (tr (@ (style "background-color: #DDE;"))
+                                                               (td (p (input (@ (name "folder") (class "path") (type "button") (value "Choose a folder") (id "folder"))))) (td (p (@ (id "path-name")) "No file selected"))))))
                  (tr (td (p "Destination folder"))(td (table (tr (td (p (input (@ (name "dest") (class "path") (type "button") (value "Choose a folder")  (id "dest"))))) (td (p (@ (id "dest-name")) "No file selected"))))))
                  (tr (td (p "New file name")) (td (p (textarea (@ (name "name")) ""))))
                  (tr (td (p "Only convert files where "(br) "the filename ends in a date.") (td (@ (style "text-align: center; zoom: 1.25;")) (input (@ (name "datesOnly") (type "checkbox") (checked))))))))
@@ -88,14 +89,14 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
 
 (define (setup-explain)
   (respond (section "New database setup:" `(div (@ (style "width: 90%; padding-left: 6px;")) (p "There are two types of tables created, data tables and header
-    tables. There is only one header table created, called Runs. Each file adds one
-    entry to the runs table that describes the information found at
-    the top of the runs file. Data tables contain the information
+    tables. There is only one header table created, called HeaderInfo. Each file adds one
+    entry to the HeaderInfo table that describes the information found at
+    the top of the given file. Data tables contain the information
     found in the main body of the log file. There are as many data
     tables created as there are unique convertable file names.")
               (p "Each data table created has four columns, Run number, method, dateTime, and
     desc. Run number is automatically generated and references the
-    corresponding entry in the Runs table, allowing the user to determine the header information if necessary.")
+    corresponding entry in the HeaderInfo table, allowing the user to determine the header information if necessary.")
               (p "Method is obtained from the header information.")
               (p "dateTime is the value found at the start of each data entry in the log file.")
               (p "desc is everything that follows the dateTime value in the data entry.")
@@ -156,7 +157,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
           (header run-number method)])))
 
     (define (complete-header)
-      (sqlite:execute header-insert (list (get-output-string op)))
+      (sqlite:execute header-insert (list table-name (get-output-string op)))
       (match (execute-sql db "select last_insert_rowid()")
         [(#(,num)) num]))
 
@@ -253,15 +254,15 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
         (#f #f))))
 
   (define (create-table table-name)
-    (let ([sql (format "create table if not exists ~a ([Run number] integer, Method text, dateTime text, desc text, foreign key([Run number]) references Runs([Unique Run Number]))" (quote-sqlite-identifier table-name))]) 
+    (let ([sql (format "create table if not exists ~a ([Run number] integer, Method text, dateTime text, desc text, foreign key([Run number]) references HeaderInfo([Unique Run Number]))" (quote-sqlite-identifier table-name))]) 
       (execute-sql db sql)))
 
   (let ([file-list (list-directory src-path)]
-        [header-insert (sqlite:prepare db "insert into Runs ([header contents]) values (?)")])
+        [header-insert (sqlite:prepare db "insert into HeaderInfo ([Corresponding table], [header contents]) values (?, ?)")])
     (process-each-file file-list '() header-insert)))
 
 (define (set-up-conversion folder db file-name)
-  (execute-sql db "create table if not exists  Runs ([Unique Run Number] integer primary key, [header contents] text)")
+  (execute-sql db "create table if not exists HeaderInfo ([Unique Run Number] integer primary key,[Corresponding table] text, [header contents] text)")
   (fullConvert folder db file-name))
 
 (define (make-db-and-convert folder db-path file-name)

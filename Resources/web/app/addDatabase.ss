@@ -43,9 +43,9 @@
   (respond (section "Add a new database" `(form
              (div (@ (style "padding-left: 8px; padding-top: 3px; padding-bottom: 5px;"))(table
               (tr (th (p "Field")) (th (p "Value")))
-              (tr (td (p "Name")) (td (p (textarea (@ (id "name") (name "name") (class "textBox"))))))
+              (tr (td (p "Name")) (td  (table (tr (@ (style "background-color: #DDE;")) (td (@ (style "border-width: 0px; padding: 0px;")) (textarea (@ (id "name") (name "name") (class "textBox")))) (td (@ (style "border-width: 0px; padding: 0px"))(p "Optional, defaults to filename"))))))
               (tr (td (p "Description")) (td (p (textarea (@ (id "desc") (name "desc") (class "desc"))))))
-              (tr (td (p "File")) (td (table (tr (td  (p (input (@ (name "path") (class "path") (type "button") (value "Choose a database") (id "path"))) (td (p (@ (id "filename")) "No file choosen"))))))))))
+              (tr (td (p "File")) (td (table (tr (@ (style "background-color: #DDE;"))(td (p (input (@ (name "path") (class "path") (type "button") (value "Choose a database") (id "path"))) (td (p (@ (id "filename")) "No file choosen"))))))))))
              (input (@ (id "file-path") (name "file-path") (class "hidden")))
              (script "var app = require('electron').remote; 
             var dialog = app.dialog;
@@ -59,24 +59,31 @@ document.getElementById('filename').innerHTML = basename(fileNames[0]);})
              (p (button (@ (type "submit")) "Save"))))))
 
 (define (initial-nofile file)
-  (respond (section "Add a new database" `(form
+  (respond (section "Add the newly created database" `(form
              (table
               (tr (th (p "Field")) (th (p "Value")))
-              (tr (td (p "Name")) (td (p (textarea (@ (id "name") (name "name") (class "textBox"))))))
+              (tr (td (p "Name")) (td (table (tr (@ (style "background-color: #DDE;")) (td (@ (style "border-width: 0px; padding: 0px;")) (textarea (@ (id "name") (name "name") (class "textBox"))))
+                                              (td (@ (style "border-width: 0px; padding: 0px"))(p "Optional, defaults to filename"))))))
               (tr (td (p "Description")) (td (p (textarea (@ (id "desc") (name "desc") (class "desc")))))))
              (input (@ (id "file-path") (name "file-path") (class "hidden") (value ,file)))
              (p (button (@ (type "submit")) "Save"))))))
 
 (define (update-path name desc file)
+  (define (get-file-name)
+    (if (string=? "" name)
+        (match (pregexp-match "\\\\([-\\w \\.,]*?\\..*)$" file)
+          [(,full . (,val)) val]
+          [,_ ""])
+        name))
+  
   (unless (not (string=? "undefined" file))
     (raise "browser-add"))
   (unless (or (ends-with-ci? file ".db3")
               (ends-with-ci? file ".db")
               (ends-with-ci? file ".sqlite"))
     (raise "not-database"))
-  
   (match (catch (transaction 'log-db (execute "insert into database (name, description, file_path)
-values (?, ?, ?)" name desc file)))
+values (?, ?, ?)" (get-file-name) desc file)))
     
     [#(EXIT ,reason)  (respond:error reason)]
     [,val (begin (user-log-path file) (redirect "saved?type=database&sql=&limit=100&offset=0&flag=Save+successful,+active+database+changed."))]))
