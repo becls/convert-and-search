@@ -22,12 +22,11 @@ A windows installer is avalible for those who want to use the application rather
 * Use `npm start` to run the progrma
 
 ## Deployment
-* It is recommened to use Electron-Packager to package the application for distribution
-* Use `npm install electron-packager` to download Electron-Packager
-* Electron-Packager has a number of optional flags. More information about these flagas can be found in the docs.
-* `electron-packager . ` should create a folder with everything needed to run the application
-* Running the executable file in this folder should run the program
+### Prerequisites 
+- Wix-installer
 
+### Creating installer
+- Run `buildInstaller`
 
 
 
