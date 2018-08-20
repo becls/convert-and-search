@@ -26,10 +26,14 @@ A windows installer is avalible for those who want to use the application rather
 - Wix-installer
 
 ### Creating installer
+#### Updating InfozamInstaller.wxs
+- Change the UpgradeCode to a new GUID
+- Update the version
+- Add any newly created files into the list of files and the corresponding feature.
+- Remove any files that were removed
+
+#### Build the installer
 - Run `buildInstaller`
-
-
-
 
 ## License
 
