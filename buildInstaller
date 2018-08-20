@@ -1,3 +1,6 @@
-npm install electron-packager
+npm install electron-packager --save-dev
+npm install electron-packager -g
 electron-packager . --overwrite --icon=assets/icons/win/icon.ico --asar
-MOVE STUFF
+cp -r Resources/* Infozam-win32-x64/resources/
+"C:/Program Files (x86)/WiX Toolset v3.11/bin/candle.exe" installerInst.wxs
+"C:/Program Files (x86)/WiX Toolset v3.11/bin/light.exe" installerInst.wixobj

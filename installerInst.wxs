@@ -154,14 +154,8 @@
             <Component Id="cmpB9DC3918F8D3AD01783F961FED38FDA9"  Guid="{58033B2A-87A0-4FA9-B54F-D60C591DA887}">
                 <File Id="filBD594C7548DA9A0EDFCD18EC7961D74F" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\export.ss" />
             </Component>
-            <Component Id="cmp7FDF6CEF95B654C96CD4F7D336CAAB56" Guid="{13ACBF29-5BC4-45BC-B2D1-036D6FF9895D}">
-                <File Id="fil6DF2F768641165F44376DC8A363AB1B5" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\export.ss~" />
-            </Component>
             <Component Id="cmp0C31AB8018AADDF89EAE96FA0EA695A8"  Guid="{49E09AEA-03F1-4D9E-A9C9-9D2CF55BED99}">
                 <File Id="fil7D9CD53FCAA1E241EFE2013BB43E33C2" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\filter.ss" />
-            </Component>
-            <Component Id="cmp50F7857056205D3BB3C77EA5C5B57BD2"  Guid="{A3C62FC0-AB2A-4B42-907F-D1AF9B529ED0}">
-                <File Id="filABCABEBD02D738E9D85BB0AEDFE0FC27" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\filter.ss~" />
             </Component>
             <Component Id="cmp657630D20466510285E213B0DED2C5C7" Guid="{7AC2102F-1290-4ACF-A324-919E6795B21E}">
                 <File Id="fil0C24218FEE2A6E3835F18D43CD8CAF70" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\query-db.ss" />
@@ -177,9 +171,6 @@
             </Component>
             <Component Id="cmp7E09535C38051697C6E254051A7BDC29"  Guid="{292BF8D5-EF5B-4AED-8E42-C5231BE1D773}">
                 <File Id="filC60435AAD175E92CE87ACD690261036F" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\twoTableSearch.ss" />
-            </Component>
-            <Component Id="cmp83D4BD1AC2E5B98178F204BF1D647A67"  Guid="{1952FAEB-9EF9-4EAB-A518-B3B4DF083BE7}">
-                <File Id="fil29A447085EB9B4DF05EFCE4A09B57576" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\twoTableSearch.ss~" />
             </Component>
             <Component Id="cmpEF1A8E0B120DF3680C37497FA81F5131"  Guid="{C063C6D4-3AF0-428F-951F-9DC36C0D9575}">
                 <File Id="filDBC59937294B93A66667C6C505482171" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\updatePath.ss" />
@@ -238,9 +229,6 @@
             <Component Id="cmpC1D171390D2444CCD790FED53283A9A6"  Guid="{690DB988-50F1-4655-AE5C-C5507141B8F9}">
                 <File Id="fil1AF04408C101B6E196A5C6C0AC7F6FD1" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\components.ss" />
             </Component>
-            <Component Id="cmp8794386F26CDD2AAF5A1775A318D2E6D" Guid="{BE1E6770-3C64-4C20-A393-2C2651258390}">
-                <File Id="filA389F4AB432806A971A413A3DD8F2E45" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\components.ss~" />
-            </Component>
             <Component Id="cmp02DE632F05CFE210A19CE1CF6D178F4F"  Guid="{FAB86474-81D5-4A07-B7B0-D34E9F4E0105}">
                 <File Id="filF9F6C994D602DD57B4ADBF4EEC3EB77D" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\debug.ss" />
             </Component>
@@ -269,9 +257,6 @@
             </Component>
             <Component Id="cmp746113BDB8CBA408923787E196315B30"  Guid="{63D48773-BF92-492B-B89F-FEE9E7C28BD7}">
                 <File Id="fil8588A6356FBC455DF69A0D1669E145DF" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\css\components.css" />
-            </Component>
-            <Component Id="cmpA770406FC2819A935D44AC3687C66FA1"  Guid="{E6877593-8EF0-4DA5-B6FE-7C168A83C010}">
-                <File Id="fil2B0A1CF1C5476189BAABD92EABAE4969" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\css\components.css~" />
             </Component>
             <Component Id="cmp25CC3C5C20B76A063A9AF5BA4E9B6E36"  Guid="{1F4B51AF-8780-4115-A8B5-7B4CE2788F0E}">
                 <File Id="fil3E5DF99CD365ACB5C20D8DCF692D0E76" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\css\query-db.css" />
@@ -354,15 +339,12 @@
 <ComponentRef Id='cmpAFA3649BDC12848CA69DD001AD699954' />
 <ComponentRef Id='cmp25D61ED59897CD4F695174BCBC8CEB6D' />
 <ComponentRef Id='cmpB9DC3918F8D3AD01783F961FED38FDA9' />
-<ComponentRef Id='cmp7FDF6CEF95B654C96CD4F7D336CAAB56' />
 <ComponentRef Id='cmp0C31AB8018AADDF89EAE96FA0EA695A8' />
-<ComponentRef Id='cmp50F7857056205D3BB3C77EA5C5B57BD2' />
 <ComponentRef Id='cmp657630D20466510285E213B0DED2C5C7' />
 <ComponentRef Id='cmp72CA7844734E0B667B9B184A81BCD191' />
 <ComponentRef Id='cmp56419D739EE14605B13B62CEF07FFEB7' />
 <ComponentRef Id='cmp46E06934745970B8BC59C62904FF1488' />
 <ComponentRef Id='cmp7E09535C38051697C6E254051A7BDC29' />
-<ComponentRef Id='cmp83D4BD1AC2E5B98178F204BF1D647A67' />
 <ComponentRef Id='cmpEF1A8E0B120DF3680C37497FA81F5131' />
 <ComponentRef Id='cmpA66305B1B965F9FCC2A34BE588FB7DBF' />
 <ComponentRef Id='cmp9B89E61AEDEE003FF2E630BB9FC23F59' />
@@ -379,7 +361,6 @@
 <ComponentRef Id='cmp665E5CD3E0E94EF84319F975461C3F6D' />
 <ComponentRef Id='cmp101821525B2147BDA8AED55E202D19DA' />
 <ComponentRef Id='cmpC1D171390D2444CCD790FED53283A9A6' />
-<ComponentRef Id='cmp8794386F26CDD2AAF5A1775A318D2E6D' />
 <ComponentRef Id='cmp02DE632F05CFE210A19CE1CF6D178F4F' />
 <ComponentRef Id='cmp471696E182D4C742E8E7ED01B37E3207' />
 <ComponentRef Id='cmpF7D3E9564BEA752E059A14CB03A6DB9D' />
@@ -389,7 +370,6 @@
 <ComponentRef Id='cmpDB205C201E072D46116E010F25415425' />
 <ComponentRef Id='cmp004EF69047975DEC6A14C0CF2445B58E' />
 <ComponentRef Id='cmp746113BDB8CBA408923787E196315B30' />
-<ComponentRef Id='cmpA770406FC2819A935D44AC3687C66FA1' />
 <ComponentRef Id='cmp25CC3C5C20B76A063A9AF5BA4E9B6E36' />
 <ComponentRef Id='cmp28F4B11DF10C5B863FAE4BE711659483' />
 <ComponentRef Id='cmp1E16209F598037C6C14742DB6B59840B' />
