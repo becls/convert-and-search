@@ -51,7 +51,7 @@
                  (tr (td (p "Destination folder"))(td (table (tr (td (p (input (@ (name "dest") (class "path") (type "button") (value "Choose a folder")  (id "dest"))))) (td (p (@ (id "dest-name")) "No file selected"))))))
                  (tr (td (p "New file name")) (td (p (textarea (@ (name "name")) ""))))
                  (tr (td (p "Only convert files where "(br) "the filename ends in a date.") (td (@ (style "text-align: center; zoom: 1.25;")) (input (@ (name "datesOnly") (type "checkbox") (checked))))))))
-             (td (@ (style "border: 0px solid;")) (table (tr (th (@ (style "border: 0px solid; background: #FaFaFa;")) (h1 (@ (style "text-decoration: underline;" )) "Help"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formating"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Generated database setup")))))))
+             (td (@ (style "border: 0px solid;")) (table (tr (th (@ (style "border: 0px solid; background: #FaFaFa;")) (h1 (@ (style "text-decoration: underline;" )) "Help"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formatting"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Generated database setup")))))))
      (input (@ (id "folder-path") (name "folder-path") (class "hidden")))
      (input (@ (id "dest-path") (name "dest-path") (class "hidden")))
      (script "var app = require('electron').remote; 
@@ -75,14 +75,14 @@ document.getElementById('dest-name').innerHTML = basename(fileNames[0]);})});")
 
 
 (define (file-explain)
-  (respond (section "Expected file formating:"
+  (respond (section "Expected file formatting:"
              `(div (@ (style "padding-left: 3px; padding-top: 2px"))
                 (p "The converter only converts files in the current
 directory. Subdirectories are ignored. Therefore, navigate to the folder that contains the log files themselves.")
                 (p "If you convert files that end in a date, only files that end in some combination of digits, periods, and dashes are converted")
                 (P "For example, this mode would convert Details05-22-2018 12.42.04.log but not DeckEditor.log")
                 (p "Otherwise all files are converted")
-                (p "In eaither mode, the table name is the part of the filename that is not the ending date.")
+                (p "In either mode, the table name is the part of the filename that is not the ending date.")
                 (p "The files themselves can contain some header information, then each data entry should start with \"mm/dd/yyyy HH:MM:SS,\" followed by a value."))
              `(table (tr (td (@ (style "border: 0px solid;")) ,(link "converter" "Back"))
                        (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Database setup")))))))
@@ -93,7 +93,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
     entry to the HeaderInfo table that describes the information found at
     the top of the given file. Data tables contain the information
     found in the main body of the log file. There are as many data
-    tables created as there are unique convertable file names.")
+    tables created as there are unique convertible file names.")
               (p "Each data table created has four columns, Run number, method, dateTime, and
     desc. Run number is automatically generated and references the
     corresponding entry in the HeaderInfo table, allowing the user to determine the header information if necessary.")
@@ -102,7 +102,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
               (p "desc is everything that follows the dateTime value in the data entry.")
               (p "For instance, the line \"06/19/2018 19:25:58,Run ended.\" would have \"06/19/2018 19:25:58\" as its dateTime value and \"Run ended.\" as its desc."))
     `(table (tr (td (@ (style "border: 0px solid;")) ,(link "converter" "Back"))
-              (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formating")))))))
+              (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formatting")))))))
 
 (define (do-conversion src dest name datesOnly)
   (unless (not (string=? "undefined" src))

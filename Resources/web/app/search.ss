@@ -173,10 +173,10 @@
        `(form (@ (method "get") (class "schema"))
           (table
            (tr
-             (th (p "Field")) (th (p "Value")) (th (p "Explination")) (th (p "Example")))
+             (th (p "Field")) (th (p "Value")) (th (p "Explanation")) (th (p "Example")))
            (tr (td (p "Table")) (td (form ,(make-table-drop-down db "table" table))) (td (p (@ (style "color:red")) "Required") (p "The table to search.")) (td (p "")))
            (tr (td (p "Column")) (td ,(make-col-drop-downs db-tables "container" "cols" column))
-             (td (@ (rowspan "2")) (p "Optional, use if you wish to search for a specifc term in a specifc column.") (p "Does an exact match search. You can do a keyword search using % to represent don't care characters.")) (td (@ (rowspan "2")) (p "Selecting \"Desc\" and entering  \"%light curtain%\" will show you all results where the desc column contains the phrase  \"light curtain\".") (p "You can also use % only at the begining or end, for example \"#%\" returns all results that start with #.")))
+             (td (@ (rowspan "2")) (p "Optional, use if you wish to search for a specific term in a specific column.") (p "Does an exact match search. You can do a keyword search using % to represent don't care characters.")) (td (@ (rowspan "2")) (p "Selecting \"Desc\" and entering  \"%light curtain%\" will show you all results where the desc column contains the phrase  \"light curtain\".") (p "You can also use % only at the beginning or end, for example \"#%\" returns all results that start with #.")))
            (tr (@ (style "background-color: #FaFaFa;")) (td (p "Search term")) (td (p (textarea (@ (id "keyWord") (name "keyWord") (class "textBox")),search-term))))
 
            (tr (@ (style "background-color: #DDE;")) (td (p "Exclude column")) (td ,(make-col-drop-downs db-tables "excCont" "excCol" excCol))
@@ -186,7 +186,7 @@
            (tr (td (p "Minimum date-time"))
              (td (p (textarea (@ (id "min") (name "min") (class "textBox")),min)))
              (td (@ (rowspan "2")) (p "Optional, limits the time range of results shown.") (p "Inclusive")
-               (p "Table must include a column labeled eaither \"timestamp\" or \"dateTime\"."))
+               (p "Table must include a column labeled either \"timestamp\" or \"dateTime\"."))
              (td (@ (rowspan "2"))(p "Formats:  yyyy-mm-dd HH:MM:SS or yyyy-mm-dd.") (p "For example, 2018-06-17 15:38:59")))
            (tr (@ (style "background-color: #FaFaFa;"))
              (td (p "Maximum date-time")) (td (p (textarea (@ (id "max") (name "max") (class "textBox")),max))))
