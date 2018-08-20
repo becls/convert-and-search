@@ -107,14 +107,8 @@
             </Component>
 
             <Directory Id='srcDir' Name='src'>
-            <Component Id="cmp1CC561FAE35C25827726FDE48596A46A"  Guid="{EC0326DD-6043-4926-AECB-7E1163C2D1BD}">
-                <File Id="fil8B27BFCC5326498C84C2D7EABDBF3F02" KeyPath="yes" Source="Infozam-win32-x64\resources\src\config.so" />
-            </Component>
             <Component Id="cmpA6BE2E5AA3B3B5ED3AC6AA421F91E944"  Guid="{88BF6B29-8B1A-40A6-BA99-F6D75088867A}">
                 <File Id="fil57D7922F329080FC8CC50B1F3766A246" KeyPath="yes" Source="Infozam-win32-x64\resources\src\config.ss" />
-            </Component>
-            <Component Id="cmp28F5C0A8AC99BC4E0C5064227FD7BB75"  Guid="{68AAFEDC-D8B7-49B0-BBB7-F49D05AE3C99}">
-                <File Id="filB752A4B08422A6A19FF3BEED95AD8F7E" KeyPath="yes" Source="Infozam-win32-x64\resources\src\helpers.so" />
             </Component>
             <Component Id="cmpF42A93F99E6336C10324757AEBB2B37A"  Guid="{B017032F-EE4E-4EC6-9F85-FBAA32738BD5}">
                 <File Id="fil1A276C5B281995AC31E585603D3AC23E" KeyPath="yes" Source="Infozam-win32-x64\resources\src\helpers.ss" />
@@ -325,9 +319,7 @@
 <ComponentRef Id='cmp061BA1EB93D21D4B61AF50CE558DCEE0' />
 <ComponentRef Id='cmp8B381B10015D2D5B8B89A9ABABC7FA11' />
 <ComponentRef Id='cmp70A42108A833E8DD15374A8D90A462DA' />
-<ComponentRef Id='cmp1CC561FAE35C25827726FDE48596A46A' />
 <ComponentRef Id='cmpA6BE2E5AA3B3B5ED3AC6AA421F91E944' />
-<ComponentRef Id='cmp28F5C0A8AC99BC4E0C5064227FD7BB75' />
 <ComponentRef Id='cmpF42A93F99E6336C10324757AEBB2B37A' />
 <ComponentRef Id='cmp1CE93C05FE65315DC921E047F72AC68B' />
 <ComponentRef Id='cmp1F9F051E36EE8544236F9E6B6C6881B1' />
