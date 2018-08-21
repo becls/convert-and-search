@@ -4,6 +4,7 @@
 *data/
 /Builds/
 *drop.ss
+InfozamInstaller.exe
 *.msi
 *.wix*
 *.wpo
