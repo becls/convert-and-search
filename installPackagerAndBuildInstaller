@@ -1,0 +1,3 @@
+npm install electron-packager --save-dev
+npm install electron-packager -g
+./BuildInstaller
