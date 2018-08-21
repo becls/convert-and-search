@@ -1,4 +1,4 @@
-electron-packager . --overwrite --icon=assets/icons/win/icon.ico --asar
+electron-packager . --overwrite --icon=assets/icons/win/icon.ico --prune=true --ignore="buildInstaller" --ignore="\.gitIgnore" --ignore="NOTICE" --ignore="README\.md" --ignore="installPackagerAndBuildInstaller" --ignore=".*\.wix.*" --ignore="InfozamInstaller\.exe" --ignore=".*\.msi" --ignore=".*\.wxs" --ignore=".*~" --ignore="LICENSE\.rtf" --ignore="Makefile" --ignore="LICENSE" --ignore="\.git" --ignore="Inspections" --ignore="Resources" --asar --ignore="doc"
 cp -r Resources/* Infozam-win32-x64/resources/
 "C:/Program Files (x86)/WiX Toolset v3.11/bin/candle.exe" FirstStepForInstall.wxs
 "C:/Program Files (x86)/WiX Toolset v3.11/bin/light.exe" -ext WixUIExtension FirstStepForInstall.wixobj

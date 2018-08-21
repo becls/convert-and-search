@@ -1,4 +1,4 @@
 install:
-	npm install electron
+	npm install --save-dev electron
 	npm install cross-spawn
 	cd doc; make
