@@ -14,4 +14,8 @@ This product also includes separately licensed:
 
 * Cross-spawn NPM module
 
-*Electron-packager NPM module
+In order to package and distribute this product it includes separately licensed:
+
+* Electron-packager NPM module
+
+* Wix installer
