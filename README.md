@@ -26,15 +26,16 @@ A windows installer is avalible for those who want to use the application rather
 - Wix-installer
 
 ### Creating installer
-#### Updating InfozamInstaller.wxs
+#### Update FirstStepForInstall.wxs
 - Change the UpgradeCode to a new GUID
 - Update the version
 - Add any newly created files into the list of files and the corresponding feature.
 - Remove any files that were removed
 
 #### Build the installer
-- Run `buildInstaller`
-- This will create the `.msi` file in the base directory of the project
+- If you do not have Electron-packager run `installPackagerAndBuildInstaller`
+- If you already have electron-packager, run `buildInstaller`
+- This will create the `InfozamInstaller.exe` file in the base directory of the project
 
 ## License
 
