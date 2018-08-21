@@ -39,7 +39,7 @@ A windows installer is avalible for those who want to use the application rather
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
 
 
