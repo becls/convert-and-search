@@ -148,7 +148,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
 (define (conversion-complete dest name)
   (let* ([new-file (path-combine dest name)]
          [new-file (string-append new-file ".db3")])
-    (respond `(p "Conversion sucessful") `(div (@ (style "padding-left: 5px")) ,(link (format "addDatabase?file-path=~a" (http:percent-encode new-file)) "Add to saved databases")))))
+    (respond `(p "Conversion successful") `(div (@ (style "padding-left: 5px")) ,(link (format "addDatabase?file-path=~a" (http:percent-encode new-file)) "Add to saved databases")))))
 
 
 ;;Conversion related functions
