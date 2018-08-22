@@ -57,7 +57,7 @@
 
     (define (build-new-col)
       (string-append (formatCond table1 join1) " AS " (quote-sqlite-identifier newName) ", "))
-    
+
     (check-request-blank-vals)
     (let* ([t1-cols (get-columns table1 table1 db join1)]
            [t2-cols (get-columns table2 table2alias db join2)]
@@ -95,7 +95,7 @@
   (initial-setup db (get-bracketed "from " sql) (get-bracketed "join " sql) (get-bracketed "where \\[(?:.*?)]\\." sql) (get-bracketed "= \\[(?:.*?)]\\." sql) (get-newName))) 
 
 ;;Initial setup
-(define (initial-setup db t1 t2 c1 c2 newName) 
+(define (initial-setup db t1 t2 c1 c2 newName)
   (let ([db-tables (get-db-tables db)])
     (respond
      (section "Please enter the following fields"
@@ -105,10 +105,9 @@
              (th (p "Field")) (th (p "Value")) (th (p "Notes")))
            (tr (td (p "Table 1")) (td ,(make-table-drop-down db "t1" t1)) (td (p "Required")))
            (tr (td (p "Table 2")) (td ,(make-table-drop-down db "t2" t2)) (td (p "Required")))
-           
-           (tr (td (p "Join column 1")) (td ,(make-col-drop-downs db-tables "contJ1" "j1" c1)) (td (p "Select table 1 first.") (p "The system combines rows with the same value in this column and join column 2.")))
+           (tr (td (p "Join column 1")) (td ,(make-col-drop-downs db-tables "contJ1" "j1" c1))
+             (td (p "Select table 1 first.") (p "The system combines rows with the same value in this column and join column 2.")))
            (tr (td (p "Join column 2")) (td ,(make-col-drop-downs db-tables "contJ2" "j2" c2)) (td (p "Select table 2 first.")))
-           
            (tr (td (p "New name for joined columns")) (td (p (textarea (@ (id "newName") (name "newName") (class "textBox")),newName)))
              (td (p "Since the two join columns contain the same value, only one of them is displayed.")
                (p "This field is the name of that newly created column."))))
@@ -123,13 +122,13 @@
 window.addEventListener('load', joinInitialupdate, false)
 var select = document.getElementById('t1');
 select.addEventListener('change', updateJoin1, false);")
-          
+
           (script "
 var select = document.getElementById('t2');
 select.addEventListener('change', updateJoin2, false);")
           (script "$('.j1').bind('change', updateOtherFieldJ1).trigger('change')")
           (script "$('.j2').bind('change', updateOtherFieldJ2).trigger('change')")))
-     
+
      (section "Schema"
        (schema->html db-tables)))))
 
@@ -173,5 +172,3 @@ select.addEventListener('change', updateJoin2, false);")
 
 
 (dispatch)
-
-

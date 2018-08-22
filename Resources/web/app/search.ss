@@ -33,17 +33,11 @@
   (respond
    (match reason
      [no-table (section "Search failed" `(p "You must select a table.") (link "Search" "Go Back"))]
-     
      [search-term-or-column-empty (section "Search failed" `(p "If you specify a column, you must specify a search term. Similarly, if you specify a search term you must specify a column.")(link "Search" "Go Back"))]
-
      [min-or-max-empty (section "Search failed" `(p "You must enter both a min and a max if you want to limit by time.")(link "Search" "Go Back"))]
-
      [exc-empty (section "Search failed" `(p "If you specify an exclude column, you must specify an exclude term. Similarly, if you specify an exclude term you must specify an exclude column.")(link "Search" "Go Back"))]
-     
      [no-timestamp (section "Search failed: no timestamp" `(p "Please select a table with that has a column named timestamp in order to search by timestamp.")(link "Search" "Go Back"))]
-     
-     [,_
-      (section "Query failed" `(p "Suggestion: Check the current database is the correct database") `(p ,(exit-reason->english reason)) (link "Search" "Go Back"))])))
+     [,_ (section "Query failed" `(p "Suggestion: Check the current database is the correct database") `(p ,(exit-reason->english reason)) (link "Search" "Go Back"))])))
 
 
 ;: SQL helpers
@@ -54,7 +48,6 @@
           (and (string=? v1 "")
                (not (string=? v2 "")))))
 
-    
   (define (check-request-blank-vals)
     (cond
      [(string=? "(please select a table)" search-table)
@@ -89,7 +82,7 @@
                                       (string-append "["x"], ")))
                    cols))])
       (substring str 0 (- (string-length str) 2))))
-  
+
   (define (build-time-range cols)
     (if (string=? range-min "")
         ""
@@ -107,7 +100,6 @@
     (not (string=? "" str)))
 
   (check-request-blank-vals)
-  
   (let* ([all-cols (get-columns search-table db)]
          [timed? (or (member "timestamp" all-cols) (member "dateTime" all-cols))]
          [time-range (build-time-range all-cols)]
@@ -117,10 +109,7 @@
          [except-clause (build-except formated-cols)])
     (if (and (has-value time-range) (not timed?))
         (raise `no-timestamp))
-
-    
     (string-append "SELECT " formated-cols " FROM [" search-table "]" where? (build-search-str) and? time-range except-clause (build-order))))
-
 
 (define (get-columns table db)
   (define (table-info master-row)
@@ -134,13 +123,13 @@
 
 
 (define (edit-setup sql db)
-  ;Only match if does not include except before the keyword
+  ;;Only match if does not include except before the keyword
   (define (get-search-col)
     (match (pregexp-match "^(?i:select)(?i:(?!except).)*?(?i:where) \\[(.*?)]" sql)
       [(,full . (,val)) val]
       [,_ ""]))
 
-   (define (get-search-term)
+  (define (get-search-term)
     (match (pregexp-match "^(?i:select)(?i:(?!except).)*?(?i:where).*?(?i:like) \\('(.*?)'" sql)
       [(,full . (,val)) val]
       [,_ ""]))
@@ -159,14 +148,13 @@
     (match (pregexp-match "(?i:Except) (?:.*?) (?i:like) \\('(.*?)'" sql)
       [(,full . (,val)) val]
       [,_ ""]))
-;(respond `(p ,sql) #;(p ,(get-bracketed "^select.*(?i:where) " sql)))
+  ;;(respond `(p ,sql) #;(p ,(get-bracketed "^select.*(?i:where) " sql)))
   (initial-setup db "The system filled in what fields it could from the existing query. If your active database is different than the one used to create the search some fields may be blank."
     (get-bracketed "from " sql) (get-search-col) (get-search-term) (get-quoted "between " sql) (get-quoted "and " sql) (get-exc-col) (get-exc-term) (get-bracketed "by " sql) (get-desc)))
 
 
 ;;Initial setup
 (define (initial-setup db inst table column search-term min max excCol excTerm order desc)
-  
   (let ([db-tables (get-db-tables db)])
     (respond
      (section inst
@@ -182,7 +170,6 @@
            (tr (@ (style "background-color: #DDE;")) (td (p "Exclude column")) (td ,(make-col-drop-downs db-tables "excCont" "excCol" excCol))
              (td  (@ (rowspan "2"))(p "Optional, similar to the above two rows, except excludes results from the search that match this condition.") (p "Still shows this column, just not the rows that match the condition.") (p "Same guidelines as above for the keyword.")) (td (@ (rowspan "2")) (p "Selecting \"Method\" and entering  \"Clinical%\" will remove all rows where the method name starts with clinical.")))
            (tr (td (p "Exclude term")) (td (p (textarea (@ (id "execTerm") (name "execTerm") (class "textBox")) ,excTerm))))
-           
            (tr (td (p "Minimum date-time"))
              (td (p (textarea (@ (id "min") (name "min") (class "textBox")),min)))
              (td (@ (rowspan "2")) (p "Optional, limits the time range of results shown.") (p "Inclusive")
@@ -202,7 +189,6 @@
           (input (@ (id "order") (name "order") (class "hidden") (value "")))
           (p (button (@ (type "submit")) "Run Search"))
           (p (textarea (@ (id "sql") (name "sql") (class "hidden"))))
-          
           (script "
 window.addEventListener('load', initialupdate, false);
 var select = document.getElementById('table');
@@ -210,7 +196,6 @@ select.addEventListener('click', updateDrops, false);")
           (script "$('.excCol').bind('change', updateExecVal).trigger('change')")
           (script "$('.cols').bind('change', updateColVal).trigger('change')")
           (script "$('.orders').bind('change', updateOrderVal).trigger('change')")))
-     
      (section "Schema"
        (schema->html db-tables)))))
 
@@ -262,5 +247,3 @@ select.addEventListener('click', updateDrops, false);")
 
 
 (dispatch)
-
-

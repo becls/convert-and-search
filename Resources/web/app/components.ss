@@ -98,7 +98,7 @@
       (link "saved?type=search&sql=&limit=100&offset=0" "Saved searches")
       (link "search" "Search")
       (link  "twoTableSearch" "Two table search")
-      (link "query-db" "Advanced search")
+      (link "adv-search" "Advanced search")
       (link "converter" "Convert log files")
       (link "/swish/errors?type=child&sql=&limit=100&offset=0" "Debug")
     (active-database))))
@@ -133,6 +133,3 @@
   `(div (@ (class "row"))
      (label ,label)
      ,@content))
-
-
-

@@ -43,8 +43,8 @@
      (hosted-page-minimal ""
       '()
       c1 c2 ...)]))
-     
-     
+
+
 (define (hosted-page-minimal page-title heads . content)
   (http:respond op 200 '(("Content-Type" . "text/html"))
     (html->bytevector
@@ -115,7 +115,7 @@ getURL('http://127.0.0.1:54321/app/export?sql=SELECT%20%5BRun%20number%5D%2C%20%
                      text)])
       `(td ,text)))
 
-  
+
   (match-let*
    ([,stmt (sqlite:prepare db sql)]
     [,results (get-results (lambda () (sqlite:step stmt)) row->tr)]

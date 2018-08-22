@@ -27,7 +27,7 @@
 (define-syntax respond
   (syntax-rules ()
     [(_ c1 c2 ...)
-     (hosted-page "Create a view" 
+     (hosted-page "Create a view"
        (list (css-include "css/confirm-delete.css"))
        c1 c2 ...)]))
 
@@ -53,7 +53,7 @@
               (p "This is similar to creating a table in the active database from the search results.")
               (p "The selected search is:")
               (p ,sql))
-    
+
     `(form (table (tr
                    (td  (@ (class "nav"))(p (@ (style "font-weight: bold;")) "Name for the view:"))
                    (td (@ (class "nav"))(input (@ (id "viewName") (name "viewName"))))))

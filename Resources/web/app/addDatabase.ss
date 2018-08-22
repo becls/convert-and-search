@@ -47,7 +47,7 @@
               (tr (td (p "Description")) (td (p (textarea (@ (id "desc") (name "desc") (class "desc"))))))
               (tr (td (p "File")) (td (table (tr (@ (style "background-color: #DDE;"))(td (p (input (@ (name "path") (class "path") (type "button") (value "Choose a database") (id "path"))) (td (p (@ (id "filename")) "No file choosen"))))))))))
              (input (@ (id "file-path") (name "file-path") (class "hidden")))
-             (script "var app = require('electron').remote; 
+             (script "var app = require('electron').remote;
             var dialog = app.dialog;
             var fs = require('fs');
 const {basename} = require('path');
@@ -75,7 +75,7 @@ document.getElementById('filename').innerHTML = basename(fileNames[0]);})
           [(,full . (,val)) val]
           [,_ ""])
         name))
-  
+
   (unless (not (string=? "undefined" file))
     (raise "browser-add"))
   (unless (or (ends-with-ci? file ".db3")
@@ -84,7 +84,7 @@ document.getElementById('filename').innerHTML = basename(fileNames[0]);})
     (raise "not-database"))
   (match (catch (transaction 'log-db (execute "insert into database (name, description, file_path)
 values (?, ?, ?)" (get-file-name) desc file)))
-    
+
     [#(EXIT ,reason)  (respond:error reason)]
     [,val (begin (user-log-path file) (redirect "saved?type=database&sql=&limit=100&offset=0&flag=Save+successful,+active+database+changed."))]))
 

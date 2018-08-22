@@ -27,10 +27,10 @@
 (define-syntax respond
   (syntax-rules ()
     [(_ c1 c2 ...)
-     (hosted-page (get-page-name) 
-       (list (css-include "css/query-db.css")
+     (hosted-page (get-page-name)
+       (list (css-include "css/display-query.css")
          (js-include "js/jquery-1.4.4.min.js")
-         (js-include "js/query-db.js"))
+         (js-include "js/display-query.js"))
        c1 c2 ...)]))
 
 ;; Running a query
@@ -41,7 +41,7 @@
        (input (@ (name "limit") (class "hidden") (value ,(stringify limit))))
        (input (@ (name "offset") (class "hidden") (value ,(stringify from-offset))))
        (input (@ (name "type") (class "hidden") (value ,(stringify type))))
-       (button ,(if enabled? 
+       (button ,(if enabled?
                     '(@ (type "submit"))
                     '(@ (type "submit") (disabled)))
          ,(stringify where))))
@@ -128,8 +128,6 @@
                `(tr ,@(map make-td columns (apply f (vector->list row)))))
              rows))))))
 
-
-
 (define (schema->html db-tables)
   (define (db-table->tr table)
     (match table
@@ -139,8 +137,7 @@
   (define (column->tr column-type)
     (match column-type
       [(,column . ,type)
-       `(tr (td ,(stringify column)) 
+       `(tr (td ,(stringify column))
           (td ,type))]))
   `(div (@ (class "schema"))
      ,@(map db-table->tr db-tables)))
-

@@ -20,9 +20,6 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//src = 'js/jquery-1.4.4.min.js'
-src = 'js/store.js'
-src = 'js/jquery-resizable-columns/dist/jquery.resizableColumns.js'
 
 function onLoad() {
   $('#offsetInput').val('');

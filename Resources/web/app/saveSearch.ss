@@ -27,7 +27,7 @@
 (define-syntax respond
   (syntax-rules ()
     [(_ c1 c2 ...)
-     (hosted-page "Save search" 
+     (hosted-page "Save search"
        (list (css-include "css/saveSearch.css"))
        c1 c2 ...)]))
 
@@ -61,4 +61,3 @@ values (?, ?, ?)" name desc sql)))
         (initial-setup))))
 
 (dispatch)
-

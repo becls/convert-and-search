@@ -40,7 +40,6 @@
     ["database" `(table
                    (tr (td (@ (style "border: 0px solid; padding-left:0px")) ,(link "addDatabase" "Add database"))
                     (td (@ (style "border: 0px solid;")),(link "confirm-delete?type=dataAll&val=" "Delete all"))))]
-    
     ["search" `(table (tr (td (@ (style "border: 0px solid;")) ,(link "confirm-delete?type=searchAll&val=" "Delete all"))))]))
 
 (define (dispatch)
@@ -53,11 +52,11 @@
         [search-func (lambda (name desc sqlite edit export view delete)
                        (let ([display-name (if (string=? name "") "()" name)])
                          (list
-                          (link (format "query-db?limit=100&offset=0&sql=~a" (http:percent-encode sqlite)) (format "~a" display-name))
+                          (link (format "adv-search?limit=100&offset=0&sql=~a" (http:percent-encode sqlite)) (format "~a" display-name))
                           desc sqlite
                           (link (format "search?edit-sql=~a" (http:percent-encode sqlite))  "Edit")
                           (link (format "export?inst=&sql=~a" (http:percent-encode sqlite))  "Export to Excel")
-                          (link (format "filter?sql=~a" (http:percent-encode sqlite))  "Create view")
+                          (link (format "view?sql=~a" (http:percent-encode sqlite))  "Create view")
                           (link (format "confirm-delete?type=search&val=~a" (http:percent-encode sqlite))  "Delete"))))]
         [data-func (lambda (name desc filePath delete)
                      (let ([display-name (if (string=? name "") "()" name)])
@@ -65,8 +64,7 @@
                         (link (format "updatePath?val=~a" (http:percent-encode filePath)) (format "~a" display-name))
                         desc filePath
                         (link (format "confirm-delete?type=database&val=~a" (http:percent-encode filePath)) "Delete"))))])
-    
-    
+
     (let ([sql (if (previous-sql-valid? sql)
                    sql
                    (match type
@@ -75,7 +73,7 @@
           [func (match type
                   ["database" data-func]
                   ["search" search-func])])
-      
+
       (with-db [db (log-file) SQLITE_OPEN_READONLY]
         (do-query db sql limit offset type func)))))
 

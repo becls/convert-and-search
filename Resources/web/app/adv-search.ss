@@ -61,7 +61,7 @@
      [(or (starts-with-ci? sql "select ")
           (starts-with-ci? sql "with ")
           (starts-with-ci? sql "explain ")
-	  (starts-with-ci? sql "select* "))
+          (starts-with-ci? sql "select* "))
       (if (and limit offset)
           'ok
           (raise `#(db-query-failed missing-limit-offset ,limit ,offset ,sql)))]
@@ -75,7 +75,7 @@
           (a (@ (href ,(format "saveSearch?sql=~a"
                          (http:percent-encode last-sql)))) "Save Search"))
       (td (@ (style "border: 0px solid; background: #FaFaFa;"))
-         (a (@ (href ,(format "query-db?lastSql=~a"
+         (a (@ (href ,(format "adv-search?lastSql=~a"
                         (http:percent-encode last-sql)))) "Edit Search")))))
 
 ;; Dispatching requests

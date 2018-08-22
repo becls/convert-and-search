@@ -27,12 +27,12 @@
 (define-syntax respond
   (syntax-rules ()
     [(_ c1 c2 ...)
-     (hosted-page "Confirm delete" 
+     (hosted-page "Confirm delete"
        (list (css-include "css/confirm-delete.css"))
        c1 c2 ...)]))
 
 (define (instruct message value link type)
-  (respond message `(p ,value) 
+  (respond message `(p ,value)
     `(table (tr (td (@ (class "nav")) ,link)
               (td (@ (class "nav")) (form
                                      (input (@ (id "click") (name "click") (class "hidden")))
@@ -58,7 +58,7 @@
                                    (format "delete from ~a where ~a = ~a" type
                                      (match type ["database" "file_path"] ["search" "sqlite"])
                                      (quote-sqlite-identifier value))))]))
-  (match (catch (do-delete)) 
+  (match (catch (do-delete))
     [#(EXIT ,reason) (respond `(p ,reason))]
     [,val (return-to-saved)]))
 
@@ -84,6 +84,5 @@
     (if delete-clicked
         (delete-and-show-confirmation value type)
         (instruct message value link type))))
-
 
 (dispatch)

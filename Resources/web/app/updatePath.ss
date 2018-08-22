@@ -27,9 +27,9 @@
 (define-syntax respond
   (syntax-rules ()
     [(_ c1 c2 ...)
-     (hosted-page "Database changed" 
+     (hosted-page "Database changed"
        '()
-       c1 c2 ...)])) 
+       c1 c2 ...)]))
 
 (define (dispatch)
   (let ([val (string-param "val" params)])

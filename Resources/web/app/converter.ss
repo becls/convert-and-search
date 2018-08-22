@@ -29,7 +29,7 @@
 (define (respond:error reason)
   (define (back-link)
     `(div (@ (style "padding-left: 5px")) ,(link "converter" "Go back")))
-  
+
   (respond
    (match reason
      [browser-add (section "Must use desktop app to convert files" (back-link))]
@@ -60,7 +60,7 @@
              (td (@ (style "border: 0px solid;")) (table (tr (th (@ (style "border: 0px solid; background: #FaFaFa;")) (h1 (@ (style "text-decoration: underline;" )) "Help"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formatting"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Generated database setup")))))))
      (input (@ (id "folder-path") (name "folder-path") (class "hidden")))
      (input (@ (id "dest-path") (name "dest-path") (class "hidden")))
-     (script "var app = require('electron').remote; 
+     (script "var app = require('electron').remote;
             var dialog = app.dialog;
             var fs = require('fs');
 const {basename} = require('path');
@@ -110,7 +110,6 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
     the top of the given file. Data tables contain the information
     found in the main body of the log file. There are as many data
     tables created as there are unique convertible file names.")
-                
                 (p "Each data table created has four columns, Run number, method, dateTime, and
     desc. Run number is automatically generated and references the
     corresponding entry in the HeaderInfo table, allowing the user to determine the header information if necessary.")
@@ -131,7 +130,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
     (raise `empty-dest))
   (unless (not (string=? "" name))
     (raise `empty-name))
-  
+
   (let* ([new-file (path-combine dest name)]
          [new-file (string-append new-file ".db3")]
          [file-name (if datesOnly
@@ -183,12 +182,12 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
         [(#(,num)) num]))
 
     (define (parse-method line)
-      ;;Method = 
+      ;;Method =
       (let ([n (string-length line)])
         (and (>= n 9)
              (string=? (substring line 0 9) "Method = ")
              (substring line 9 (- n 1)))))
-    
+
     (define (reformat date)
       (let ([year (substring date 6 10)]
             [month (substring date 0 2)]
@@ -250,7 +249,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
 
     (define (complete-line date run-number method)
       (sqlite:execute prepared-insert (list run-number method date (get-output-string op))))
-    
+
     (on-exit (close-input-port ip)
       (header -1 ""))))
 
@@ -279,7 +278,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
                   (processfile short-name path db prepared-insert header-insert pattern)
                   (process-each-file rest (cons new-table existing-tables)  header-insert))]))
            (process-each-file rest existing-tables header-insert))]
-      
+
       [() "Finished?"]))
 
   (define (get-name full-name)
