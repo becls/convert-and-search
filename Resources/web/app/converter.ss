@@ -32,12 +32,13 @@
   
   (respond
    (match reason
-     ["browser-add" (section "Must use desktop app to convert files" (back-link))]
-     ["empty-dest" (section "Must select a destination to save the newly created database" (back-link))]
-     ["empty-src" (section "Must select a folder to convert" (back-link))]
-     ["empty-name" (section "Must enter a file name" (back-link))]
-     ["file-exists" (section "That file already exists in that folder. Please select a different name or destination folder" (back-link))]
-     [,_ (section "insert failed" `(p ,(exit-reason->english reason)))])))
+     [browser-add (section "Must use desktop app to convert files" (back-link))]
+     [empty-dest (section "Must select a destination to save the newly created database" (back-link))]
+     [empty-src (section "Must select a folder to convert" (back-link))]
+     [empty-name (section "Must enter a file name" (back-link))]
+     [file-exists (section "That file already exists in that folder. Please select a different name or destination folder" (back-link))]
+     [too_many_groups (section "The specifed pattern can contain a maxium of one group" (back-link))]
+     [,_ (section "insert failed" `(p ,(exit-reason->english reason)) (back-link))])))
 
 
 (define (get-paths)
@@ -45,12 +46,17 @@
    `(form
      (table (tr
              (td (@ (style "border: 0px solid; padding-left: 0px"))
-               (table (tr (th (p "Field")) (th (p "Value")))
+               (table (tr (th (p "Field")) (th (p "Value")) (th (p "Information")))
                  (tr (td (p "Folder to convert")) (td (table (tr (@ (style "background-color: #DDE;"))
-                                                               (td (p (input (@ (name "folder") (class "path") (type "button") (value "Choose a folder") (id "folder"))))) (td (p (@ (id "path-name")) "No file selected"))))))
-                 (tr (td (p "Destination folder"))(td (table (tr (td (p (input (@ (name "dest") (class "path") (type "button") (value "Choose a folder")  (id "dest"))))) (td (p (@ (id "dest-name")) "No file selected"))))))
-                 (tr (td (p "New file name")) (td (p (textarea (@ (name "name")) ""))))
-                 (tr (td (p "Only convert files where "(br) "the filename ends in a date.") (td (@ (style "text-align: center; zoom: 1.25;")) (input (@ (name "datesOnly") (type "checkbox") (checked))))))))
+                                                               (td (p (input (@ (name "folder") (class "path") (type "button") (value "Choose a folder") (id "folder"))))) (td (p (@ (id "path-name")) "No file selected")))))(td))
+                 (tr (td (p "Destination folder"))(td (table (tr (td (p (input (@ (name "dest") (class "path") (type "button") (value "Choose a folder")  (id "dest"))))) (td (p (@ (id "dest-name")) "No file selected"))))) (td))
+                 (tr (td (p "New file name")) (td (p (textarea (@ (name "name")) "")))(td))
+                 (tr (td (p "Only convert files where "(br) "the filename ends in a date.") (td (@ (style "text-align: center; zoom: 1.25;")) (input (@ (name "datesOnly") (type "checkbox") (checked)))))(td (p "Checking this box ignores files like DeckEditor" (br) "which often have a different format and therefore convert strangely.")))
+                 (tr (td (p "Start of line regular expression"))
+                   (td (p (textarea (@ (style "width: 90%; padding:0px;")(name "pattern")) "")))
+                   (td (p (@ (style "color:red;")) "Important:")
+                     (p"Leave blank for \"mm/dd/yyyy HH:MM:SS,\" which is common in biomek logs.")
+                     (p "Information on regular expressions can by found at" (br) "http://ds26gte.github.io/pregexp/index.html#node_toc_start")))))
              (td (@ (style "border: 0px solid;")) (table (tr (th (@ (style "border: 0px solid; background: #FaFaFa;")) (h1 (@ (style "text-decoration: underline;" )) "Help"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formatting"))) (tr (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Generated database setup")))))))
      (input (@ (id "folder-path") (name "folder-path") (class "hidden")))
      (input (@ (id "dest-path") (name "dest-path") (class "hidden")))
@@ -79,13 +85,22 @@ document.getElementById('dest-name').innerHTML = basename(fileNames[0]);})});")
              `(div (@ (style "padding-left: 3px; padding-top: 2px"))
                 (p "The converter only converts files in the current
 directory. Subdirectories are ignored. Therefore, navigate to the folder that contains the log files themselves.")
-                (p "If you convert files that end in a date, only files that end in some combination of digits, periods, and dashes are converted")
+                (p "If you convert files that end in a date, only files that end in some combination of digits, periods, and dashes are converted.")
                 (P "For example, this mode would convert Details05-22-2018 12.42.04.log but not DeckEditor.log")
-                (p "Otherwise all files are converted")
+                (p "Otherwise all .log files are converted.")
                 (p "In either mode, the table name is the part of the filename that is not the ending date.")
-                (p "The files themselves can contain some header information, then each data entry should start with \"mm/dd/yyyy HH:MM:SS,\" followed by a value."))
+                (p "The files themselves can contain some header information, then each data entry should start with either the entered pattern or \"mm/dd/yyyy HH:MM:SS,\" followed by a value.")))
+             (section "Entering a start of line pattern:"
+               `(div (@ (style "padding-left: 3px; padding-top: 2px"))
+                  (p "This allows the user to define what counts as the start of an entry.")
+                  (p "The pattern is only matched if it occurs at the start of a line.")
+                  (p "If a group is included in the regular expression, the value of that group becomes the value in dateTime.")
+                  (p "Otherwise, the entire match becomes dateTime.")
+                  (p "Including more than one capturing group will cause an error.")
+                  (p "It is possible to enter the regular expression \"(\\d\\d/\\d\\d/\\d\\d\\d\\d \\d\\d:\\d\\d:\\d\\d),\" and get the same result as leaving the start of line regular expression blank.")
+                  (p "However, this will cause the conversion to take longer.")))
              `(table (tr (td (@ (style "border: 0px solid;")) ,(link "converter" "Back"))
-                       (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Database setup")))))))
+                       (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Database setup"))))))
 
 (define (setup-explain)
   (respond (section "New database setup:" `(div (@ (style "width: 90%; padding-left: 6px;")) (p "There are two types of tables created, data tables and header
@@ -104,24 +119,27 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
     `(table (tr (td (@ (style "border: 0px solid;")) ,(link "converter" "Back"))
               (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formatting")))))))
 
-(define (do-conversion src dest name datesOnly)
+(define (do-conversion src dest name datesOnly pattern)
   (unless (not (string=? "undefined" src))
-    (raise "browser-add"))
+    (raise `browser-add))
   (unless (not (string=? "" src))
-    (raise "empty-src"))
+    (raise `empty-src))
   (unless (not (string=? "" dest))
-    (raise "empty-dest"))
+    (raise `empty-dest))
   (unless (not (string=? "" name))
-    (raise "empty-name"))
+    (raise `empty-name))
   
   (let* ([new-file (path-combine dest name)]
          [new-file (string-append new-file ".db3")]
          [file-name (if datesOnly
                        (pregexp "(.+?)[-0-9 .]+(?i:\\.log)")
-                       (pregexp "(.+?)[-0-9 .]*(?i:\\.log)"))])
+                       (pregexp "(.+?)[-0-9 .]*(?i:\\.log)"))]
+         [re-pattern (if (string=? "" pattern)
+                         #f
+                         (pregexp (string-append "^" pattern)))])
     (unless (not (regular-file? new-file))
-      (raise "file-exists"))
-    (make-db-and-convert src new-file file-name)
+      (raise `file-exists))
+    (make-db-and-convert src new-file file-name re-pattern)
     (conversion-complete dest name)))
 
 
@@ -132,7 +150,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
 
 
 ;;Conversion related functions
-(define (processfile table-name file-path db prepared-insert header-insert)
+(define (processfile table-name file-path db prepared-insert header-insert pattern)
   (let* ([ip (open-file-to-read file-path)]
          [op (open-output-string)])
 
@@ -145,7 +163,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
             (display-string line op)
             (newline op)
             (header run-number method))]
-         [(parse-date-line line) =>
+         [(parse-start-line-pattern line) =>
           (lambda (x)
             (let ([run-number (complete-header)])
               (match-let* ([(,date . ,desc) x])
@@ -173,6 +191,18 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
             [month (substring date 0 2)]
             [day (substring date 3 5)])
         (string-append year "-" month "-" day (substring date 10 (string-length date)))))
+
+    (define (parse-start-line-pattern line)
+      (if pattern
+          (parse-pattern line)
+          (parse-date-line line)))
+
+    (define (parse-pattern line)
+      (match (pregexp-match-positions pattern line)
+        [((,start . ,end) (,mstart . ,mend)) (cons (substring line mstart mend) (substring line mend (- (string-length line) 1)))]
+        [((,start . ,end)) (cons (substring line start end) (substring line end (- (string-length line) 1)))]
+        [#f #f]
+        [,_ (raise `too_many_groups)]))
 
     (define (parse-date-line line)
       ;; mm/dd/yyyy HH:MM:SS,
@@ -204,7 +234,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
       (let ([line (get-line ip)])
         (cond
          [(eof-object? line) (complete-line date run-number method)]
-         [(parse-date-line line) =>
+         [(parse-start-line-pattern line) =>
           (lambda (x)
             (complete-line date run-number method)
             (match-let* ([(,date . ,desc) x])
@@ -221,7 +251,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
     (on-exit (close-input-port ip)
       (header -1 ""))))
 
-(define (fullConvert src-path db file-name)
+(define (fullConvert src-path db file-name pattern)
   (define (process-each-file remaining-files existing-tables header-insert)
     (match remaining-files
       [((,name . ,num) . ,rest)
@@ -234,14 +264,14 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
                               [(,key . ,value) value])])
              (cond [(not short-name) (process-each-file rest existing-tables header-insert)] ;Wrong file format, skip
                [prepared ;Table and prepared statement already created
-                (begin (processfile short-name path db prepared header-insert)
+                (begin (processfile short-name path db prepared header-insert pattern)
                        (process-each-file rest existing-tables header-insert))]
 
                [else ;Need to create table and prepare statment
                 (let*  ([table (create-table short-name)]
                         [prepared-insert (sqlite:prepare db (format "insert into ~a ([Run number], Method, dateTime, desc) values (?, ?, ?, ?)" (quote-sqlite-identifier short-name)))]
                         [new-table (cons short-name prepared-insert)])
-                  (processfile short-name path db prepared-insert header-insert)
+                  (processfile short-name path db prepared-insert header-insert pattern)
                   (process-each-file rest (cons new-table existing-tables)  header-insert))]))
            (process-each-file rest existing-tables header-insert))]
       
@@ -261,15 +291,15 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
         [header-insert (sqlite:prepare db "insert into HeaderInfo ([Corresponding table], [header contents]) values (?, ?)")])
     (process-each-file file-list '() header-insert)))
 
-(define (set-up-conversion folder db file-name)
+(define (set-up-conversion folder db file-name pattern)
   (execute-sql db "create table if not exists HeaderInfo ([Unique Run Number] integer primary key,[Corresponding table] text, [header contents] text)")
-  (fullConvert folder db file-name))
+  (fullConvert folder db file-name pattern))
 
-(define (make-db-and-convert folder db-path file-name)
+(define (make-db-and-convert folder db-path file-name pattern)
   (with-db [db db-path (logor SQLITE_OPEN_READWRITE
   SQLITE_OPEN_CREATE)]
     (execute-sql db "begin transaction")
-    (set-up-conversion folder db file-name)
+    (set-up-conversion folder db file-name pattern)
     (execute-sql db "end transaction")))
 
 (define (dispatch)
@@ -278,10 +308,11 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
          [name (string-param "name" params)]
          [file (string-param "file" params)]
          [setup (string-param "setup" params)]
-         [datesOnly (string-param "datesOnly" params)])
+         [datesOnly (string-param "datesOnly" params)]
+         [pattern (string-param "pattern" params)])
     (cond
      [src
-      (match (catch (do-conversion src dest name datesOnly))
+      (match (catch (do-conversion src dest name datesOnly pattern))
         [#(EXIT ,reason) (respond:error reason)]
         [,value value])]
      [file (file-explain)]

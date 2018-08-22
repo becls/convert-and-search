@@ -35,15 +35,15 @@
      [#(db-query-failed not-a-query ,sql)
       (section "Not a SELECT or EXPLAIN statement" `(p ,sql))]
      [,_
-      (section "Query failed" `(p "Check the current database is the correct database") `(p ,(exit-reason->english reason)))])))
+      (section "Query failed" `(p "Suggestion: Check the current database is the correct database") `(p ,(exit-reason->english reason)))])))
 
 ;; Home page
 (define (do-home db last-sql)
   (let ([db-tables (get-db-tables db)])
     (respond
      `(div
-       (p "Please enter a SELECT or EXPLAIN statement in "
-         (a (@ (href "http://www.sqlite.org/lang_select.html")) "SQLite syntax") ". ")
+       (p "Please enter a SELECT or EXPLAIN statement in SQLite syntax")
+       (p "Please see http://www.sqlite.org/lang_select.html for examples")
        (p (i "Note: LIMIT and OFFSET clauses are not allowed."))
        (form (@ (method "get") (class "schema"))
          (input (@ (name "limit") (class "hidden") (value 100)))
