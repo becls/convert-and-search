@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-   <Product Name='Infozam' Id='2F001EEC-C689-4725-BF7D-7F6AF217CBCA' UpgradeCode='522E0B7F-E9EE-429F-8648-3B7AD1FFACB1'
+   <Product Name='Infozam' Id='2F001EEC-C689-4725-BF7D-7F6AF217CBCA' UpgradeCode='F8D96515-1C45-44AB-8562-111800F6CBE8'
     Language='1033' Codepage='1252' Version='1.0.0'
     Manufacturer='Beckman Coulter'>
 

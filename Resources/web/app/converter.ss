@@ -79,7 +79,6 @@ document.getElementById('dest-name').innerHTML = basename(fileNames[0]);})});")
    (p (button (@ (type "submit")) "Convert")))
    `(p (@ (style "padding-left: 5px; padding-top:7px;")) "Depending on folder size the conversion may take a few minutes. If you leave this page the conversion will continue in the background. If you stay on this page you will be notified when the conversion is complete.")))
 
-
 (define (file-explain)
   (respond (section "Expected file formatting:"
              `(div (@ (style "padding-left: 3px; padding-top: 2px"))
@@ -199,7 +198,7 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
 
     (define (parse-pattern line)
       (match (pregexp-match-positions pattern line)
-        [((,start . ,end) (,mstart . ,mend)) (cons (substring line mstart mend) (substring line mend (- (string-length line) 1)))]
+        [((,start . ,end) (,mstart . ,mend)) (cons (substring line mstart mend) (substring line (+ 1 end) (- (string-length line) 1)))]
         [((,start . ,end)) (cons (substring line start end) (substring line end (- (string-length line) 1)))]
         [#f #f]
         [,_ (raise `too_many_groups)]))
