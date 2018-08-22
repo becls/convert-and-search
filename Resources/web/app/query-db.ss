@@ -31,11 +31,11 @@
   (respond
    (match reason
      [#(db-query-failed empty-query ,sql)
-      (section "No query given" `(p ,sql))]
+      (section "No query given" `(p ,sql) (home-link sql))]
      [#(db-query-failed not-a-query ,sql)
-      (section "Not a SELECT or EXPLAIN statement" `(p ,sql))]
+      (section "Not a SELECT or EXPLAIN statement" `(p ,sql) (home-link sql))]
      [,_
-      (section "Query failed" `(p "Suggestion: Check the current database is the correct database") `(p ,(exit-reason->english reason)))])))
+      (section "Query failed" `(p "Suggestion: Check the current database is the correct database") `(p ,(exit-reason->english reason)) (home-link sql))])))
 
 ;; Home page
 (define (do-home db last-sql)
@@ -70,8 +70,13 @@
   (do-query db sql limit offset "" (lambda x x)))
 
 (define (home-link last-sql)
-  (link (format "saveSearch?sql=~a" (http:percent-encode last-sql)) "Save search"))
-
+  `(table
+    (tr (td (@ (style "border: 0px solid;"))
+          (a (@ (href ,(format "saveSearch?sql=~a"
+                         (http:percent-encode last-sql)))) "Save Search"))
+      (td (@ (style "border: 0px solid; background: #FaFaFa;"))
+         (a (@ (href ,(format "query-db?lastSql=~a"
+                        (http:percent-encode last-sql)))) "Edit Search")))))
 
 ;; Dispatching requests
 (define (dispatch)

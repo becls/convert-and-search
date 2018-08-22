@@ -51,7 +51,7 @@
                                                                (td (p (input (@ (name "folder") (class "path") (type "button") (value "Choose a folder") (id "folder"))))) (td (p (@ (id "path-name")) "No file selected")))))(td))
                  (tr (td (p "Destination folder"))(td (table (tr (td (p (input (@ (name "dest") (class "path") (type "button") (value "Choose a folder")  (id "dest"))))) (td (p (@ (id "dest-name")) "No file selected"))))) (td))
                  (tr (td (p "New file name")) (td (p (textarea (@ (name "name")) "")))(td))
-                 (tr (td (p "Only convert files where "(br) "the filename ends in a date.") (td (@ (style "text-align: center; zoom: 1.25;")) (input (@ (name "datesOnly") (type "checkbox") (checked)))))(td (p "Checking this box ignores files like DeckEditor" (br) "which often have a different format and therefore convert strangely.")))
+                 (tr (td (p "Only convert files where "(br) "the filename ends in a date.") (td (@ (style "text-align: center; zoom: 1.25;")) (input (@ (name "datesOnly") (type "checkbox") (checked)))))(td (p "Checking this box ignores files like DeckEditor.log" (br) "which often have a different format and therefore convert strangely.")))
                  (tr (td (p "Start of line regular expression"))
                    (td (p (textarea (@ (style "width: 90%; padding:0px;")(name "pattern")) "")))
                    (td (p (@ (style "color:red;")) "Important:")
@@ -93,8 +93,8 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
                `(div (@ (style "padding-left: 3px; padding-top: 2px"))
                   (p "This allows the user to define what counts as the start of an entry.")
                   (p "The pattern is only matched if it occurs at the start of a line.")
-                  (p "If a group is included in the regular expression, the value of that group becomes the value in dateTime.")
-                  (p "Otherwise, the entire match becomes dateTime.")
+                  (p "If a group is included in the regular expression, the value of that group becomes the value in custom column.")
+                  (p "Otherwise, the entire match is the value of custom column.")
                   (p "Including more than one capturing group will cause an error.")
                   (p "It is possible to enter the regular expression \"(\\d\\d/\\d\\d/\\d\\d\\d\\d \\d\\d:\\d\\d:\\d\\d),\" and get the same result as leaving the start of line regular expression blank.")
                   (p "However, this will cause the conversion to take longer.")))
@@ -102,21 +102,25 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
                        (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?setup=" "Database setup"))))))
 
 (define (setup-explain)
-  (respond (section "New database setup:" `(div (@ (style "width: 90%; padding-left: 6px;")) (p "There are two types of tables created, data tables and header
+  (respond (section "New database setup:"
+             `(div (@ (style "width: 90%; padding-left: 6px;"))
+                (p "There are two types of tables created, data tables and header
     tables. There is only one header table created, called HeaderInfo. Each file adds one
     entry to the HeaderInfo table that describes the information found at
     the top of the given file. Data tables contain the information
     found in the main body of the log file. There are as many data
     tables created as there are unique convertible file names.")
-              (p "Each data table created has four columns, Run number, method, dateTime, and
+                
+                (p "Each data table created has four columns, Run number, method, dateTime, and
     desc. Run number is automatically generated and references the
     corresponding entry in the HeaderInfo table, allowing the user to determine the header information if necessary.")
-              (p "Method is obtained from the header information.")
-              (p "dateTime is the value found at the start of each data entry in the log file.")
-              (p "desc is everything that follows the dateTime value in the data entry.")
-              (p "For instance, the line \"06/19/2018 19:25:58,Run ended.\" would have \"06/19/2018 19:25:58\" as its dateTime value and \"Run ended.\" as its desc."))
-    `(table (tr (td (@ (style "border: 0px solid;")) ,(link "converter" "Back"))
-              (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formatting")))))))
+                (p "Method is obtained from the header information.")
+                (p "dateTime is the value found at the start of each data entry in the log file.")
+                (p "Entering a custom start of line regular expression changes the name of the column dateTime to custom column.")
+                (p "desc is everything that follows the dateTime value in the data entry.")
+                (p "For instance, the line \"06/19/2018 19:25:58,Run ended.\" would have \"06/19/2018 19:25:58\" as its dateTime value and \"Run ended.\" as its desc."))
+             `(table (tr (td (@ (style "border: 0px solid;")) ,(link "converter" "Back"))
+                       (td (@ (style "border: 0px solid; background: #FaFaFa;")),(link "converter?file=" "Expected file formatting")))))))
 
 (define (do-conversion src dest name datesOnly pattern)
   (unless (not (string=? "undefined" src))
@@ -268,7 +272,9 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
 
                [else ;Need to create table and prepare statment
                 (let*  ([table (create-table short-name)]
-                        [prepared-insert (sqlite:prepare db (format "insert into ~a ([Run number], Method, dateTime, desc) values (?, ?, ?, ?)" (quote-sqlite-identifier short-name)))]
+                        [prepared-insert (if pattern
+                                             (sqlite:prepare db (format "insert into ~a ([Run number], Method, [Custom column], desc) values (?, ?, ?, ?)" (quote-sqlite-identifier short-name)))
+                                             (sqlite:prepare db (format "insert into ~a ([Run number], Method, dateTime, desc) values (?, ?, ?, ?)" (quote-sqlite-identifier short-name))))]
                         [new-table (cons short-name prepared-insert)])
                   (processfile short-name path db prepared-insert header-insert pattern)
                   (process-each-file rest (cons new-table existing-tables)  header-insert))]))
@@ -283,7 +289,8 @@ directory. Subdirectories are ignored. Therefore, navigate to the folder that co
         (#f #f))))
 
   (define (create-table table-name)
-    (let ([sql (format "create table if not exists ~a ([Run number] integer, Method text, dateTime text, desc text, foreign key([Run number]) references HeaderInfo([Unique Run Number]))" (quote-sqlite-identifier table-name))]) 
+    (let* ([colName (if pattern "[Custom column]" "dateTime")]
+           [sql (format "create table if not exists ~a ([Run number] integer, Method text, ~a text, desc text, foreign key([Run number]) references HeaderInfo([Unique Run Number]))" (quote-sqlite-identifier table-name) colName)]) 
       (execute-sql db sql)))
 
   (let ([file-list (list-directory src-path)]
