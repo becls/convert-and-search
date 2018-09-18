@@ -1,6 +1,14 @@
+#!/bin/bash -e
 electron-packager . --overwrite --icon=assets/icons/win/icon.ico --prune=true --ignore="buildInstaller" --ignore="\.gitIgnore" --ignore="NOTICE" --ignore="README\.md" --ignore="installPackagerAndBuildInstaller" --ignore=".*\.wix.*" --ignore="InfozamInstaller\.exe" --ignore=".*\.msi" --ignore=".*\.wxs" --ignore=".*~" --ignore="LICENSE\.rtf" --ignore="Makefile" --ignore="LICENSE" --ignore="\.git" --ignore="Inspections" --ignore="Resources" --asar --ignore="doc"
-cp -r Resources/* Infozam-win32-x64/resources/
-"C:/Program Files (x86)/WiX Toolset v3.11/bin/candle.exe" FirstStepForInstall.wxs
-"C:/Program Files (x86)/WiX Toolset v3.11/bin/light.exe" -ext WixUIExtension FirstStepForInstall.wixobj
-"C:/Program Files (x86)/WiX Toolset v3.11/bin/candle.exe" -ext WixBalExtension InfozamInstaller.wxs
-"C:/Program Files (x86)/WiX Toolset v3.11/bin/light.exe" -ext WixBalExtension InfozamInstaller.wixobj
+rm Infozam-win32-x64/api-*.dll
+cp Resources/convert.* Infozam-win32-x64/resources
+WIXBIN=$(cygpath "$WIX")bin
+cp -r Resources/web Infozam-win32-x64/resources
+mv Infozam-win32-x64/Infozam.exe .
+"$WIXBIN/heat.exe" dir Infozam-win32-x64 -ag -cg Infozam -dr INSTALLDIR -indent 2 -nologo -sfrag -srd -sreg -var var.Infozam -out Infozam.wxs
+mv Infozam.exe Infozam-win32-x64
+"$WIXBIN/candle.exe" FirstStepForInstall.wxs -nologo
+"$WIXBIN/candle.exe" Infozam.wxs -dInfozam=Infozam-win32-x64 -nologo -o Infozam.wixobj
+"$WIXBIN/light.exe" -ext WixUIExtension -nologo FirstStepForInstall.wixobj Infozam.wixobj -out FirstStepForInstall.msi
+"$WIXBIN/candle.exe" -ext WixBalExtension -nologo InfozamInstaller.wxs
+"$WIXBIN/light.exe" -ext WixBalExtension -nologo InfozamInstaller.wixobj

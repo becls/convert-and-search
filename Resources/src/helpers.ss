@@ -28,7 +28,6 @@
    previous-sql-valid?
    stringify
    quote-sqlite-identifier
-   trim-whitespace
    column-info
    get-db-tables
    remove-tags
@@ -63,25 +62,6 @@
      [(string? x) x]
      [(symbol? x) (symbol->string x)]
      [else (format "~a" x)]))
-
-  (define (trim-whitespace s)
-    (define (find-start s i len)
-      (cond
-       [(eqv? i len) ""]
-       [(char-whitespace? (string-ref s i)) (find-start s (fx+ i 1) len)]
-       [else (find-end s (fx- len 1) i len)]))
-    (define (find-end s i start len)
-      (cond
-       [(eqv? i start)
-        (if (eqv? len 1)
-            s
-            (string (string-ref s i)))]
-       [(char-whitespace? (string-ref s i)) (find-end s (fx- i 1) start len)]
-       [else
-        (if (and (eqv? start 0) (eqv? (fx- len 1) i))
-            s
-            (substring s start (fx+ i 1)))]))
-    (find-start s 0 (string-length s)))
 
   ;;SQLite helpers
   (define (quote-sqlite-identifier s)

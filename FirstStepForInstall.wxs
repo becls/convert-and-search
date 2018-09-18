@@ -1,382 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-   <Product Name='Infozam' Id='2F001EEC-C689-4725-BF7D-7F6AF217CBCA' UpgradeCode='F8D96515-1C45-44AB-8562-111800F6CBE8'
-    Language='1033' Codepage='1252' Version='1.0.0'
-    Manufacturer='Beckman Coulter'>
-
-     <Package Id='*' Keywords='Installer'
-              Description="Installer for Infozam which is a program
-                           that can be used for database searching and
-                           log file conversion."
-              Manufacturer='Beckman Coulter'
-              InstallScope='perMachine'
-      InstallerVersion='100' Languages='1033' Compressed='yes'
-      SummaryCodepage='1252'/>
-      <Media Id='1' Cabinet='Sample.cab' EmbedCab='yes'
-             DiskPrompt="CD-ROM #1" />
-      <Property Id='DiskPrompt' Value="Infozam 1.0 Installation [1]" />
-
+  <Product Name='Infozam' Id='164C9081-5FFA-417C-9D53-D8CA2E23069D' UpgradeCode='F8D96515-1C45-44AB-8562-111800F6CBE8'
+           Language='1033' Codepage='1252' Version='1.1.1'
+           Manufacturer='Beckman Coulter'>
+    <Package Id='*' Keywords='Installer'
+             Description="Installer for Infozam which is a program that can be used for database searching and log file conversion."
+             Manufacturer='Beckman Coulter'
+             InstallScope='perMachine'
+             InstallerVersion='301' Languages='1033' Compressed='yes'
+             SummaryCodepage='1252'/>
+    <MajorUpgrade
+        AllowDowngrades="no"
+        DowngradeErrorMessage="A newer version is already installed."
+        AllowSameVersionUpgrades="no" />
+    <MediaTemplate EmbedCab="yes"/>
     <Directory Id='TARGETDIR' Name='SourceDir'>
       <Directory Id='ProgramFilesFolder' Name='PFiles'>
-        <Directory Id='Beckman' Name='BeckmanCoulter'>
+        <Directory Id='Beckman' Name='Beckman Coulter'>
           <Directory Id='INSTALLDIR' Name='Infozam'>
-        
-      <Component Id="cmpEDC0E9BC2EE82F9DF5B7C3DF960A5C40" Guid="{92B1639C-E2B6-4FB9-B578-DF2A49EE585E}">
-                <File Id="filA3735C39BA4571E62C66C547DCA3B357" KeyPath="yes" Source="Infozam-win32-x64\blink_image_resources_200_percent.pak" />
-            </Component>
-            <Component Id="cmp1241FAFDB44EA42568AD17AA8610960D" Guid="{DEBC0969-8C1D-4CB5-932B-795545B3981E}">
-                <File Id="filB54EE3E3F611D40718DB0BE8E20A147A" KeyPath="yes" Source="Infozam-win32-x64\content_resources_200_percent.pak" />
-            </Component>
-            <Component Id="cmp6E4C424DB3549F20A9D1EAFF1462C338"  Guid="{99727257-176C-46CF-A6CA-CC18FD8B1165}">
-                <File Id="fil8B9E849F54116B9E40D68AAF8E9A7C54" KeyPath="yes" Source="Infozam-win32-x64\content_shell.pak" />
-            </Component>
-            <Component Id="cmpA74848B396AB1E9D2B6C037191DA0CEE"  Guid="{9F224661-F00A-4864-B83A-9381FBF2EC6B}">
-                <File Id="filD229770A51798DE746CBB0287B0663B4" KeyPath="yes" Source="Infozam-win32-x64\d3dcompiler_47.dll" />
-            </Component>
-            <Component Id="cmpB738AC20C3D71D738687F782CD785976"  Guid="{AFE6DC44-9733-4977-9C60-179B103E82CC}">
-                <File Id="fil0DBD601179B367F869D2EFA699112E2A" KeyPath="yes" Source="Infozam-win32-x64\ffmpeg.dll" />
-            </Component>
-            <Component Id="cmp0745FAD511887985577EC99AC77FB633"  Guid="{92DBCC85-1653-4F00-978E-5AE234774D38}">
-                <File Id="fil5B94C9B475560E50CE14D4EF47174761" KeyPath="yes" Source="Infozam-win32-x64\icudtl.dat" />
-            </Component>
-            <Component Id="cmpFAF1A3DFDB5699CC8B8F819A012DE2BF"  Guid="{7E4C6723-B0FE-40F2-919E-D402C12300AD}">
-                <File Id="filF44CF9CD5FCB44DAEAD0A90C39993DEE"
-                      KeyPath="yes"
-                      Source="Infozam-win32-x64\Infozam.exe">
-                  <Shortcut Id="startmenuInfozam" Directory="ProgramMenuDir" Name="Infozam" WorkingDirectory='INSTALLDIR' Icon="Infozam.exe" IconIndex="0" Advertise="yes" />
-                <Shortcut Id="desktopInfozam" Directory="DesktopFolder" Name="Infozam" WorkingDirectory='INSTALLDIR' Icon="Infozam.exe" IconIndex="0" Advertise="yes" />
-                </File>
-            </Component>
-            <Component Id="cmp8AB6382503E9553F275CD99C808B03C8"  Guid="{8DEA2F4C-3FE7-4F94-A1F7-C5E3A54E0D6C}">
-                <File Id="filC64709275E98B1570A5E50976CAB19BF" KeyPath="yes" Source="Infozam-win32-x64\libEGL.dll" />
-            </Component>
-            <Component Id="cmpDA1D809CCC64B5ED3BE696F0ADE2E90E"  Guid="{D91977FA-1580-4C7E-A38F-ADC1FCE43A0D}">
-                <File Id="fil9BC435B7AFAFF5CB7C9F865CD74586DB" KeyPath="yes" Source="Infozam-win32-x64\libGLESv2.dll" />
-            </Component>
-            <Component Id="cmp1EB9D1C7382C0AE4356C5E0034F670DA"  Guid="{A8D6A458-B68B-4BD2-AEDB-125319719F73}">
-                <File Id="fil3DD8645570525A477A28768399D1CA0C" KeyPath="yes" Source="Infozam-win32-x64\LICENSE" />
-            </Component>
-            <Component Id="cmpD23DB018BB7CD882EEE7108FD27B691C"  Guid="{4C3D57E9-7753-4B8A-A8B4-C1E448FB3082}">
-                <File Id="fil3827C8040B5E6C84E479946584F1DF91" KeyPath="yes" Source="Infozam-win32-x64\LICENSES.chromium.html" />
-            </Component>
-            <Component Id="cmp400F80947A2B90356D6E73F3D8E73421"  Guid="{61FA90AB-4E0F-4E1A-9EB1-EE76C69C9A3F}">
-                <File Id="fil706F15C4CEECB9C0DC389779BA930B86" KeyPath="yes" Source="Infozam-win32-x64\msvcp140.dll" />
-            </Component>
-            <Component Id="cmp9670ECC1B5FF2C7673CA11F770556C91"  Guid="{44CE1C00-201D-4A7B-B172-3C427AE6586C}">
-                <File Id="filB1327EB7BD9A413B4801927805B88C86" KeyPath="yes" Source="Infozam-win32-x64\natives_blob.bin" />
-            </Component>
-            <Component Id="cmpFE24C9507392DB077D409620F571448E"  Guid="{C2DD7684-A23D-4433-946D-1D6BA6A933F2}">
-                <File Id="fil7C9E021CD39B1C5BDE2F2D8DDD315378" KeyPath="yes" Source="Infozam-win32-x64\node.dll" />
-            </Component>
-            <Component Id="cmpA10FF9D8A4932AA482DA1504FC380D9F"  Guid="{B81A7639-2B79-4898-B63A-2179CC5D178E}">
-                <File Id="fil71406BBB88DC9C583B3D6E98B73A0318" KeyPath="yes" Source="Infozam-win32-x64\pdf_viewer_resources.pak" />
-            </Component>
-            <Component Id="cmp9E4395E632B535F431B98E2D759BC3E0" Guid="{3DA1BDC0-BDD9-44E4-9E5F-0D6331D2390F}">
-                <File Id="filC042B13F93741EE6A4B10CDE772980DF" KeyPath="yes" Source="Infozam-win32-x64\snapshot_blob.bin" />
-            </Component>
-            <Component Id="cmp32F9AE344CE9717085706D16512BF781" Guid="{7764A4E6-5A31-4EC9-BB4A-984F28A07574}">
-                <File Id="fil7A56FD3D3B44A1B44B1161915CF43E7D" KeyPath="yes" Source="Infozam-win32-x64\ucrtbase.dll" />
-            </Component>
-            <Component Id="cmp975261FAC4F453EDB1AC493541CBBA0D"  Guid="{F25F1965-8245-420C-8B1A-860AE84011B2}">
-                <File Id="fil1CAA5EDBDD2458D0CCA06ED2AC069694" KeyPath="yes" Source="Infozam-win32-x64\ui_resources_200_percent.pak" />
-            </Component>
-            <Component Id="cmpA1C87CD1F457B1D66FA6B2A3A97B7943"  Guid="{D3DBAF36-3667-47AC-B6B4-A2F7B5CD4E7D}">
-                <File Id="filCA327DA8D70FBC6544DC1761A2CEEEBA" KeyPath="yes" Source="Infozam-win32-x64\vcruntime140.dll" />
-            </Component>
-            <Component Id="cmp0FA7F1E7C5D0AAC24E3FC3E84DAE1C87" Guid="{91EA2E29-C5D8-4812-AE85-0A52D7543AC9}">
-                <File Id="fil1EF6CB777CF07D3AE5A258922DF66A04" KeyPath="yes" Source="Infozam-win32-x64\version" />
-            </Component>
-            <Component Id="cmp4BC40CDDF0A2BD5284FAFFA56CCB70AA"  Guid="{BC5C2503-9468-423D-9235-7BF05F63717E}">
-                <File Id="fil64FFED06968210CEF5B90CFB6EFAF994" KeyPath="yes" Source="Infozam-win32-x64\views_resources_200_percent.pak" />
-            </Component>
-
-            <Directory Id='resourcesNewDir' Name='resources'> 
-            <Component Id="cmp866B124032D0FE91593F61B5C4E2A732"  Guid="{31E482B0-B1D1-4EA1-B9D6-97764634C92D}">
-                <File Id="filF4A2D19D027DE8C43A7478049782BDA4" KeyPath="yes" Source="Infozam-win32-x64\resources\app.asar" />
-            </Component>
-            <Component Id="cmp8CEF6E87D4A70B4AD3C04C49B95A5FB8"  Guid="{D4597B2F-7164-473F-934F-2EDA96143B85}">
-                <File Id="fil0198D922EED495228D3C8D6A6F03127A" KeyPath="yes" Source="Infozam-win32-x64\resources\convert.boot" />
-            </Component>
-            <Component Id="cmp061BA1EB93D21D4B61AF50CE558DCEE0"  Guid="{17537306-22E0-46C2-9792-41DD85EFF482}">
-                <File Id="fil1EA9CD2B041C0DCA7A3C992388379F41" KeyPath="yes" Source="Infozam-win32-x64\resources\convert.exe" />
-            </Component>
-            <Component Id="cmp8B381B10015D2D5B8B89A9ABABC7FA11" Guid="{F1DA1FB4-4DF0-43D8-9D89-2242587325BF}">
-                <File Id="fil630DB37AAE3FD8E5E3C31A0BB4D2631C" KeyPath="yes" Source="Infozam-win32-x64\resources\csv951.dll" />
-            </Component>
-            <Component Id="cmp70A42108A833E8DD15374A8D90A462DA"  Guid="{DB504FDE-98C6-4757-91EB-563481D673D3}">
-                <File Id="filC0FE61DF18BAF1CE4FCBB3F3FF25A022" KeyPath="yes" Source="Infozam-win32-x64\resources\electron.asar" />
-            </Component>
-
-            <Directory Id='srcDir' Name='src'>
-            <Component Id="cmpA6BE2E5AA3B3B5ED3AC6AA421F91E944"  Guid="{88BF6B29-8B1A-40A6-BA99-F6D75088867A}">
-                <File Id="fil57D7922F329080FC8CC50B1F3766A246" KeyPath="yes" Source="Infozam-win32-x64\resources\src\config.ss" />
-            </Component>
-            <Component Id="cmpF42A93F99E6336C10324757AEBB2B37A"  Guid="{B017032F-EE4E-4EC6-9F85-FBAA32738BD5}">
-                <File Id="fil1A276C5B281995AC31E585603D3AC23E" KeyPath="yes" Source="Infozam-win32-x64\resources\src\helpers.ss" />
-            </Component>
-            <Component Id="cmp1CE93C05FE65315DC921E047F72AC68B"  Guid="{B6DC18D9-6C92-40DC-8C34-7DE31C9E8E5A}">
-                <File Id="fil431359AC50119F7FA357C57A7F80F3E1" KeyPath="yes" Source="Infozam-win32-x64\resources\src\main.ss" />
-            </Component>
-            </Directory>
-
-            <Directory Id='webDir' Name='web'>
-            <Component Id="cmp1F9F051E36EE8544236F9E6B6C6881B1"  Guid="{30BC555A-6CE5-4B6A-A1F9-5C7F54FB2995}">
-                <File Id="fil0A17D162E9E8233363D744CFE043D340" KeyPath="yes" Source="Infozam-win32-x64\resources\web\favicon.ico" />
-            </Component>
-            <Component Id="cmp945D8080F7820F93ECC464C1D2F22E0B" Guid="{24441CB0-DBD6-4FB3-9831-C0A786B1E7E0}">
-                <File Id="fil562F1E01012DFC7A2FF7AF48383357E8" KeyPath="yes" Source="Infozam-win32-x64\resources\web\index.ss" />
-            </Component>
-            <Component Id="cmp3C0CC6BCF41D2B39655870BF36AB7F64"  Guid="{888DE152-1C36-49F1-8D04-9EB226AF9409}">
-                <File Id="filB98E963F9562859960D59903442885BE" KeyPath="yes" Source="Infozam-win32-x64\resources\web\mime-types" />
-            </Component>
-
-            <Directory Id='appDir' Name='app'>
-            <Component Id="cmp4686BF1F341B1869B0090BF29EE6081E" Guid="{EF7F6CCC-A026-4B58-88C8-E9564A81AF41}">
-                <File Id="fil3F5926CD8431AF88E259D5C4B02839FA" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\addDatabase.ss" />
-            </Component>
-            <Component Id="cmpD712D429C598C1203CA619960EC9085B"  Guid="{E42DD8D9-507E-43F5-AF35-B63728E3981B}">
-                <File Id="fil68716BE095A368E0744DE383EE086EB2" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\components.ss" />
-            </Component>
-            <Component Id="cmpA8853168EBB3BA307AA6536E54E7E76F"  Guid="{C46A9F72-8990-424D-AB43-4557B88ABA2F}">
-                <File Id="filC7ABE2454636D1B78F09C3F319A59D2C" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\confirm-delete.ss" />
-            </Component>
-            <Component Id="cmpAFA3649BDC12848CA69DD001AD699954" Guid="{43651966-F88E-4B54-854B-FFBC89CF9617}">
-                <File Id="fil3F104BC62ED4A7291F654274D370BB1F" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\converter.ss" />
-            </Component>
-            <Component Id="cmp25D61ED59897CD4F695174BCBC8CEB6D"  Guid="{C48BE1AD-1CD6-476D-9899-909C3D6910AB}">
-                <File Id="filE8D3F6EB40A24AFA9E2554CC16746589" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\displayQuery.ss" />
-            </Component>
-            <Component Id="cmpB9DC3918F8D3AD01783F961FED38FDA9"  Guid="{58033B2A-87A0-4FA9-B54F-D60C591DA887}">
-                <File Id="filBD594C7548DA9A0EDFCD18EC7961D74F" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\export.ss" />
-            </Component>
-            <Component Id="cmp0C31AB8018AADDF89EAE96FA0EA695A8"  Guid="{49E09AEA-03F1-4D9E-A9C9-9D2CF55BED99}">
-                <File Id="fil7D9CD53FCAA1E241EFE2013BB43E33C2" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\filter.ss" />
-            </Component>
-            <Component Id="cmp657630D20466510285E213B0DED2C5C7" Guid="{7AC2102F-1290-4ACF-A324-919E6795B21E}">
-                <File Id="fil0C24218FEE2A6E3835F18D43CD8CAF70" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\query-db.ss" />
-            </Component>
-            <Component Id="cmp72CA7844734E0B667B9B184A81BCD191" Guid="{D1A430B2-885F-42DD-98E2-E079844A50C7}">
-                <File Id="fil454D8C1CC690EF49996BF3FFF1F8C4C3" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\saved.ss" />
-            </Component>
-            <Component Id="cmp56419D739EE14605B13B62CEF07FFEB7" Guid="{FE860D1D-CA25-4509-AB44-A45060D4C0D4}">
-                <File Id="filAB352F76C16E901ED9D9118F6D44383B" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\saveSearch.ss" />
-            </Component>
-            <Component Id="cmp46E06934745970B8BC59C62904FF1488" Guid="{8EBEC72F-CE43-4271-AB5F-2BE53FACE05D}">
-                <File Id="filB14B78C473CA8637DF6C1EF3F4B14706" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\search.ss" />
-            </Component>
-            <Component Id="cmp7E09535C38051697C6E254051A7BDC29"  Guid="{292BF8D5-EF5B-4AED-8E42-C5231BE1D773}">
-                <File Id="filC60435AAD175E92CE87ACD690261036F" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\twoTableSearch.ss" />
-            </Component>
-            <Component Id="cmpEF1A8E0B120DF3680C37497FA81F5131"  Guid="{C063C6D4-3AF0-428F-951F-9DC36C0D9575}">
-                <File Id="filDBC59937294B93A66667C6C505482171" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\updatePath.ss" />
-            </Component>
-
-            <Directory Id='appCssDir' Name='css'>
-            <Component Id="cmpA66305B1B965F9FCC2A34BE588FB7DBF"  Guid="{5F9FE00A-2422-44F7-9ED0-7781574D8C25}">
-                <File Id="fil42D2F80332FBBB9CF452581747445771" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\css\charts.css" />
-            </Component>
-            <Component Id="cmp9B89E61AEDEE003FF2E630BB9FC23F59"  Guid="{CC8E917A-2DF3-4FA2-A61F-376DA63827D1}">
-                <File Id="fil8AA207E110F7B42D3F01735AC1B212B8" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\css\components.css" />
-            </Component>
-            <Component Id="cmp375671410B0E9192350D9968D5EEB055"  Guid="{B225BEAF-7B9A-4839-AA79-CA35DF78F3E4}">
-                <File Id="filAC7C6902AF8A7B2A54C49CAD708E2792" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\css\confirm-delete.css" />
-            </Component>
-            <Component Id="cmp022E7F67AF19F60467765E3DFEBEF612"  Guid="{E12FD50A-ABEA-43A5-8E6D-83FB4AB23C6E}">
-                <File Id="fil649389A2DC641BFF3EED432271F5DAEB" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\css\drop.css" />
-            </Component>
-            <Component Id="cmp12C4F5276C87C6307786461833AF6ED7" Guid="{40E4D654-1D35-4351-A44D-880C795C16AF}">
-                <File Id="filB05F095F9D33AFAE7A3F3CE984C111CB" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\css\index.css" />
-            </Component>
-            <Component Id="cmp6706001E4325E139CE2C3CB6107814B0"  Guid="{8FE6D092-CA7A-4A44-AF1F-0B3B8F5C01A9}">
-                <File Id="fil1B6577C034B1D57D8EB1CCF7FD90FFD4" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\css\query-db.css" />
-            </Component>
-            <Component Id="cmp50C129D3B0C59530D481B58A0FB9F0DC"  Guid="{6B9CB5CA-8CA1-4785-B601-BC9B0741521D}">
-                <File Id="fil1017ECA4D7A1F2F7AF2264FD977A5936" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\css\rounded-panel-header.png" />
-            </Component>
-            <Component Id="cmp1303D8D0DFD667C35A474A256447B055" Guid="{3AB9B1E2-A12E-4120-8562-19B37981A9FE}">
-                <File Id="fil3A3D7E03C8DE4067F4DCB14689B5CAD8" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\css\saveSearch.css" />
-            </Component>
-            <Component Id="cmp42A5D5E4212ED69B2CCE80DF420564D1" Guid="{6CD07051-63ED-4C69-B3EB-099D07590756}">
-                <File Id="filD616DE6AFB4BFDF3394BB2F18B6F0C27" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\css\search.css" />
-            </Component>
-            <Component Id="cmp929EE47B7D86868BBF0D5A40D34C315A"  Guid="{BB77A620-9830-4928-89F0-88DB5D7BFEF8}">
-                <File Id="fil30B24F2A7F26484056AB2E5089BDB704" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\css\sub-rounded-panel-header.png" />
-            </Component>
-
-            </Directory>
-            <Directory Id='appJsDir' Name='js'>
-            <Component Id="cmp481E0A0503276BB79EEC6B193136394C"  Guid="{A08C6931-D665-4894-BBB2-BEFED860C7AC}">
-                <File Id="fil4EED21B80DECE1AFE058F3EF6233AE92" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\js\components.js" />
-            </Component>
-            <Component Id="cmp2447A6A2E12B66702B6D85CA895E9C06"  Guid="{EBDB5557-B0AB-47E4-9FB9-3AC25DC60B5E}">
-                <File Id="fil18ECC0BA5CEFD054E5DB5A3BE6B7C574" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\js\jquery-1.4.4.min.js" />
-            </Component>
-            <Component Id="cmp665E5CD3E0E94EF84319F975461C3F6D"  Guid="{A27269C9-C062-4C8F-BE81-072C8E179575}">
-                <File Id="fil60D8BEAB96DF9EEADC87E1D6178F25A9" KeyPath="yes" Source="Infozam-win32-x64\resources\web\app\js\query-db.js" />
-            </Component>
-            </Directory>
-          </Directory>
-
-            <Directory Id='swishDir' Name='swish'>
-            <Component Id="cmp101821525B2147BDA8AED55E202D19DA"  Guid="{F67B49A0-B111-47D0-9CD9-4D37C2694576}">
-                <File Id="filDD4E45D3128A4C86E96F70C546B78418" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\charts.ss" />
-            </Component>
-            <Component Id="cmpC1D171390D2444CCD790FED53283A9A6"  Guid="{690DB988-50F1-4655-AE5C-C5507141B8F9}">
-                <File Id="fil1AF04408C101B6E196A5C6C0AC7F6FD1" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\components.ss" />
-            </Component>
-            <Component Id="cmp02DE632F05CFE210A19CE1CF6D178F4F"  Guid="{FAB86474-81D5-4A07-B7B0-D34E9F4E0105}">
-                <File Id="filF9F6C994D602DD57B4ADBF4EEC3EB77D" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\debug.ss" />
-            </Component>
-            <Component Id="cmp471696E182D4C742E8E7ED01B37E3207"  Guid="{06B6063B-B8CF-4D3E-AC95-323F281458A8}">
-                <File Id="fil66CACCD78AD547676F19CE9B519E02C4" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\displayQuery.ss" />
-            </Component>
-            <Component Id="cmpF7D3E9564BEA752E059A14CB03A6DB9D"  Guid="{9D576830-A66E-4E4D-BE97-68E174C00D11}">
-                <File Id="filE7FEEEEDD80E9E4D72C6CE30663120AC" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\errors.ss" />
-            </Component>
-            <Component Id="cmp765A38087539BA90CC937FA2914FB8B8"  Guid="{C71B59FE-1FD6-4B5E-A209-B13186E1BD61}">
-                <File Id="fil636AF6BA096AC8A0D577589CA0C253B5" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\index.ss" />
-            </Component>
-            <Component Id="cmp4F726E961F1D035279022391BE810278"  Guid="{6ABA980D-22BE-4033-B9A9-491988DF7AC7}">
-                <File Id="fil8E4B5CECAA4C3A636DFDE03A40DD4B21" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\query-db.ss" />
-            </Component>
-            <Component Id="cmp671BD9235CC864965B796EF6A6B746EF"  Guid="{B9682936-7A3A-49A1-874E-BC6DB5E37D75}">
-                <File Id="filCF367BDB7BAC86421A20213135DD4BCD" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\query.ss" />
-            </Component>
-            <Component Id="cmpDB205C201E072D46116E010F25415425" Guid="{A819023D-D2E7-4EE8-96A0-D2E893AF2308}">
-                <File Id="fil707B92A2AB7726F3F6C119B4369D072D" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\reboot.ss" />
-            </Component>
-
-            <Directory Id='cssDir' Name='css'>
-            <Component Id="cmp004EF69047975DEC6A14C0CF2445B58E"  Guid="{2D543E2B-2125-4177-9F1D-E7B029577DB5}">
-                <File Id="fil9B4796BCCFD7C3A8C4A9A69A7B3F82C9" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\css\charts.css" />
-            </Component>
-            <Component Id="cmp746113BDB8CBA408923787E196315B30"  Guid="{63D48773-BF92-492B-B89F-FEE9E7C28BD7}">
-                <File Id="fil8588A6356FBC455DF69A0D1669E145DF" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\css\components.css" />
-            </Component>
-            <Component Id="cmp25CC3C5C20B76A063A9AF5BA4E9B6E36"  Guid="{1F4B51AF-8780-4115-A8B5-7B4CE2788F0E}">
-                <File Id="fil3E5DF99CD365ACB5C20D8DCF692D0E76" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\css\query-db.css" />
-            </Component>
-            <Component Id="cmp28F4B11DF10C5B863FAE4BE711659483"  Guid="{1538549B-F8E6-46F3-89DB-ABAD3E9B399D}">
-                <File Id="fil21EA5D45024552C2AF59F683C4163B8B" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\css\rounded-panel-header.png" />
-            </Component>
-            <Component Id="cmp1E16209F598037C6C14742DB6B59840B"  Guid="{EF3FBD48-9AA0-4DD4-B48B-2B43632D9B50}">
-                <File Id="fil6379442878469466E46ED82FF459A055" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\css\sub-rounded-panel-header.png" />
-            </Component>
-            </Directory>
-            
-            <Directory Id='jsDir' Name='js'>
-            <Component Id="cmpDA1DB8A5F4F015E32127C0275B95B730"  Guid="{1FD8B490-3CEF-47BB-9354-782786EC5B4B}">
-                <File Id="filE1EAAB4B59946CAD6817B1008E82FFC8" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\js\components.js" />
-            </Component>
-            <Component Id="cmp6883A870DEDB8D806F92655251E9693D"  Guid="{1554A2DE-20DF-45A8-BCCD-BE416FC0385A}">
-                <File Id="fil824A8EC0AF6E1D8FF6AAF0598ADFFDA0" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\js\jquery-1.4.4.min.js" />
-            </Component>
-            <Component Id="cmp6F41CF514BDD9AB598ED69FC04D841A5"  Guid="{08B7842B-8AF5-475E-BD91-A8674B8B4BDD}">
-                <File Id="filF731221CD153A0DA0292BB2C567436D3" KeyPath="yes" Source="Infozam-win32-x64\resources\web\swish\js\query-db.js" />
+            <Component Id="InfozamComponent" Guid="*">
+              <File Id="Infozam.exe" KeyPath="yes" Name="Infozam.exe"
+                    Source="Infozam-win32-x64\Infozam.exe" />
+              <Shortcut Id="InfozamShortcut1" Advertise="yes"
+                        Directory="ProgramMenuFolder"
+                        Name="Infozam"
+			Icon="Infozam.exe" IconIndex="0"
+                        WorkingDirectory="INSTALLDIR"/>
+              <Shortcut Id="InfozamShortcut2" Advertise="yes"
+                        Directory="DesktopFolder"
+			Name="Infozam"
+                        Icon="Infozam.exe" IconIndex="0"
+                        WorkingDirectory="INSTALLDIR"/>
             </Component>
           </Directory>
         </Directory>
       </Directory>
+      <Directory Id="ProgramMenuFolder" Name="Programs"/>
+      <Directory Id="DesktopFolder" Name="Desktop"/>
     </Directory>
-  </Directory>
-</Directory>
-</Directory>
-
-    <Directory Id="ProgramMenuFolder" Name="Programs">
-        <Directory Id="ProgramMenuDir" Name="Infozam">
-          <Component Id="ProgramMenuDir" Guid="413141BC-4917-41A5-93D0-19CCB686993F">
-            <RemoveFolder Id='ProgramMenuDir' On='uninstall' />
-            <RegistryValue Root='HKCU' Key='Software\BeckManCoulter\Infozam' Type='string' Value='' KeyPath='yes' />
-          </Component>
-        </Directory>
-    </Directory>
-    <Directory Id="DesktopFolder" Name="Desktop" />
-  </Directory>
-
     <Feature Id='Complete' Level='1'>
-      <ComponentRef Id='cmpEDC0E9BC2EE82F9DF5B7C3DF960A5C40' />
-      <ComponentRef Id='cmp1241FAFDB44EA42568AD17AA8610960D' />
-<ComponentRef Id='cmp6E4C424DB3549F20A9D1EAFF1462C338' />
-<ComponentRef Id='cmpA74848B396AB1E9D2B6C037191DA0CEE' />
-<ComponentRef Id='cmpB738AC20C3D71D738687F782CD785976' />
-<ComponentRef Id='cmp0745FAD511887985577EC99AC77FB633' />
-<ComponentRef Id='cmpFAF1A3DFDB5699CC8B8F819A012DE2BF' />
-<ComponentRef Id='cmp8AB6382503E9553F275CD99C808B03C8' />
-<ComponentRef Id='cmpDA1D809CCC64B5ED3BE696F0ADE2E90E' />
-<ComponentRef Id='cmp1EB9D1C7382C0AE4356C5E0034F670DA' />
-<ComponentRef Id='cmpD23DB018BB7CD882EEE7108FD27B691C' />
-<ComponentRef Id='cmp400F80947A2B90356D6E73F3D8E73421' />
-<ComponentRef Id='cmp9670ECC1B5FF2C7673CA11F770556C91' />
-<ComponentRef Id='cmpFE24C9507392DB077D409620F571448E' />
-<ComponentRef Id='cmpA10FF9D8A4932AA482DA1504FC380D9F' />
-<ComponentRef Id='cmp9E4395E632B535F431B98E2D759BC3E0' />
-<ComponentRef Id='cmp32F9AE344CE9717085706D16512BF781' />
-<ComponentRef Id='cmp975261FAC4F453EDB1AC493541CBBA0D' />
-<ComponentRef Id='cmpA1C87CD1F457B1D66FA6B2A3A97B7943' />
-<ComponentRef Id='cmp0FA7F1E7C5D0AAC24E3FC3E84DAE1C87' />
-<ComponentRef Id='cmp4BC40CDDF0A2BD5284FAFFA56CCB70AA' />
-<ComponentRef Id='cmp866B124032D0FE91593F61B5C4E2A732' />
-<ComponentRef Id='cmp8CEF6E87D4A70B4AD3C04C49B95A5FB8' />
-<ComponentRef Id='cmp061BA1EB93D21D4B61AF50CE558DCEE0' />
-<ComponentRef Id='cmp8B381B10015D2D5B8B89A9ABABC7FA11' />
-<ComponentRef Id='cmp70A42108A833E8DD15374A8D90A462DA' />
-<ComponentRef Id='cmpA6BE2E5AA3B3B5ED3AC6AA421F91E944' />
-<ComponentRef Id='cmpF42A93F99E6336C10324757AEBB2B37A' />
-<ComponentRef Id='cmp1CE93C05FE65315DC921E047F72AC68B' />
-<ComponentRef Id='cmp1F9F051E36EE8544236F9E6B6C6881B1' />
-<ComponentRef Id='cmp945D8080F7820F93ECC464C1D2F22E0B' />
-<ComponentRef Id='cmp3C0CC6BCF41D2B39655870BF36AB7F64' />
-<ComponentRef Id='cmp4686BF1F341B1869B0090BF29EE6081E' />
-<ComponentRef Id='cmpD712D429C598C1203CA619960EC9085B' />
-<ComponentRef Id='cmpA8853168EBB3BA307AA6536E54E7E76F' />
-<ComponentRef Id='cmpAFA3649BDC12848CA69DD001AD699954' />
-<ComponentRef Id='cmp25D61ED59897CD4F695174BCBC8CEB6D' />
-<ComponentRef Id='cmpB9DC3918F8D3AD01783F961FED38FDA9' />
-<ComponentRef Id='cmp0C31AB8018AADDF89EAE96FA0EA695A8' />
-<ComponentRef Id='cmp657630D20466510285E213B0DED2C5C7' />
-<ComponentRef Id='cmp72CA7844734E0B667B9B184A81BCD191' />
-<ComponentRef Id='cmp56419D739EE14605B13B62CEF07FFEB7' />
-<ComponentRef Id='cmp46E06934745970B8BC59C62904FF1488' />
-<ComponentRef Id='cmp7E09535C38051697C6E254051A7BDC29' />
-<ComponentRef Id='cmpEF1A8E0B120DF3680C37497FA81F5131' />
-<ComponentRef Id='cmpA66305B1B965F9FCC2A34BE588FB7DBF' />
-<ComponentRef Id='cmp9B89E61AEDEE003FF2E630BB9FC23F59' />
-<ComponentRef Id='cmp375671410B0E9192350D9968D5EEB055' />
-<ComponentRef Id='cmp022E7F67AF19F60467765E3DFEBEF612' />
-<ComponentRef Id='cmp12C4F5276C87C6307786461833AF6ED7' />
-<ComponentRef Id='cmp6706001E4325E139CE2C3CB6107814B0' />
-<ComponentRef Id='cmp50C129D3B0C59530D481B58A0FB9F0DC' />
-<ComponentRef Id='cmp1303D8D0DFD667C35A474A256447B055' />
-<ComponentRef Id='cmp42A5D5E4212ED69B2CCE80DF420564D1' />
-<ComponentRef Id='cmp929EE47B7D86868BBF0D5A40D34C315A' />
-<ComponentRef Id='cmp481E0A0503276BB79EEC6B193136394C' />
-<ComponentRef Id='cmp2447A6A2E12B66702B6D85CA895E9C06' />
-<ComponentRef Id='cmp665E5CD3E0E94EF84319F975461C3F6D' />
-<ComponentRef Id='cmp101821525B2147BDA8AED55E202D19DA' />
-<ComponentRef Id='cmpC1D171390D2444CCD790FED53283A9A6' />
-<ComponentRef Id='cmp02DE632F05CFE210A19CE1CF6D178F4F' />
-<ComponentRef Id='cmp471696E182D4C742E8E7ED01B37E3207' />
-<ComponentRef Id='cmpF7D3E9564BEA752E059A14CB03A6DB9D' />
-<ComponentRef Id='cmp765A38087539BA90CC937FA2914FB8B8' />
-<ComponentRef Id='cmp4F726E961F1D035279022391BE810278' />
-<ComponentRef Id='cmp671BD9235CC864965B796EF6A6B746EF' />
-<ComponentRef Id='cmpDB205C201E072D46116E010F25415425' />
-<ComponentRef Id='cmp004EF69047975DEC6A14C0CF2445B58E' />
-<ComponentRef Id='cmp746113BDB8CBA408923787E196315B30' />
-<ComponentRef Id='cmp25CC3C5C20B76A063A9AF5BA4E9B6E36' />
-<ComponentRef Id='cmp28F4B11DF10C5B863FAE4BE711659483' />
-<ComponentRef Id='cmp1E16209F598037C6C14742DB6B59840B' />
-<ComponentRef Id='cmpDA1DB8A5F4F015E32127C0275B95B730' />
-<ComponentRef Id='cmp6883A870DEDB8D806F92655251E9693D' />
-<ComponentRef Id='cmp6F41CF514BDD9AB598ED69FC04D841A5' />
-<ComponentRef Id='ProgramMenuDir' />
+      <ComponentRef Id="InfozamComponent"/>
+      <ComponentGroupRef Id="Infozam"/>
     </Feature>
-
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
     <UIRef Id="WixUI_Minimal" />
     <UIRef Id="WixUI_ErrorProgressText" />
-    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+    <WixVariable Id="WixUILicenseRtf" Value="license.rtf" />
     <Icon Id="Infozam.exe" SourceFile="Infozam-win32-x64\Infozam.exe" />
-    
   </Product>
 </Wix>

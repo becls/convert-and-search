@@ -1,4 +1,7 @@
 install:
-	npm install --save-dev electron
+	npm install electron --save-dev
 	npm install cross-spawn
+	cd Resources; ./buildScript
 	cd doc; make
+	npm install electron-packager --save-dev -g
+	./buildInstaller

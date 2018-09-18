@@ -1,6 +1,6 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
      xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
-  <Bundle Name="Infozam" Version="1.0.0" Manufacturer="Beckman Coulter" UpgradeCode="199D312C-009C-4F47-8057-DCA4914E1214" IconSourceFile="assets\icons\win\icon.ico" AboutUrl="https://github.com/becls/convert-and-search">
+  <Bundle Name="Infozam" Version="1.1.1" Manufacturer="Beckman Coulter" UpgradeCode="199D312C-009C-4F47-8057-DCA4914E1214" IconSourceFile="assets\icons\win\icon.ico" AboutUrl="https://github.com/becls/convert-and-search">
 
   <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense">
   <bal:WixStandardBootstrapperApplication

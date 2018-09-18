@@ -1,4 +1,4 @@
-;;; Copyright 2018 Beckman Coulter, Inc.
+>;;; Copyright 2018 Beckman Coulter, Inc.
 ;;;
 ;;; Permission is hereby granted, free of charge, to any person
 ;;; obtaining a copy of this software and associated documentation
@@ -20,32 +20,17 @@
 ;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 ;;; DEALINGS IN THE SOFTWARE.
 
-(import (config) (helpers) (scheme) (swish imports))
 (http-port-number 54321)
-
 (app-sup-spec
  (make-swish-sup-spec
   (list swish-event-logger
-    (<event-logger> make [setup setup-config-db] [log (lambda (e) #f)]))))
-(match (command-line)
-  [("") (swish-start
-         (lambda (cmdline)
-           (printf "starting as stand-alone application\n")
-           (base-dir (path-parent (osi_get_executable_path))) (eval '(import (config) (helpers) (scheme) (swish imports)))
-           (data-dir (path-combine (getenv "USERPROFILE") "AppData\\Local\\Beckman Coulter\\Infozam"))
-           (log-file (path-combine (data-dir) "Log.db3"))
-           (tmp-dir (path-combine (data-dir) "tmp"))
-           (app:start)
-           (hook-console-input)
-           (new-cafe))
-         )]
-
-  [(,me . ,rest)
-   (printf "running in debug mode\n")
-   (base-dir "..")
-   (data-dir (path-combine (getenv "USERPROFILE") "AppData\\Local\\Beckman Coulter\\Infozam"))
-   (log-file (path-combine (data-dir) "Log.db3"))
-   (tmp-dir (path-combine (data-dir) "tmp"))
-   (app:start)
-   ((swish-start) (cons "--" rest))
-   ])
+    (<event-logger> make [setup (let () (import (config)) setup-config-db)] [log (lambda (e) #f)]))))
+(printf "~a\n" (app:name))
+(base-dir (path-parent (osi_get_executable_path)))
+(data-dir (path-combine (getenv "USERPROFILE") "AppData\\Local\\Beckman Coulter\\Infozam"))
+(log-file (path-combine (data-dir) "Log.db3"))
+(tmp-dir (path-combine (data-dir) "tmp"))
+(eval '(import (config) (helpers) (swish imports)))
+(app:start)
+(hook-console-input)
+(new-cafe)
