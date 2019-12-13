@@ -16,7 +16,7 @@
  },
  "dependencies": {
   "cross-spawn": "^6.0.5",
-  "npm": "^6.4.1",
+  "npm": "^6.13.4",
   "request": "^2.87.0"
  }
 }
